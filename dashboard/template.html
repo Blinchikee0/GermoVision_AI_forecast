@@ -4,6 +4,11 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
 
 <style>
+/* Панель намеренно выполнена в одной — светлой — теме: она рассчитана на
+   печать в составе официального отчёта и на демонстрацию с проектора, где
+   тёмный фон читается хуже. Поэтому тёмных вариантов токенов нет, а все
+   цвета, включая фон страницы, заданы явно — страница держит вид на любом
+   фоне, который подставит клиент. */
 :root {
   color-scheme: light;
   --ground:        #f5f7f9;
@@ -34,53 +39,6 @@
   --gap: 22px;
   --radius: 3px;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --ground:       #0f131a;
-    --surface:      #171c25;
-    --surface-sunk: #10151d;
-    --ink:          #e9edf3;
-    --ink-soft:     #9ba5b6;
-    --ink-faint:    #6d778a;
-    --rule:         #262d3a;
-    --rule-strong:  #38414f;
-    --accent:       #35a5a1;
-    --accent-soft:  #12292c;
-    --good:         #45b98c;
-    --warn:         #d9a441;
-    --crit:         #e2706e;
-    --good-bg:      #12291f;
-    --warn-bg:      #2b2312;
-    --crit-bg:      #2c1717;
-    --s1: #3987e5;  --s2: #d95926;  --s3: #199e70;  --s4: #c98500;
-    --grid:         #232a36;
-    --band:         #3987e5;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --ground:       #0f131a;
-  --surface:      #171c25;
-  --surface-sunk: #10151d;
-  --ink:          #e9edf3;
-  --ink-soft:     #9ba5b6;
-  --ink-faint:    #6d778a;
-  --rule:         #262d3a;
-  --rule-strong:  #38414f;
-  --accent:       #35a5a1;
-  --accent-soft:  #12292c;
-  --good:         #45b98c;
-  --warn:         #d9a441;
-  --crit:         #e2706e;
-  --good-bg:      #12291f;
-  --warn-bg:      #2b2312;
-  --crit-bg:      #2c1717;
-  --s1: #3987e5;  --s2: #d95926;  --s3: #199e70;  --s4: #c98500;
-  --grid:         #232a36;
-  --band:         #3987e5;
-}
-
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -993,11 +951,12 @@ footer li { margin-bottom: 6px; }
   buildIsolates();
   renderAll();
 
-  // Цвета берутся из токенов темы, поэтому при её смене графики перерисовываются.
-  const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  mq.addEventListener("change", renderAll);
-  new MutationObserver(renderAll).observe(document.documentElement, {
-    attributes: true, attributeFilter: ["data-theme"],
+  // Перерисовка при изменении ширины: у графиков подписи расставлены по
+  // координатам viewBox, но подсказки привязаны к экранным координатам.
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 150);
   });
 })();
 </script>
