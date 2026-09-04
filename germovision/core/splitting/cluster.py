@@ -16,7 +16,7 @@ import numpy as np
 
 from ..types import Split
 
-__all__ = ["cluster_by_distance", "cluster_split"]
+__all__ = ["cluster_by_distance", "cluster_split", "temporal_cluster_split"]
 
 
 def cluster_by_distance(distances: np.ndarray, threshold: float) -> np.ndarray:
@@ -146,5 +146,98 @@ def cluster_split(
             "target_test_size": test_size,
             "actual_test_size": round(idx["test"].size / n_total, 4),
             "largest_cluster": int(sizes.max()),
+        },
+    )
+
+
+def temporal_cluster_split(
+    dates,
+    clusters,
+    test_size: float = 0.2,
+    calib_size: float = 0.15,
+) -> Split:
+    """Временнóе разделение, не разрывающее кластеры родства.
+
+    Правила 1 и 2 протокола валидации конфликтуют напрямую: отсечка по
+    календарной дате рассекает кластер, часть членов которого
+    депонирована до неё, а часть — после. Соблюсти оба правила
+    одновременно можно, только сделав неделимой единицей **кластер, а не
+    изолят**.
+
+    Кластеры упорядочиваются по дате первого появления и нарезаются по
+    накопленной доле изолятов. Обучающая часть оказывается строго раньше
+    калибровочной, а та — раньше тестовой, при этом ни один кластер не
+    пересекает границу.
+
+    Побочный эффект, о котором нужно знать: границы частей смещаются
+    относительно ровных календарных дат — ровно на длину кластеров,
+    пересекавших отсечку. Фактические границы возвращаются в `meta`.
+
+    Args:
+        dates: даты доступности записей (`submission_date`).
+        clusters: метки кластеров родства.
+        test_size: целевая доля тестовой части.
+        calib_size: целевая доля калибровочной части. Ноль отключает её,
+            но тогда становятся недоступны калибровка вероятностей и
+            конформный отказ от ответа.
+
+    Returns:
+        Split со стратегией "temporal_cluster".
+
+    Raises:
+        ValueError: если доли некорректны или кластеров слишком мало.
+    """
+    d = np.asarray(dates).astype("datetime64[D]")
+    labels = np.asarray(clusters)
+    if d.size != labels.size:
+        raise ValueError("длины dates и clusters должны совпадать")
+    if not 0.0 < test_size < 1.0:
+        raise ValueError("test_size должен лежать в (0, 1)")
+    if not 0.0 <= calib_size < 1.0 or test_size + calib_size >= 1.0:
+        raise ValueError("test_size + calib_size должно быть < 1")
+
+    uniq = np.unique(labels)
+    if uniq.size < 3:
+        raise ValueError(
+            f"кластеров {uniq.size}: разделить на три части без утечки невозможно"
+        )
+
+    # Кластер датируется по своему самому раннему изоляту: именно тогда
+    # он впервые стал наблюдаемым.
+    first_seen = np.array([d[labels == c].min() for c in uniq])
+    order = np.argsort(first_seen, kind="stable")
+
+    sizes = np.array([int((labels == c).sum()) for c in uniq])
+    cum = np.cumsum(sizes[order]) / labels.size
+
+    train_end_frac = 1.0 - test_size - calib_size
+    calib_end_frac = 1.0 - test_size
+
+    train_clusters = uniq[order][cum <= train_end_frac]
+    calib_clusters = uniq[order][(cum > train_end_frac) & (cum <= calib_end_frac)]
+    test_clusters = uniq[order][cum > calib_end_frac]
+
+    if train_clusters.size == 0 or test_clusters.size == 0:
+        raise ValueError("после нарезки по кластерам одна из частей пуста")
+
+    train_idx = np.flatnonzero(np.isin(labels, train_clusters))
+    calib_idx = np.flatnonzero(np.isin(labels, calib_clusters)) if calib_clusters.size else None
+    test_idx = np.flatnonzero(np.isin(labels, test_clusters))
+
+    return Split(
+        train=train_idx,
+        calib=calib_idx,
+        test=test_idx,
+        strategy="temporal_cluster",
+        meta={
+            "n_clusters": int(uniq.size),
+            "train_last_date": str(d[train_idx].max()),
+            "test_first_date": str(d[test_idx].min()),
+            "actual_test_size": round(test_idx.size / labels.size, 4),
+            "date_semantics": "submission_date",
+            "note": (
+                "границы смещены относительно календарных дат, поскольку "
+                "неделимой единицей является кластер родства"
+            ),
         },
     )

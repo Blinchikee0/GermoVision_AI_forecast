@@ -1,0 +1,3796 @@
+{
+  "generated_at": "2026-09-04 23:38:45",
+  "elapsed_sec": 116.6,
+  "source": "synthetic",
+  "synthetic": true,
+  "warning": "СИНТЕТИЧЕСКИЕ ДАННЫЕ. Метрики характеризуют корректность пайплайна, а не качество модели. Для проверки гипотезы H1 требуется набор CRyPTIC.",
+  "dataset": {
+    "n_isolates": 6000,
+    "n_clusters": 1693,
+    "n_countries": 10,
+    "n_lineages": 5,
+    "n_variants": 68,
+    "date_min": "2015-01-23",
+    "date_max": "2025-04-22",
+    "countries": [
+      "BR",
+      "CN",
+      "DE",
+      "GB",
+      "IN",
+      "KZ",
+      "PE",
+      "RU",
+      "UZ",
+      "ZA"
+    ],
+    "resistance_rates": {
+      "RIF": 0.2589952477936185,
+      "RFB": 0.21605756485514108,
+      "INH": 0.31217021276595747,
+      "EMB": 0.1640953716690042,
+      "LEV": 0.14640379700620665,
+      "MXF": 0.1438648598477817,
+      "BDQ": 0.05131236698983211,
+      "LZD": 0.05202803142917817,
+      "CFZ": 0.05473098330241188,
+      "DLM": 0.04460352422907489,
+      "AMI": 0.09676791277258567,
+      "KAN": 0.12094335819391251,
+      "ETH": 0.17614750882699098
+    },
+    "by_country": [
+      {
+        "country": "BR",
+        "n": 534,
+        "RIF_rate": 0.18199233716475097,
+        "RIF_n": 522,
+        "INH_rate": 0.23091603053435114,
+        "INH_n": 524,
+        "mdr_rate": 0.04483430799220273,
+        "mdr_n": 513
+      },
+      {
+        "country": "CN",
+        "n": 660,
+        "RIF_rate": 0.2406832298136646,
+        "RIF_n": 644,
+        "INH_rate": 0.2801857585139319,
+        "INH_n": 646,
+        "mdr_rate": 0.06666666666666667,
+        "mdr_n": 630
+      },
+      {
+        "country": "DE",
+        "n": 372,
+        "RIF_rate": 0.10054347826086957,
+        "RIF_n": 368,
+        "INH_rate": 0.1448087431693989,
+        "INH_n": 366,
+        "mdr_rate": 0.024861878453038673,
+        "mdr_n": 362
+      },
+      {
+        "country": "GB",
+        "n": 555,
+        "RIF_rate": 0.11009174311926606,
+        "RIF_n": 545,
+        "INH_rate": 0.1270718232044199,
+        "INH_n": 543,
+        "mdr_rate": 0.013133208255159476,
+        "mdr_n": 533
+      },
+      {
+        "country": "IN",
+        "n": 1104,
+        "RIF_rate": 0.25092250922509224,
+        "RIF_n": 1084,
+        "INH_rate": 0.3081180811808118,
+        "INH_n": 1084,
+        "mdr_rate": 0.07894736842105263,
+        "mdr_n": 1064
+      },
+      {
+        "country": "KZ",
+        "n": 512,
+        "RIF_rate": 0.4701195219123506,
+        "RIF_n": 502,
+        "INH_rate": 0.5119047619047619,
+        "INH_n": 504,
+        "mdr_rate": 0.242914979757085,
+        "mdr_n": 494
+      },
+      {
+        "country": "PE",
+        "n": 612,
+        "RIF_rate": 0.20930232558139536,
+        "RIF_n": 602,
+        "INH_rate": 0.24958402662229617,
+        "INH_n": 601,
+        "mdr_rate": 0.043993231810490696,
+        "mdr_n": 591
+      },
+      {
+        "country": "RU",
+        "n": 599,
+        "RIF_rate": 0.4074074074074074,
+        "RIF_n": 594,
+        "INH_rate": 0.5085324232081911,
+        "INH_n": 586,
+        "mdr_rate": 0.2306368330464716,
+        "mdr_n": 581
+      },
+      {
+        "country": "UZ",
+        "n": 266,
+        "RIF_rate": 0.42911877394636017,
+        "RIF_n": 261,
+        "INH_rate": 0.5,
+        "INH_n": 260,
+        "mdr_rate": 0.22745098039215686,
+        "mdr_n": 255
+      },
+      {
+        "country": "ZA",
+        "n": 786,
+        "RIF_rate": 0.24805194805194805,
+        "RIF_n": 770,
+        "INH_rate": 0.31537450722733246,
+        "INH_n": 761,
+        "mdr_rate": 0.08322147651006712,
+        "mdr_n": 745
+      }
+    ]
+  },
+  "split": {
+    "sizes": {
+      "train": 3899,
+      "test": 1203,
+      "calib": 898
+    },
+    "strategy": "temporal_cluster",
+    "meta": {
+      "n_clusters": 1693,
+      "train_last_date": "2022-04-04",
+      "test_first_date": "2022-07-30",
+      "actual_test_size": 0.2005,
+      "date_semantics": "submission_date",
+      "note": "границы смещены относительно календарных дат, поскольку неделимой единицей является кластер родства"
+    }
+  },
+  "per_drug": [
+    {
+      "drug": "RIF",
+      "drug_name": "Рифампицин",
+      "n_train": 3831,
+      "n_test": 1153,
+      "n_positive": 310,
+      "prevalence": 0.2582,
+      "decision": {
+        "sensitivity": [
+          0.7645161290322581,
+          0.7161290322580646,
+          0.8096774193548387
+        ],
+        "specificity": [
+          0.8434163701067615,
+          0.8185053380782918,
+          0.8683274021352313
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.735882739675791,
+          0.686971551320959,
+          0.7747359263150922
+        ],
+        "roc_auc": [
+          0.8698695136417556,
+          0.8460319328052653,
+          0.8940286706463093
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.6787878787878788,
+          0.6256818181818182,
+          0.7272727272727273
+        ],
+        "specificity": [
+          0.8511137162954279,
+          0.8300117233294255,
+          0.8757327080890973
+        ],
+        "pr_auc": [
+          0.5227892715072202,
+          0.4812011570524616,
+          0.5603317163457947
+        ]
+      },
+      "calibration": {
+        "brier": 0.11247524001242096,
+        "ece": 0.01900791206998799,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 351,
+        "by_model": 832,
+        "no_call": 30,
+        "no_call_rate": 0.0254
+      },
+      "answer_rate": 0.9746,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.3220625528317836,
+          "accuracy": 0.6614173228346457,
+          "sensitivity": 0.9911504424778761,
+          "specificity": 0.18064516129032257,
+          "n_answered": 381
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.9230769230769231,
+          "accuracy": 0.8342490842490843,
+          "sensitivity": 0.8274647887323944,
+          "specificity": 0.8366336633663366,
+          "n_answered": 1092
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9746407438715131,
+          "accuracy": 0.8222029488291414,
+          "sensitivity": 0.7645161290322581,
+          "specificity": 0.8434163701067615,
+          "n_answered": 1153
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.9839391377852916,
+          "accuracy": 0.8230240549828178,
+          "sensitivity": 0.771875,
+          "specificity": 0.8424170616113744,
+          "n_answered": 1164
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.9746407438715131,
+          "accuracy": 0.8222029488291414,
+          "sensitivity": 0.7645161290322581,
+          "specificity": 0.8434163701067615,
+          "n_answered": 1153
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9230769230769231,
+          "accuracy": 0.8342490842490843,
+          "sensitivity": 0.8274647887323944,
+          "specificity": 0.8366336633663366,
+          "n_answered": 1092
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0857
+    },
+    {
+      "drug": "RFB",
+      "drug_name": "Рифабутин",
+      "n_train": 3438,
+      "n_test": 1023,
+      "n_positive": 233,
+      "prevalence": 0.2144,
+      "decision": {
+        "sensitivity": [
+          0.6909871244635193,
+          0.630901287553648,
+          0.7510729613733905
+        ],
+        "specificity": [
+          0.9037974683544304,
+          0.881613924050633,
+          0.9227848101265823
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.6441724861941812,
+          0.5912884153913978,
+          0.700542743030117
+        ],
+        "roc_auc": [
+          0.8436138425598957,
+          0.8112996414407562,
+          0.875564594991036
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.61328125,
+          0.54873046875,
+          0.6700195312499999
+        ],
+        "specificity": [
+          0.9106699751861043,
+          0.890818858560794,
+          0.9280397022332506
+        ],
+        "pr_auc": [
+          0.5136795365813042,
+          0.47038707513045785,
+          0.5599366135131248
+        ]
+      },
+      "calibration": {
+        "brier": 0.11240995591568435,
+        "ece": 0.04176958959295651,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 229,
+        "by_model": 833,
+        "no_call": 39,
+        "no_call_rate": 0.0367
+      },
+      "answer_rate": 0.9633,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.4444444444444444,
+          "accuracy": 0.8177966101694916,
+          "sensitivity": 0.9181286549707602,
+          "specificity": 0.760797342192691,
+          "n_answered": 472
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.923728813559322,
+          "accuracy": 0.8715596330275229,
+          "sensitivity": 0.7440758293838863,
+          "specificity": 0.9064935064935065,
+          "n_answered": 981
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.963276836158192,
+          "accuracy": 0.855327468230694,
+          "sensitivity": 0.6909871244635193,
+          "specificity": 0.9037974683544304,
+          "n_answered": 1023
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 1.0,
+          "accuracy": 0.8455743879472694,
+          "sensitivity": 0.71875,
+          "specificity": 0.8858560794044665,
+          "n_answered": 1062
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.931261770244821,
+          "accuracy": 0.8685540950455005,
+          "sensitivity": 0.7488372093023256,
+          "specificity": 0.9018087855297158,
+          "n_answered": 989
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9171374764595104,
+          "accuracy": 0.8726899383983573,
+          "sensitivity": 0.7511961722488039,
+          "specificity": 0.9058823529411765,
+          "n_answered": 974
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0777
+    },
+    {
+      "drug": "INH",
+      "drug_name": "Изониазид",
+      "n_train": 3816,
+      "n_test": 1110,
+      "n_positive": 331,
+      "prevalence": 0.3173,
+      "decision": {
+        "sensitivity": [
+          0.8126888217522659,
+          0.7673716012084593,
+          0.8535498489425981
+        ],
+        "specificity": [
+          0.8883183568677792,
+          0.8645378690629012,
+          0.9062901155327343
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.7667456057758084,
+          0.7243517400045524,
+          0.8065093439533221
+        ],
+        "roc_auc": [
+          0.8812735360618036,
+          0.8580479272752657,
+          0.9037128319287644
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.6631299734748011,
+          0.6206896551724138,
+          0.7069628647214854
+        ],
+        "specificity": [
+          0.8967661691542289,
+          0.8730721393034826,
+          0.9166666666666666
+        ],
+        "pr_auc": [
+          0.6053813118836915,
+          0.5644592266668552,
+          0.642817227587474
+        ]
+      },
+      "calibration": {
+        "brier": 0.11078716668090731,
+        "ece": 0.016006036848456202,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 333,
+        "by_model": 848,
+        "no_call": 71,
+        "no_call_rate": 0.0601
+      },
+      "answer_rate": 0.9399,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.46655376799322607,
+          "accuracy": 0.8294010889292196,
+          "sensitivity": 0.9578544061302682,
+          "specificity": 0.7137931034482758,
+          "n_answered": 551
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.46655376799322607,
+          "accuracy": 0.8294010889292196,
+          "sensitivity": 0.9578544061302682,
+          "specificity": 0.7137931034482758,
+          "n_answered": 551
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9398814563928873,
+          "accuracy": 0.8657657657657658,
+          "sensitivity": 0.8126888217522659,
+          "specificity": 0.8883183568677792,
+          "n_answered": 1110
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 1.0,
+          "accuracy": 0.8526672311600338,
+          "sensitivity": 0.8355437665782494,
+          "specificity": 0.8606965174129353,
+          "n_answered": 1181
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 1.0,
+          "accuracy": 0.8526672311600338,
+          "sensitivity": 0.8355437665782494,
+          "specificity": 0.8606965174129353,
+          "n_answered": 1181
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9204064352243861,
+          "accuracy": 0.8666053357865685,
+          "sensitivity": 0.8012820512820513,
+          "specificity": 0.8929032258064517,
+          "n_answered": 1087
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.1496
+    },
+    {
+      "drug": "EMB",
+      "drug_name": "Этамбутол",
+      "n_train": 3716,
+      "n_test": 1093,
+      "n_positive": 196,
+      "prevalence": 0.1564,
+      "decision": {
+        "sensitivity": [
+          0.7602040816326531,
+          0.6989795918367347,
+          0.8190051020408162
+        ],
+        "specificity": [
+          0.9899665551839465,
+          0.9832775919732442,
+          0.9955406911928651
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.7746575301375417,
+          0.7174628370217058,
+          0.8271634260008363
+        ],
+        "roc_auc": [
+          0.8867426569289923,
+          0.8567526676222329,
+          0.9172678770504858
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.6727272727272727,
+          0.6090909090909091,
+          0.7363636363636363
+        ],
+        "specificity": [
+          0.9912568306010929,
+          0.9846994535519126,
+          0.9967213114754099
+        ],
+        "pr_auc": [
+          0.7016645615764558,
+          0.640756772622749,
+          0.753081630120779
+        ]
+      },
+      "calibration": {
+        "brier": 0.05569396034106565,
+        "ece": 0.01966240718343152,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 156,
+        "by_model": 979,
+        "no_call": 42,
+        "no_call_rate": 0.037
+      },
+      "answer_rate": 0.963,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.23788546255506607,
+          "accuracy": 0.9629629629629629,
+          "sensitivity": 0.9866666666666667,
+          "specificity": 0.9333333333333333,
+          "n_answered": 270
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.5400881057268723,
+          "accuracy": 0.9543230016313213,
+          "sensitivity": 0.8809523809523809,
+          "specificity": 0.9820224719101124,
+          "n_answered": 613
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9629955947136564,
+          "accuracy": 0.9487648673376029,
+          "sensitivity": 0.7602040816326531,
+          "specificity": 0.9899665551839465,
+          "n_answered": 1093
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.9629955947136564,
+          "accuracy": 0.9487648673376029,
+          "sensitivity": 0.7602040816326531,
+          "specificity": 0.9899665551839465,
+          "n_answered": 1093
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.9612334801762115,
+          "accuracy": 0.9495875343721356,
+          "sensitivity": 0.7589743589743589,
+          "specificity": 0.9910714285714286,
+          "n_answered": 1091
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9612334801762115,
+          "accuracy": 0.9495875343721356,
+          "sensitivity": 0.7589743589743589,
+          "specificity": 0.9910714285714286,
+          "n_answered": 1091
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0875
+    },
+    {
+      "drug": "LEV",
+      "drug_name": "Левофлоксацин",
+      "n_train": 3536,
+      "n_test": 1098,
+      "n_positive": 150,
+      "prevalence": 0.1499,
+      "decision": {
+        "sensitivity": [
+          0.58,
+          0.5066666666666667,
+          0.66
+        ],
+        "specificity": [
+          0.9040084388185654,
+          0.8829113924050633,
+          0.9229957805907173
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.43515402109214907,
+          0.36865243541832304,
+          0.5030614816497806
+        ],
+        "roc_auc": [
+          0.8036111111111112,
+          0.7592343530239101,
+          0.8404360935302391
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.5408805031446541,
+          0.4716981132075472,
+          0.6226415094339622
+        ],
+        "specificity": [
+          0.9069037656903766,
+          0.8875261506276151,
+          0.9246861924686193
+        ],
+        "pr_auc": [
+          0.3312749849918815,
+          0.2837133587342152,
+          0.3877464299547675
+        ]
+      },
+      "calibration": {
+        "brier": 0.09199943426933781,
+        "ece": 0.032141163831810336,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 175,
+        "by_model": 940,
+        "no_call": 17,
+        "no_call_rate": 0.0152
+      },
+      "answer_rate": 0.9848,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.15695067264573992,
+          "accuracy": 0.49142857142857144,
+          "sensitivity": 1.0,
+          "specificity": 0.0,
+          "n_answered": 175
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.9434977578475336,
+          "accuracy": 0.8745247148288974,
+          "sensitivity": 0.6666666666666666,
+          "specificity": 0.9035752979414952,
+          "n_answered": 1052
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9847533632286996,
+          "accuracy": 0.8597449908925319,
+          "sensitivity": 0.58,
+          "specificity": 0.9040084388185654,
+          "n_answered": 1098
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.9820627802690582,
+          "accuracy": 0.8611872146118722,
+          "sensitivity": 0.5771812080536913,
+          "specificity": 0.9059196617336153,
+          "n_answered": 1095
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.9820627802690582,
+          "accuracy": 0.8611872146118722,
+          "sensitivity": 0.5771812080536913,
+          "specificity": 0.9059196617336153,
+          "n_answered": 1095
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9076233183856502,
+          "accuracy": 0.8725296442687747,
+          "sensitivity": 0.6825396825396826,
+          "specificity": 0.899548532731377,
+          "n_answered": 1012
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0391
+    },
+    {
+      "drug": "MXF",
+      "drug_name": "Моксифлоксацин",
+      "n_train": 3493,
+      "n_test": 1046,
+      "n_positive": 132,
+      "prevalence": 0.1443,
+      "decision": {
+        "sensitivity": [
+          0.75,
+          0.6742424242424242,
+          0.8181818181818182
+        ],
+        "specificity": [
+          0.9113785557986871,
+          0.8927789934354485,
+          0.9294584245076586
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.48288826359026066,
+          0.4162339845033736,
+          0.5647927265024878
+        ],
+        "roc_auc": [
+          0.8448876069226178,
+          0.8081760576221736,
+          0.8849078517671243
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.6423841059602649,
+          0.5594370860927153,
+          0.7218543046357616
+        ],
+        "specificity": [
+          0.916135881104034,
+          0.8991507430997877,
+          0.9331210191082803
+        ],
+        "pr_auc": [
+          0.4034465467126198,
+          0.34609426117569786,
+          0.45862140592880607
+        ]
+      },
+      "calibration": {
+        "brier": 0.0817085629843665,
+        "ece": 0.021708846473109288,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 176,
+        "by_model": 917,
+        "no_call": 47,
+        "no_call_rate": 0.043
+      },
+      "answer_rate": 0.957,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.4455626715462031,
+          "accuracy": 0.8193018480492813,
+          "sensitivity": 0.9150943396226415,
+          "specificity": 0.7926509186351706,
+          "n_answered": 487
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.9469350411710887,
+          "accuracy": 0.8927536231884058,
+          "sensitivity": 0.751937984496124,
+          "specificity": 0.91280353200883,
+          "n_answered": 1035
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9569990850869168,
+          "accuracy": 0.8910133843212237,
+          "sensitivity": 0.75,
+          "specificity": 0.9113785557986871,
+          "n_answered": 1046
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.9963403476669717,
+          "accuracy": 0.8787878787878788,
+          "sensitivity": 0.66,
+          "specificity": 0.9137380191693291,
+          "n_answered": 1089
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.9963403476669717,
+          "accuracy": 0.8787878787878788,
+          "sensitivity": 0.66,
+          "specificity": 0.9137380191693291,
+          "n_answered": 1089
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9322964318389753,
+          "accuracy": 0.8920510304219823,
+          "sensitivity": 0.7578125,
+          "specificity": 0.9113355780022446,
+          "n_answered": 1019
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.1076
+    },
+    {
+      "drug": "BDQ",
+      "drug_name": "Бедаквилин",
+      "n_train": 2727,
+      "n_test": 844,
+      "n_positive": 54,
+      "prevalence": 0.0451,
+      "decision": {
+        "sensitivity": [
+          0.46296296296296297,
+          0.3333333333333333,
+          0.6023148148148144
+        ],
+        "specificity": [
+          0.9658227848101266,
+          0.9512341772151899,
+          0.9784810126582278
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.42935967621045734,
+          0.300320902279598,
+          0.5500807129898321
+        ],
+        "roc_auc": [
+          0.7489217065166432,
+          0.6663633966244726,
+          0.8229283872480074
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.44642857142857145,
+          0.31205357142857143,
+          0.580803571428571
+        ],
+        "specificity": [
+          0.9664179104477612,
+          0.9520833333333334,
+          0.9776119402985075
+        ],
+        "pr_auc": [
+          0.25067563250702785,
+          0.16713236038763316,
+          0.3603664890206541
+        ]
+      },
+      "calibration": {
+        "brier": 0.04375302974011494,
+        "ece": 0.01193414325573569,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 52,
+        "by_model": 808,
+        "no_call": 16,
+        "no_call_rate": 0.0186
+      },
+      "answer_rate": 0.9814,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.30348837209302326,
+          "accuracy": 0.8735632183908046,
+          "sensitivity": 0.8064516129032258,
+          "specificity": 0.8826086956521739,
+          "n_answered": 261
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.9813953488372092,
+          "accuracy": 0.933649289099526,
+          "sensitivity": 0.46296296296296297,
+          "specificity": 0.9658227848101266,
+          "n_answered": 844
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9813953488372092,
+          "accuracy": 0.933649289099526,
+          "sensitivity": 0.46296296296296297,
+          "specificity": 0.9658227848101266,
+          "n_answered": 844
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.9813953488372092,
+          "accuracy": 0.933649289099526,
+          "sensitivity": 0.46296296296296297,
+          "specificity": 0.9658227848101266,
+          "n_answered": 844
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.9813953488372092,
+          "accuracy": 0.933649289099526,
+          "sensitivity": 0.46296296296296297,
+          "specificity": 0.9658227848101266,
+          "n_answered": 844
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9813953488372092,
+          "accuracy": 0.933649289099526,
+          "sensitivity": 0.46296296296296297,
+          "specificity": 0.9658227848101266,
+          "n_answered": 844
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0165
+    },
+    {
+      "drug": "LZD",
+      "drug_name": "Линезолид",
+      "n_train": 3065,
+      "n_test": 920,
+      "n_positive": 55,
+      "prevalence": 0.0486,
+      "decision": {
+        "sensitivity": [
+          0.32727272727272727,
+          0.21818181818181817,
+          0.45454545454545453
+        ],
+        "specificity": [
+          0.9976878612716763,
+          0.9942196531791907,
+          1.0
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.3545827843653931,
+          0.24182134044507955,
+          0.47659927727994544
+        ],
+        "roc_auc": [
+          0.6328849185496584,
+          0.5340680504466632,
+          0.7321605359957959
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.32727272727272727,
+          0.21818181818181817,
+          0.45454545454545453
+        ],
+        "specificity": [
+          0.9976878612716763,
+          0.9942196531791907,
+          1.0
+        ],
+        "pr_auc": [
+          0.33476284584980237,
+          0.22128458498023718,
+          0.45296442687747035
+        ]
+      },
+      "calibration": {
+        "brier": 0.04115223857323309,
+        "ece": 0.0076583671145320185,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 20,
+        "by_model": 900,
+        "no_call": 0,
+        "no_call_rate": 0.0
+      },
+      "answer_rate": 1.0,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.1608695652173913,
+          "accuracy": 0.9121621621621622,
+          "sensitivity": 0.6206896551724138,
+          "specificity": 0.9831932773109243,
+          "n_answered": 148
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 1.0,
+          "accuracy": 0.9576086956521739,
+          "sensitivity": 0.32727272727272727,
+          "specificity": 0.9976878612716763,
+          "n_answered": 920
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 1.0,
+          "accuracy": 0.9576086956521739,
+          "sensitivity": 0.32727272727272727,
+          "specificity": 0.9976878612716763,
+          "n_answered": 920
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 1.0,
+          "accuracy": 0.9576086956521739,
+          "sensitivity": 0.32727272727272727,
+          "specificity": 0.9976878612716763,
+          "n_answered": 920
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.9043478260869565,
+          "accuracy": 0.9603365384615384,
+          "sensitivity": 0.3673469387755102,
+          "specificity": 0.9974457215836526,
+          "n_answered": 832
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9043478260869565,
+          "accuracy": 0.9603365384615384,
+          "sensitivity": 0.3673469387755102,
+          "specificity": 0.9974457215836526,
+          "n_answered": 832
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0
+    },
+    {
+      "drug": "CFZ",
+      "drug_name": "Клофазимин",
+      "n_train": 2791,
+      "n_test": 857,
+      "n_positive": 46,
+      "prevalence": 0.0509,
+      "decision": {
+        "sensitivity": [
+          0.391304347826087,
+          0.24945652173913047,
+          0.5217391304347826
+        ],
+        "specificity": [
+          0.9901356350184957,
+          0.9839704069050554,
+          0.9963008631319359
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.30483719638325163,
+          0.18996553507302938,
+          0.439428450711443
+        ],
+        "roc_auc": [
+          0.6947139870262156,
+          0.6252771001983595,
+          0.770318447434729
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.3333333333333333,
+          0.2222222222222222,
+          0.46296296296296297
+        ],
+        "specificity": [
+          0.9902676399026764,
+          0.9829683698296837,
+          0.9963503649635036
+        ],
+        "pr_auc": [
+          0.2718651211801897,
+          0.1624364287605056,
+          0.3965898540997237
+        ]
+      },
+      "calibration": {
+        "brier": 0.043502559660576916,
+        "ece": 0.012696748272457493,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 26,
+        "by_model": 850,
+        "no_call": 19,
+        "no_call_rate": 0.0217
+      },
+      "answer_rate": 0.9783,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.1095890410958904,
+          "accuracy": 0.8958333333333334,
+          "sensitivity": 0.9,
+          "specificity": 0.8947368421052632,
+          "n_answered": 96
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.978310502283105,
+          "accuracy": 0.9579929988331388,
+          "sensitivity": 0.391304347826087,
+          "specificity": 0.9901356350184957,
+          "n_answered": 857
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.978310502283105,
+          "accuracy": 0.9579929988331388,
+          "sensitivity": 0.391304347826087,
+          "specificity": 0.9901356350184957,
+          "n_answered": 857
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.978310502283105,
+          "accuracy": 0.9579929988331388,
+          "sensitivity": 0.391304347826087,
+          "specificity": 0.9901356350184957,
+          "n_answered": 857
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.978310502283105,
+          "accuracy": 0.9579929988331388,
+          "sensitivity": 0.391304347826087,
+          "specificity": 0.9901356350184957,
+          "n_answered": 857
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.978310502283105,
+          "accuracy": 0.9579929988331388,
+          "sensitivity": 0.391304347826087,
+          "specificity": 0.9901356350184957,
+          "n_answered": 857
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.058
+    },
+    {
+      "drug": "DLM",
+      "drug_name": "Деламанид",
+      "n_train": 2368,
+      "n_test": 721,
+      "n_positive": 40,
+      "prevalence": 0.0384,
+      "decision": {
+        "sensitivity": [
+          0.425,
+          0.275,
+          0.575
+        ],
+        "specificity": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.06358306761042144,
+          0.0535675023223682,
+          0.0796127789412777
+        ],
+        "roc_auc": [
+          0.5619676945668135,
+          0.4828698604992658,
+          0.643884453010279
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.425,
+          0.275,
+          0.575
+        ],
+        "specificity": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "pr_auc": [
+          0.4569001386962552,
+          0.3152219140083218,
+          0.5985783633841886
+        ]
+      },
+      "calibration": {
+        "brier": 0.05252931476085792,
+        "ece": 0.013564989332702575,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 17,
+        "by_model": 704,
+        "no_call": 0,
+        "no_call_rate": 0.0
+      },
+      "answer_rate": 1.0,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.14285714285714285,
+          "accuracy": 1.0,
+          "sensitivity": 1.0,
+          "specificity": 1.0,
+          "n_answered": 103
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.680998613037448,
+          "accuracy": 0.9714867617107943,
+          "sensitivity": 0.5483870967741935,
+          "specificity": 1.0,
+          "n_answered": 491
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 1.0,
+          "accuracy": 0.9680998613037448,
+          "sensitivity": 0.425,
+          "specificity": 1.0,
+          "n_answered": 721
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 1.0,
+          "accuracy": 0.9680998613037448,
+          "sensitivity": 0.425,
+          "specificity": 1.0,
+          "n_answered": 721
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 1.0,
+          "accuracy": 0.9680998613037448,
+          "sensitivity": 0.425,
+          "specificity": 1.0,
+          "n_answered": 721
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 1.0,
+          "accuracy": 0.9680998613037448,
+          "sensitivity": 0.425,
+          "specificity": 1.0,
+          "n_answered": 721
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0
+    },
+    {
+      "drug": "AMI",
+      "drug_name": "Амикацин",
+      "n_train": 3313,
+      "n_test": 998,
+      "n_positive": 80,
+      "prevalence": 0.1011,
+      "decision": {
+        "sensitivity": [
+          0.6,
+          0.49343750000000003,
+          0.7125
+        ],
+        "specificity": [
+          0.9662309368191722,
+          0.9553376906318083,
+          0.9766067538126362
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.40437866509628406,
+          0.31714904757774365,
+          0.5075443359300273
+        ],
+        "roc_auc": [
+          0.7938997821350762,
+          0.7382004016884532,
+          0.8480637254901962
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.5,
+          0.3958333333333333,
+          0.59375
+        ],
+        "specificity": [
+          0.9672995780590717,
+          0.9556962025316456,
+          0.9789029535864979
+        ],
+        "pr_auc": [
+          0.34977447984868326,
+          0.2736005956916334,
+          0.4372721757777904
+        ]
+      },
+      "calibration": {
+        "brier": 0.05860567515705098,
+        "ece": 0.012574218201520779,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 79,
+        "by_model": 965,
+        "no_call": 46,
+        "no_call_rate": 0.0441
+      },
+      "answer_rate": 0.9559,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.1781609195402299,
+          "accuracy": 0.8225806451612904,
+          "sensitivity": 0.96,
+          "specificity": 0.7720588235294118,
+          "n_answered": 186
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.9559386973180076,
+          "accuracy": 0.93687374749499,
+          "sensitivity": 0.6,
+          "specificity": 0.9662309368191722,
+          "n_answered": 998
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9559386973180076,
+          "accuracy": 0.93687374749499,
+          "sensitivity": 0.6,
+          "specificity": 0.9662309368191722,
+          "n_answered": 998
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.9559386973180076,
+          "accuracy": 0.93687374749499,
+          "sensitivity": 0.6,
+          "specificity": 0.9662309368191722,
+          "n_answered": 998
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.9559386973180076,
+          "accuracy": 0.93687374749499,
+          "sensitivity": 0.6,
+          "specificity": 0.9662309368191722,
+          "n_answered": 998
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.9559386973180076,
+          "accuracy": 0.93687374749499,
+          "sensitivity": 0.6,
+          "specificity": 0.9662309368191722,
+          "n_answered": 998
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.1
+    },
+    {
+      "drug": "KAN",
+      "drug_name": "Канамицин",
+      "n_train": 3241,
+      "n_test": 942,
+      "n_positive": 107,
+      "prevalence": 0.124,
+      "decision": {
+        "sensitivity": [
+          0.6822429906542056,
+          0.5981308411214953,
+          0.7757009345794392
+        ],
+        "specificity": [
+          0.9317365269461078,
+          0.9143413173652695,
+          0.9473053892215569
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.5536519548489558,
+          0.46878740246190703,
+          0.6526987929188337
+        ],
+        "roc_auc": [
+          0.8265263864793777,
+          0.7699142369466675,
+          0.8738461861324082
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.5887096774193549,
+          0.5080645161290323,
+          0.6774193548387096
+        ],
+        "specificity": [
+          0.9334112149532711,
+          0.9152745327102804,
+          0.9509345794392523
+        ],
+        "pr_auc": [
+          0.38262394287739915,
+          0.31730114341152416,
+          0.44835663038588125
+        ]
+      },
+      "calibration": {
+        "brier": 0.07288594438138701,
+        "ece": 0.034826381315418084,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 130,
+        "by_model": 850,
+        "no_call": 38,
+        "no_call_rate": 0.0388
+      },
+      "answer_rate": 0.9612,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.6928571428571428,
+          "accuracy": 0.8836524300441826,
+          "sensitivity": 0.7684210526315789,
+          "specificity": 0.9023972602739726,
+          "n_answered": 679
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.9785714285714285,
+          "accuracy": 0.8967674661105318,
+          "sensitivity": 0.6347826086956522,
+          "specificity": 0.9324644549763034,
+          "n_answered": 959
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 0.9612244897959183,
+          "accuracy": 0.9033970276008493,
+          "sensitivity": 0.6822429906542056,
+          "specificity": 0.9317365269461078,
+          "n_answered": 942
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 0.960204081632653,
+          "accuracy": 0.9032943676939427,
+          "sensitivity": 0.6822429906542056,
+          "specificity": 0.9316546762589928,
+          "n_answered": 941
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 0.960204081632653,
+          "accuracy": 0.9032943676939427,
+          "sensitivity": 0.6822429906542056,
+          "specificity": 0.9316546762589928,
+          "n_answered": 941
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 0.960204081632653,
+          "accuracy": 0.9032943676939427,
+          "sensitivity": 0.6822429906542056,
+          "specificity": 0.9316546762589928,
+          "n_answered": 941
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0935
+    },
+    {
+      "drug": "ETH",
+      "drug_name": "Этионамид",
+      "n_train": 3314,
+      "n_test": 1021,
+      "n_positive": 179,
+      "prevalence": 0.1798,
+      "decision": {
+        "sensitivity": [
+          0.6871508379888268,
+          0.6145251396648045,
+          0.7597765363128491
+        ],
+        "specificity": [
+          0.9323040380047506,
+          0.9144893111638955,
+          0.9477434679334917
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.5950311914843203,
+          0.5284704583991279,
+          0.6638733913506077
+        ],
+        "roc_auc": [
+          0.8292141615467297,
+          0.7927552614817076,
+          0.8674076752610838
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.6871508379888268,
+          0.6145251396648045,
+          0.7597765363128491
+        ],
+        "specificity": [
+          0.9323040380047506,
+          0.9144893111638955,
+          0.9477434679334917
+        ],
+        "pr_auc": [
+          0.5244012606766288,
+          0.46753522530698705,
+          0.5829831995321233
+        ]
+      },
+      "calibration": {
+        "brier": 0.08845453862592735,
+        "ece": 0.033482273367892494,
+        "acceptable": true
+      },
+      "routing": {
+        "by_catalogue": 180,
+        "by_model": 841,
+        "no_call": 0,
+        "no_call_rate": 0.0
+      },
+      "answer_rate": 1.0,
+      "coverage_tradeoff": [
+        {
+          "alpha": 0.02,
+          "answer_rate": 0.28697355533790403,
+          "accuracy": 0.7918088737201365,
+          "sensitivity": 0.968503937007874,
+          "specificity": 0.6566265060240963,
+          "n_answered": 293
+        },
+        {
+          "alpha": 0.05,
+          "answer_rate": 0.7375122428991185,
+          "accuracy": 0.8778220451527224,
+          "sensitivity": 0.7784810126582279,
+          "specificity": 0.9042016806722689,
+          "n_answered": 753
+        },
+        {
+          "alpha": 0.1,
+          "answer_rate": 1.0,
+          "accuracy": 0.8893241919686582,
+          "sensitivity": 0.6871508379888268,
+          "specificity": 0.9323040380047506,
+          "n_answered": 1021
+        },
+        {
+          "alpha": 0.15,
+          "answer_rate": 1.0,
+          "accuracy": 0.8893241919686582,
+          "sensitivity": 0.6871508379888268,
+          "specificity": 0.9323040380047506,
+          "n_answered": 1021
+        },
+        {
+          "alpha": 0.2,
+          "answer_rate": 1.0,
+          "accuracy": 0.8893241919686582,
+          "sensitivity": 0.6871508379888268,
+          "specificity": 0.9323040380047506,
+          "n_answered": 1021
+        },
+        {
+          "alpha": 0.3,
+          "answer_rate": 1.0,
+          "accuracy": 0.8893241919686582,
+          "sensitivity": 0.6871508379888268,
+          "specificity": 0.9323040380047506,
+          "n_answered": 1021
+        }
+      ],
+      "delta_sensitivity_vs_catalogue": 0.0
+    }
+  ],
+  "external_validation": [
+    {
+      "drug": "RIF",
+      "drug_name": "Рифампицин",
+      "country": "KZ",
+      "n_test": 450,
+      "n_positive": 207,
+      "sensitivity": [
+        0.8888888888888888,
+        0.8454106280193237,
+        0.927536231884058
+      ],
+      "specificity": [
+        0.6707818930041153,
+        0.6090534979423868,
+        0.7223251028806584
+      ],
+      "pr_auc": [
+        0.8119187252830383,
+        0.76114274317164,
+        0.8658840671697449
+      ],
+      "abstention_rate": 0.1036,
+      "baseline_sensitivity": 0.7372881355932204,
+      "baseline_specificity": 0.7105263157894737,
+      "h1_target": [
+        0.9,
+        0.95
+      ],
+      "h1_met": false
+    },
+    {
+      "drug": "RFB",
+      "drug_name": "Рифабутин",
+      "country": "KZ",
+      "n_test": 411,
+      "n_positive": 154,
+      "sensitivity": [
+        0.8506493506493507,
+        0.7922077922077922,
+        0.9025974025974026
+      ],
+      "specificity": [
+        0.8249027237354085,
+        0.7821011673151751,
+        0.8715953307392996
+      ],
+      "pr_auc": [
+        0.7845946971477775,
+        0.7345089204728873,
+        0.8346801881672412
+      ],
+      "abstention_rate": 0.0947,
+      "baseline_sensitivity": 0.7456647398843931,
+      "baseline_specificity": 0.8398576512455516,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "INH",
+      "drug_name": "Изониазид",
+      "country": "KZ",
+      "n_test": 483,
+      "n_positive": 245,
+      "sensitivity": [
+        0.8734693877551021,
+        0.8285714285714286,
+        0.9142857142857143
+      ],
+      "specificity": [
+        0.7436974789915967,
+        0.6826680672268908,
+        0.7941176470588235
+      ],
+      "pr_auc": [
+        0.8282021251790561,
+        0.7878651762427351,
+        0.8707156508580843
+      ],
+      "abstention_rate": 0.0417,
+      "baseline_sensitivity": 0.7093023255813954,
+      "baseline_specificity": 0.8130081300813008,
+      "h1_target": [
+        0.9,
+        0.95
+      ],
+      "h1_met": false
+    },
+    {
+      "drug": "EMB",
+      "drug_name": "Этамбутол",
+      "country": "KZ",
+      "n_test": 447,
+      "n_positive": 123,
+      "sensitivity": [
+        0.8373983739837398,
+        0.776219512195122,
+        0.8943089430894309
+      ],
+      "specificity": [
+        0.9876543209876543,
+        0.9753086419753086,
+        0.9969135802469136
+      ],
+      "pr_auc": [
+        0.8646088716734593,
+        0.812347590253441,
+        0.9112766373518119
+      ],
+      "abstention_rate": 0.0726,
+      "baseline_sensitivity": 0.7410071942446043,
+      "baseline_specificity": 0.9883381924198251,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "LEV",
+      "drug_name": "Левофлоксацин",
+      "country": "KZ",
+      "n_test": 412,
+      "n_positive": 99,
+      "sensitivity": [
+        0.7676767676767676,
+        0.6767676767676768,
+        0.8484848484848485
+      ],
+      "specificity": [
+        0.7827476038338658,
+        0.7363418530351438,
+        0.8274760383386581
+      ],
+      "pr_auc": [
+        0.5614265238578494,
+        0.4851269475105671,
+        0.643240415577111
+      ],
+      "abstention_rate": 0.0945,
+      "baseline_sensitivity": 0.6551724137931034,
+      "baseline_specificity": 0.799410029498525,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "MXF",
+      "drug_name": "Моксифлоксацин",
+      "country": "KZ",
+      "n_test": 422,
+      "n_positive": 97,
+      "sensitivity": [
+        0.8350515463917526,
+        0.7525773195876289,
+        0.9072164948453608
+      ],
+      "specificity": [
+        0.7846153846153846,
+        0.7384615384615385,
+        0.8246153846153846
+      ],
+      "pr_auc": [
+        0.5961546244457085,
+        0.5242621177436945,
+        0.6768305148546562
+      ],
+      "abstention_rate": 0.0925,
+      "baseline_sensitivity": 0.6864406779661016,
+      "baseline_specificity": 0.7982708933717579,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "BDQ",
+      "drug_name": "Бедаквилин",
+      "country": "KZ",
+      "n_test": 343,
+      "n_positive": 23,
+      "sensitivity": [
+        0.391304347826087,
+        0.21739130434782608,
+        0.6086956521739131
+      ],
+      "specificity": [
+        0.971875,
+        0.953125,
+        0.9875
+      ],
+      "pr_auc": [
+        0.38656316836421833,
+        0.20199332464673464,
+        0.5803375614352455
+      ],
+      "abstention_rate": 0.02,
+      "baseline_sensitivity": 0.36,
+      "baseline_specificity": 0.9723076923076923,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "LZD",
+      "drug_name": "Линезолид",
+      "country": "KZ",
+      "n_test": 385,
+      "n_positive": 27,
+      "sensitivity": [
+        0.48148148148148145,
+        0.2962962962962963,
+        0.7037037037037037
+      ],
+      "specificity": [
+        0.9916201117318436,
+        0.9804469273743017,
+        1.0
+      ],
+      "pr_auc": [
+        0.43782132409181584,
+        0.26786348641999846,
+        0.6267112745478337
+      ],
+      "abstention_rate": 0.0128,
+      "baseline_sensitivity": 0.41935483870967744,
+      "baseline_specificity": 0.9916434540389972,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "CFZ",
+      "drug_name": "Клофазимин",
+      "country": "KZ",
+      "n_test": 360,
+      "n_positive": 22,
+      "sensitivity": [
+        0.5,
+        0.2727272727272727,
+        0.6818181818181818
+      ],
+      "specificity": [
+        0.9940828402366864,
+        0.985207100591716,
+        1.0
+      ],
+      "pr_auc": [
+        0.4911386593204775,
+        0.2886257533417819,
+        0.7037715624450552
+      ],
+      "abstention_rate": 0.0137,
+      "baseline_sensitivity": 0.4583333333333333,
+      "baseline_specificity": 0.9941348973607038,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "DLM",
+      "drug_name": "Деламанид",
+      "country": "KZ",
+      "n_test": 316,
+      "n_positive": 19,
+      "sensitivity": [
+        0.2631578947368421,
+        0.0776315789473685,
+        0.47368421052631576
+      ],
+      "specificity": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "pr_auc": [
+        0.3191179413530471,
+        0.1646940658928116,
+        0.5164608185720109
+      ],
+      "abstention_rate": 0.0,
+      "baseline_sensitivity": 0.2631578947368421,
+      "baseline_specificity": 1.0,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "AMI",
+      "drug_name": "Амикацин",
+      "country": "KZ",
+      "n_test": 435,
+      "n_positive": 68,
+      "sensitivity": [
+        0.6470588235294118,
+        0.5294117647058824,
+        0.7647058823529411
+      ],
+      "specificity": [
+        0.9346049046321526,
+        0.9086512261580382,
+        0.9591280653950953
+      ],
+      "pr_auc": [
+        0.55631422198504,
+        0.4656886324913744,
+        0.6596396824787879
+      ],
+      "abstention_rate": 0.0,
+      "baseline_sensitivity": 0.6470588235294118,
+      "baseline_specificity": 0.9346049046321526,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "KAN",
+      "drug_name": "Канамицин",
+      "country": "KZ",
+      "n_test": 418,
+      "n_positive": 80,
+      "sensitivity": [
+        0.7375,
+        0.65,
+        0.825
+      ],
+      "specificity": [
+        0.8550295857988166,
+        0.8165680473372781,
+        0.893491124260355
+      ],
+      "pr_auc": [
+        0.6843078269264702,
+        0.5918706643241688,
+        0.7722423828256578
+      ],
+      "abstention_rate": 0.0,
+      "baseline_sensitivity": 0.7,
+      "baseline_specificity": 0.8757396449704142,
+      "h1_target": null,
+      "h1_met": null
+    },
+    {
+      "drug": "ETH",
+      "drug_name": "Этионамид",
+      "country": "KZ",
+      "n_test": 432,
+      "n_positive": 139,
+      "sensitivity": [
+        0.7050359712230215,
+        0.6293165467625899,
+        0.7769784172661871
+      ],
+      "specificity": [
+        0.9010238907849829,
+        0.8668941979522184,
+        0.931740614334471
+      ],
+      "pr_auc": [
+        0.7314405271993154,
+        0.6772067473432395,
+        0.7941126299514253
+      ],
+      "abstention_rate": 0.0,
+      "baseline_sensitivity": 0.7050359712230215,
+      "baseline_specificity": 0.9010238907849829,
+      "h1_target": null,
+      "h1_met": null
+    }
+  ],
+  "ablations": [
+    {
+      "config": "только каталог ВОЗ (база)",
+      "sensitivity": 0.6787878787878788,
+      "specificity": 0.8511137162954279,
+      "pr_auc": 0.5227892715072202,
+      "abstention_rate": 0.0
+    },
+    {
+      "config": "мутации, без признаков каталога",
+      "sensitivity": 0.6231884057971014,
+      "specificity": 0.9537869062901155,
+      "pr_auc": 0.768265881977928,
+      "abstention_rate": 0.10819949281487742
+    },
+    {
+      "config": "+ признаки каталога",
+      "sensitivity": 0.7795918367346939,
+      "specificity": 0.9356164383561644,
+      "pr_auc": 0.7805903069783391,
+      "abstention_rate": 0.17582417582417584
+    },
+    {
+      "config": "+ нагрузка по генам",
+      "sensitivity": 0.7795918367346939,
+      "specificity": 0.9356164383561644,
+      "pr_auc": 0.7773974869056004,
+      "abstention_rate": 0.17582417582417584
+    },
+    {
+      "config": "+ контекст линии",
+      "sensitivity": 0.5664335664335665,
+      "specificity": 0.9762796504369539,
+      "pr_auc": 0.7452591787500106,
+      "abstention_rate": 0.08114961961115807
+    },
+    {
+      "config": "полная модель (+ уровень правил)",
+      "sensitivity": 0.7645161290322581,
+      "specificity": 0.8434163701067615,
+      "pr_auc": 0.735882739675791,
+      "abstention_rate": 0.0253592561284869
+    }
+  ],
+  "growth": {
+    "lineages": [
+      "L4_Euro_American",
+      "L2_Beijing",
+      "L2_Beijing_MDR",
+      "L3_CAS"
+    ],
+    "tau": 0.0322613281895427,
+    "recovery": [
+      {
+        "lineage": "L4_Euro_American",
+        "true_beta": 0.0,
+        "mean_estimated_beta": 0.0,
+        "sd_across_regions": 0.0
+      },
+      {
+        "lineage": "L2_Beijing",
+        "true_beta": 0.02,
+        "mean_estimated_beta": 0.007278964391062011,
+        "sd_across_regions": 0.014302891747795329
+      },
+      {
+        "lineage": "L2_Beijing_MDR",
+        "true_beta": 0.11,
+        "mean_estimated_beta": 0.0888403334471938,
+        "sd_across_regions": 0.02706277713122403
+      },
+      {
+        "lineage": "L3_CAS",
+        "true_beta": -0.03,
+        "mean_estimated_beta": -0.0569332996252018,
+        "sd_across_regions": 0.015795575513630054
+      }
+    ],
+    "growth_table": [
+      {
+        "region": "Актобе",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 377,
+        "significant": false
+      },
+      {
+        "region": "Актобе",
+        "lineage": "L2_Beijing",
+        "beta": 0.03005241446669778,
+        "se": 0.012857960069453288,
+        "weekly_pct": 3.0508546093866737,
+        "n_samples": 377,
+        "significant": true
+      },
+      {
+        "region": "Актобе",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.04495202807616399,
+        "se": 0.016325653532641777,
+        "weekly_pct": 4.597768114348663,
+        "n_samples": 377,
+        "significant": true
+      },
+      {
+        "region": "Актобе",
+        "lineage": "L3_CAS",
+        "beta": -0.05621822048144269,
+        "se": 0.01380652534526471,
+        "weekly_pct": -5.4667177603326955,
+        "n_samples": 377,
+        "significant": true
+      },
+      {
+        "region": "Алматы",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 1186,
+        "significant": false
+      },
+      {
+        "region": "Алматы",
+        "lineage": "L2_Beijing",
+        "beta": 0.012529475820599182,
+        "se": 0.01135733983103033,
+        "weekly_pct": 1.260829856129514,
+        "n_samples": 1186,
+        "significant": false
+      },
+      {
+        "region": "Алматы",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.09458330133113585,
+        "se": 0.00965824931242217,
+        "weekly_pct": 9.920072420286925,
+        "n_samples": 1186,
+        "significant": true
+      },
+      {
+        "region": "Алматы",
+        "lineage": "L3_CAS",
+        "beta": -0.0677850971136041,
+        "se": 0.01350647427598467,
+        "weekly_pct": -6.553872957523084,
+        "n_samples": 1186,
+        "significant": true
+      },
+      {
+        "region": "Астана",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 1061,
+        "significant": false
+      },
+      {
+        "region": "Астана",
+        "lineage": "L2_Beijing",
+        "beta": -0.014211284988067566,
+        "se": 0.014306115812364793,
+        "weekly_pct": -1.411078133620028,
+        "n_samples": 1061,
+        "significant": false
+      },
+      {
+        "region": "Астана",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.12067922789622333,
+        "se": 0.010628436824606647,
+        "weekly_pct": 12.826293903840602,
+        "n_samples": 1061,
+        "significant": true
+      },
+      {
+        "region": "Астана",
+        "lineage": "L3_CAS",
+        "beta": -0.0405766508943405,
+        "se": 0.017026895666722757,
+        "weekly_pct": -3.9764441223881426,
+        "n_samples": 1061,
+        "significant": true
+      },
+      {
+        "region": "Атырау",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 212,
+        "significant": false
+      },
+      {
+        "region": "Атырау",
+        "lineage": "L2_Beijing",
+        "beta": 0.0024990096062669936,
+        "se": 0.01246933624467865,
+        "weekly_pct": 0.2502134733471852,
+        "n_samples": 212,
+        "significant": false
+      },
+      {
+        "region": "Атырау",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.09675650656097701,
+        "se": 0.013117297920536456,
+        "weekly_pct": 10.159211051079351,
+        "n_samples": 212,
+        "significant": true
+      },
+      {
+        "region": "Атырау",
+        "lineage": "L3_CAS",
+        "beta": -0.07894178363659313,
+        "se": 0.01235314862884147,
+        "weekly_pct": -7.590627974498622,
+        "n_samples": 212,
+        "significant": true
+      },
+      {
+        "region": "Караганда",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 453,
+        "significant": false
+      },
+      {
+        "region": "Караганда",
+        "lineage": "L2_Beijing",
+        "beta": -0.0011101427108643057,
+        "se": 0.013242622705693182,
+        "weekly_pct": -0.110952673040822,
+        "n_samples": 453,
+        "significant": false
+      },
+      {
+        "region": "Караганда",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.10766725509807426,
+        "se": 0.01177540350256129,
+        "weekly_pct": 11.36771133450692,
+        "n_samples": 453,
+        "significant": true
+      },
+      {
+        "region": "Караганда",
+        "lineage": "L3_CAS",
+        "beta": -0.061788528441563025,
+        "se": 0.016228643977385448,
+        "weekly_pct": -5.991833369272688,
+        "n_samples": 453,
+        "significant": true
+      },
+      {
+        "region": "Костанай",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 277,
+        "significant": false
+      },
+      {
+        "region": "Костанай",
+        "lineage": "L2_Beijing",
+        "beta": 0.003064441550064203,
+        "se": 0.013965542388150167,
+        "weekly_pct": 0.30691417510084484,
+        "n_samples": 277,
+        "significant": false
+      },
+      {
+        "region": "Костанай",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.06767864323490114,
+        "se": 0.013850329125903227,
+        "weekly_pct": 7.00213946082517,
+        "n_samples": 277,
+        "significant": true
+      },
+      {
+        "region": "Костанай",
+        "lineage": "L3_CAS",
+        "beta": -0.03342330713402945,
+        "se": 0.016189309482388108,
+        "weekly_pct": -3.2870919711821447,
+        "n_samples": 277,
+        "significant": true
+      },
+      {
+        "region": "Павлодар",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 218,
+        "significant": false
+      },
+      {
+        "region": "Павлодар",
+        "lineage": "L2_Beijing",
+        "beta": 0.027848302719893515,
+        "se": 0.014047368577734008,
+        "weekly_pct": 2.8239691425380817,
+        "n_samples": 218,
+        "significant": true
+      },
+      {
+        "region": "Павлодар",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.057413921663801736,
+        "se": 0.013064615293604892,
+        "weekly_pct": 5.909410167280199,
+        "n_samples": 218,
+        "significant": true
+      },
+      {
+        "region": "Павлодар",
+        "lineage": "L3_CAS",
+        "beta": -0.0418525483538645,
+        "se": 0.014139783159903533,
+        "weekly_pct": -4.0988822075560485,
+        "n_samples": 218,
+        "significant": true
+      },
+      {
+        "region": "Шымкент",
+        "lineage": "L4_Euro_American",
+        "beta": 0.0,
+        "se": 0.0,
+        "weekly_pct": 0.0,
+        "n_samples": 780,
+        "significant": false
+      },
+      {
+        "region": "Шымкент",
+        "lineage": "L2_Beijing",
+        "beta": -0.0024405013360937157,
+        "se": 0.010121267966596298,
+        "weekly_pct": -0.24375257338539463,
+        "n_samples": 780,
+        "significant": false
+      },
+      {
+        "region": "Шымкент",
+        "lineage": "L2_Beijing_MDR",
+        "beta": 0.12099178371627312,
+        "se": 0.009370305440411108,
+        "weekly_pct": 12.861563930293784,
+        "n_samples": 780,
+        "significant": true
+      },
+      {
+        "region": "Шымкент",
+        "lineage": "L3_CAS",
+        "beta": -0.074880260946177,
+        "se": 0.015206917252666353,
+        "weekly_pct": -7.214541989320446,
+        "n_samples": 780,
+        "significant": true
+      }
+    ],
+    "forecasts": {
+      "Актобе": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.11212221151692374,
+            0.5625878227550272,
+            0.2956225370162566,
+            0.02966742871179239
+          ],
+          [
+            0.10582507822218558,
+            0.5638849013685218,
+            0.3052666200462284,
+            0.02502340036306433
+          ],
+          [
+            0.09974214866718956,
+            0.5643958127519336,
+            0.3147851781295212,
+            0.021076860451355862
+          ],
+          [
+            0.08827860601967576,
+            0.5633352418444136,
+            0.33348837011875176,
+            0.014897782017159066
+          ]
+        ],
+        "lo": [
+          [
+            0.11212221151692374,
+            0.382446921155323,
+            0.14231657314188478,
+            0.013757040518151345
+          ],
+          [
+            0.10582507822218558,
+            0.37184597064805563,
+            0.14012052417613127,
+            0.01097080118764106
+          ],
+          [
+            0.09974214866718956,
+            0.36062994343154015,
+            0.13778796101692659,
+            0.008738122444258692
+          ],
+          [
+            0.08827860601967576,
+            0.3367636386883625,
+            0.13280453791880442,
+            0.005525821088147141
+          ]
+        ],
+        "hi": [
+          [
+            0.11212221151692374,
+            0.727607507940604,
+            0.5149253627379419,
+            0.06280679420943477
+          ],
+          [
+            0.10582507822218558,
+            0.7385013120862751,
+            0.5422996811223604,
+            0.05605589748117044
+          ],
+          [
+            0.09974214866718956,
+            0.7485087421952077,
+            0.5690806721820468,
+            0.049960479881083715
+          ],
+          [
+            0.08827860601967576,
+            0.766234254957336,
+            0.6204566213754776,
+            0.0395330003784481
+          ]
+        ],
+        "n_samples": 377
+      },
+      "Алматы": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.04883669876181749,
+            0.06058636942873554,
+            0.8756938337895518,
+            0.014883098019894908
+          ],
+          [
+            0.041316761403418424,
+            0.0525578832956515,
+            0.8951303377256644,
+            0.010995017575265394
+          ],
+          [
+            0.03482697553203396,
+            0.04542660904035805,
+            0.9116534435875101,
+            0.008092971840097853
+          ],
+          [
+            0.024532329601201042,
+            0.033643353453250854,
+            0.9374774506212319,
+            0.004346866324316221
+          ]
+        ],
+        "lo": [
+          [
+            0.04883669876181749,
+            0.03271254291296155,
+            0.8027060810042934,
+            0.006962415070273449
+          ],
+          [
+            0.041316761403418424,
+            0.027069034022067544,
+            0.8259822301779964,
+            0.004869364794409911
+          ],
+          [
+            0.03482697553203396,
+            0.02231869173819409,
+            0.8467450971798851,
+            0.0033943863452074266
+          ],
+          [
+            0.024532329601201042,
+            0.015047941954362003,
+            0.8815560971220406,
+            0.0016367032138266079
+          ]
+        ],
+        "hi": [
+          [
+            0.04883669876181749,
+            0.10952182526894066,
+            0.9242289697782048,
+            0.03152853194757203
+          ],
+          [
+            0.041316761403418424,
+            0.09959086820671265,
+            0.9388362450978701,
+            0.024635956192070305
+          ],
+          [
+            0.03482697553203396,
+            0.09025102512469502,
+            0.9506725174417394,
+            0.019170338086976234
+          ],
+          [
+            0.024532329601201042,
+            0.07350309682378321,
+            0.9679561547736006,
+            0.011493038023295894
+          ]
+        ],
+        "n_samples": 1186
+      },
+      "Астана": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.019152649755721337,
+            0.009990784529399103,
+            0.9652488756993624,
+            0.00560769001551722
+          ],
+          [
+            0.015167124888938467,
+            0.007690068766940578,
+            0.9730481829501189,
+            0.004094623394001959
+          ],
+          [
+            0.011989012996417518,
+            0.005908355605427872,
+            0.9791182817748232,
+            0.0029843496233315373
+          ],
+          [
+            0.007461696095419812,
+            0.0034740272565353786,
+            0.987485157266587,
+            0.0015791193814580949
+          ]
+        ],
+        "lo": [
+          [
+            0.019152649755721337,
+            0.004455232903071965,
+            0.9381996471492052,
+            0.0021378773182288125
+          ],
+          [
+            0.015167124888938467,
+            0.003238680463759567,
+            0.9498172884118968,
+            0.0014590178606081923
+          ],
+          [
+            0.011989012996417518,
+            0.002350482467525783,
+            0.9593138718825269,
+            0.0009940939626373187
+          ],
+          [
+            0.007461696095419812,
+            0.0012337774138998236,
+            0.9733374757445462,
+            0.0004598739964123468
+          ]
+        ],
+        "hi": [
+          [
+            0.019152649755721337,
+            0.022250445919783077,
+            0.9807025150693447,
+            0.014626523359965102
+          ],
+          [
+            0.015167124888938467,
+            0.018148250457403647,
+            0.9856869444073981,
+            0.011436721153637627
+          ],
+          [
+            0.011989012996417518,
+            0.014771960902528915,
+            0.9893893077660719,
+            0.0089236633095695
+          ],
+          [
+            0.007461696095419812,
+            0.009742365717867928,
+            0.9941707483806173,
+            0.00540765665541049
+          ]
+        ],
+        "n_samples": 1061
+      },
+      "Атырау": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.05266092144776825,
+            0.08776900674371334,
+            0.8565273221205633,
+            0.0030427496879552804
+          ],
+          [
+            0.04451967930122672,
+            0.0745719275510865,
+            0.878711738226498,
+            0.002196654921188845
+          ],
+          [
+            0.0374851321475775,
+            0.06310343495194994,
+            0.8978320010390539,
+            0.0015794318614184523
+          ],
+          [
+            0.026314274424270888,
+            0.04474315224512588,
+            0.9281340411243038,
+            0.0008085322062996607
+          ]
+        ],
+        "lo": [
+          [
+            0.05266092144776825,
+            0.04521998308954801,
+            0.739072683865191,
+            0.0015100531290509712
+          ],
+          [
+            0.04451967930122672,
+            0.03639924043961344,
+            0.7655370148799732,
+            0.0010382314144701725
+          ],
+          [
+            0.0374851321475775,
+            0.02918972340764108,
+            0.7900020270061745,
+            0.0007110112432782722
+          ],
+          [
+            0.026314274424270888,
+            0.018609137146575108,
+            0.8330093461895,
+            0.00033024959907365707
+          ]
+        ],
+        "hi": [
+          [
+            0.05266092144776825,
+            0.16349805819626,
+            0.9263773416581881,
+            0.0061215881448976606
+          ],
+          [
+            0.04451967930122672,
+            0.1466832379626846,
+            0.9414364237501457,
+            0.004641602562337551
+          ],
+          [
+            0.0374851321475775,
+            0.13109847806781982,
+            0.9535489323306169,
+            0.0035048109003983884
+          ],
+          [
+            0.026314274424270888,
+            0.10370069554715575,
+            0.9709608127280037,
+            0.0019781149735118193
+          ]
+        ],
+        "n_samples": 212
+      },
+      "Караганда": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.01208576062960115,
+            0.020088571165846118,
+            0.960263553867289,
+            0.007562114337263893
+          ],
+          [
+            0.00982737686663803,
+            0.016298529122072726,
+            0.9684398638544557,
+            0.005434230156833986
+          ],
+          [
+            0.007976600608540977,
+            0.013199710049998228,
+            0.9749256211643481,
+            0.0038980681771131043
+          ],
+          [
+            0.005234412201453082,
+            0.008623547271004292,
+            0.9841441953245762,
+            0.0019978452029660544
+          ]
+        ],
+        "lo": [
+          [
+            0.01208576062960115,
+            0.009565112061641585,
+            0.9252299599848511,
+            0.0030200727225337663
+          ],
+          [
+            0.00982737686663803,
+            0.007355900884245256,
+            0.9375156931485839,
+            0.0020341504940682804
+          ],
+          [
+            0.007976600608540977,
+            0.005647910799512383,
+            0.9477911188723676,
+            0.0013679990825566492
+          ],
+          [
+            0.005234412201453082,
+            0.00331838612826588,
+            0.9635360044615655,
+            0.0006166528473657074
+          ]
+        ],
+        "hi": [
+          [
+            0.01208576062960115,
+            0.0417023694758596,
+            0.9792502476136166,
+            0.018806309109860437
+          ],
+          [
+            0.00982737686663803,
+            0.035721553685215894,
+            0.9843153700638259,
+            0.014435331642376398
+          ],
+          [
+            0.007976600608540977,
+            0.030538873083755136,
+            0.9881340770474257,
+            0.011055613282456545
+          ],
+          [
+            0.005234412201453082,
+            0.022221066630126428,
+            0.9931876943291226,
+            0.006452687495229758
+          ]
+        ],
+        "n_samples": 453
+      },
+      "Костанай": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.0841756571666934,
+            0.12893379776217692,
+            0.7345283474960616,
+            0.0523621975750682
+          ],
+          [
+            0.07625479519530293,
+            0.11751928987306881,
+            0.7618581662017128,
+            0.04436774872991554
+          ],
+          [
+            0.0688045227542994,
+            0.10668926579483752,
+            0.7870618779382493,
+            0.037444333512613906
+          ],
+          [
+            0.05542814838160179,
+            0.08700768042224669,
+            0.8311743007931413,
+            0.02638987040301038
+          ]
+        ],
+        "lo": [
+          [
+            0.0841756571666934,
+            0.06272478266975881,
+            0.5573632725406584,
+            0.021541695226115293
+          ],
+          [
+            0.07625479519530293,
+            0.05392739061923099,
+            0.5796527277359859,
+            0.01706484280082469
+          ],
+          [
+            0.0688045227542994,
+            0.046163394913391616,
+            0.601439337798684,
+            0.013468242016048826
+          ],
+          [
+            0.05542814838160179,
+            0.0334554655830901,
+            0.6432611620391478,
+            0.008308941267887362
+          ]
+        ],
+        "hi": [
+          [
+            0.0841756571666934,
+            0.24663924614329807,
+            0.8587532457209915,
+            0.12179004195166812
+          ],
+          [
+            0.07625479519530293,
+            0.2372912258007084,
+            0.8812624583278352,
+            0.11044556818705181
+          ],
+          [
+            0.0688045227542994,
+            0.22763343758959126,
+            0.9005315365531197,
+            0.09978533957031897
+          ],
+          [
+            0.05542814838160179,
+            0.20784739252784337,
+            0.930758443349634,
+            0.0806178349372469
+          ]
+        ],
+        "n_samples": 277
+      },
+      "Павлодар": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.05356718442891608,
+            0.4211507841811367,
+            0.5018285779441226,
+            0.023453453445824876
+          ],
+          [
+            0.04944808019609215,
+            0.41103325210903907,
+            0.5196071321337794,
+            0.019911535561089454
+          ],
+          [
+            0.04556713598742667,
+            0.4004681519071379,
+            0.5370892998908865,
+            0.016875412214549204
+          ],
+          [
+            0.038510274575257755,
+            0.3783296011926063,
+            0.5710966069945289,
+            0.012063517237606979
+          ]
+        ],
+        "lo": [
+          [
+            0.05356718442891608,
+            0.24666041955156034,
+            0.3240374917627177,
+            0.010637135487470339
+          ],
+          [
+            0.04944808019609215,
+            0.22913291334512864,
+            0.328420575634727,
+            0.008531036131767276
+          ],
+          [
+            0.04556713598742667,
+            0.21213587517230895,
+            0.3326132952217232,
+            0.006830934869570396
+          ],
+          [
+            0.038510274575257755,
+            0.1801458822608716,
+            0.34048823934582384,
+            0.004360277836783487
+          ]
+        ],
+        "hi": [
+          [
+            0.05356718442891608,
+            0.6178426396560031,
+            0.6791584515287289,
+            0.05091700051694008
+          ],
+          [
+            0.04944808019609215,
+            0.6210065023981304,
+            0.7052188143955059,
+            0.04577286104315803
+          ],
+          [
+            0.04556713598742667,
+            0.6236498104829303,
+            0.7298081696387992,
+            0.04107878871407047
+          ],
+          [
+            0.038510274575257755,
+            0.6276318840995312,
+            0.7744781823921937,
+            0.03292590001986135
+          ]
+        ],
+        "n_samples": 218
+      },
+      "Шымкент": {
+        "horizons": [
+          0,
+          2,
+          4,
+          8
+        ],
+        "point": [
+          [
+            0.023445054235954235,
+            0.042975633653504534,
+            0.9286786209212908,
+            0.00490069118925026
+          ],
+          [
+            0.018705814465317668,
+            0.03412148132479092,
+            0.9438064837963985,
+            0.003366220413492719
+          ],
+          [
+            0.01487238751435182,
+            0.026996791655512168,
+            0.9558266936263908,
+            0.0023041272037451184
+          ],
+          [
+            0.009329400154312582,
+            0.016770484058295364,
+            0.9728288452936644,
+            0.0010712704937272776
+          ]
+        ],
+        "lo": [
+          [
+            0.023445054235954235,
+            0.024638727906960745,
+            0.8843166464071444,
+            0.0020706344033695175
+          ],
+          [
+            0.018705814465317668,
+            0.01874180235881087,
+            0.9048039645853472,
+            0.0013389026797068111
+          ],
+          [
+            0.01487238751435182,
+            0.014212583990334721,
+            0.9218955271111727,
+            0.0008629159725342153
+          ],
+          [
+            0.009329400154312582,
+            0.008120446908031043,
+            0.9477731123954772,
+            0.00035585056875661055
+          ]
+        ],
+        "hi": [
+          [
+            0.023445054235954235,
+            0.0739251009050724,
+            0.9568586922936929,
+            0.011553968095122444
+          ],
+          [
+            0.018705814465317668,
+            0.06133300338623806,
+            0.9674050378711806,
+            0.008437294305870082
+          ],
+          [
+            0.01487238751435182,
+            0.05068908650322276,
+            0.9754102219122667,
+            0.0061376112617126805
+          ],
+          [
+            0.009329400154312582,
+            0.034315905742633386,
+            0.9860411832949637,
+            0.003220373142440588
+          ]
+        ],
+        "n_samples": 780
+      }
+    },
+    "observed_national": [
+      {
+        "week": 0,
+        "counts": [
+          29.0,
+          36.0,
+          35.0,
+          57.0
+        ],
+        "total": 157.0
+      },
+      {
+        "week": 1,
+        "counts": [
+          28.0,
+          43.0,
+          46.0,
+          26.0
+        ],
+        "total": 143.0
+      },
+      {
+        "week": 2,
+        "counts": [
+          27.0,
+          26.0,
+          42.0,
+          38.0
+        ],
+        "total": 133.0
+      },
+      {
+        "week": 3,
+        "counts": [
+          32.0,
+          32.0,
+          54.0,
+          38.0
+        ],
+        "total": 156.0
+      },
+      {
+        "week": 4,
+        "counts": [
+          23.0,
+          38.0,
+          56.0,
+          45.0
+        ],
+        "total": 162.0
+      },
+      {
+        "week": 5,
+        "counts": [
+          21.0,
+          40.0,
+          57.0,
+          30.0
+        ],
+        "total": 148.0
+      },
+      {
+        "week": 6,
+        "counts": [
+          23.0,
+          38.0,
+          63.0,
+          25.0
+        ],
+        "total": 149.0
+      },
+      {
+        "week": 7,
+        "counts": [
+          24.0,
+          39.0,
+          59.0,
+          29.0
+        ],
+        "total": 151.0
+      },
+      {
+        "week": 8,
+        "counts": [
+          22.0,
+          38.0,
+          75.0,
+          25.0
+        ],
+        "total": 160.0
+      },
+      {
+        "week": 9,
+        "counts": [
+          20.0,
+          36.0,
+          85.0,
+          21.0
+        ],
+        "total": 162.0
+      },
+      {
+        "week": 10,
+        "counts": [
+          20.0,
+          38.0,
+          90.0,
+          21.0
+        ],
+        "total": 169.0
+      },
+      {
+        "week": 11,
+        "counts": [
+          16.0,
+          35.0,
+          84.0,
+          21.0
+        ],
+        "total": 156.0
+      },
+      {
+        "week": 12,
+        "counts": [
+          26.0,
+          26.0,
+          76.0,
+          20.0
+        ],
+        "total": 148.0
+      },
+      {
+        "week": 13,
+        "counts": [
+          21.0,
+          18.0,
+          83.0,
+          12.0
+        ],
+        "total": 134.0
+      },
+      {
+        "week": 14,
+        "counts": [
+          21.0,
+          33.0,
+          106.0,
+          11.0
+        ],
+        "total": 171.0
+      },
+      {
+        "week": 15,
+        "counts": [
+          20.0,
+          23.0,
+          88.0,
+          8.0
+        ],
+        "total": 139.0
+      },
+      {
+        "week": 16,
+        "counts": [
+          15.0,
+          24.0,
+          117.0,
+          4.0
+        ],
+        "total": 160.0
+      },
+      {
+        "week": 17,
+        "counts": [
+          8.0,
+          22.0,
+          104.0,
+          4.0
+        ],
+        "total": 138.0
+      },
+      {
+        "week": 18,
+        "counts": [
+          14.0,
+          20.0,
+          90.0,
+          13.0
+        ],
+        "total": 137.0
+      },
+      {
+        "week": 19,
+        "counts": [
+          20.0,
+          18.0,
+          128.0,
+          13.0
+        ],
+        "total": 179.0
+      },
+      {
+        "week": 20,
+        "counts": [
+          13.0,
+          27.0,
+          128.0,
+          3.0
+        ],
+        "total": 171.0
+      },
+      {
+        "week": 21,
+        "counts": [
+          10.0,
+          19.0,
+          116.0,
+          4.0
+        ],
+        "total": 149.0
+      },
+      {
+        "week": 22,
+        "counts": [
+          9.0,
+          21.0,
+          101.0,
+          6.0
+        ],
+        "total": 137.0
+      },
+      {
+        "week": 23,
+        "counts": [
+          11.0,
+          23.0,
+          113.0,
+          2.0
+        ],
+        "total": 149.0
+      },
+      {
+        "week": 24,
+        "counts": [
+          11.0,
+          21.0,
+          132.0,
+          5.0
+        ],
+        "total": 169.0
+      },
+      {
+        "week": 25,
+        "counts": [
+          11.0,
+          15.0,
+          135.0,
+          7.0
+        ],
+        "total": 168.0
+      },
+      {
+        "week": 26,
+        "counts": [
+          5.0,
+          20.0,
+          117.0,
+          2.0
+        ],
+        "total": 144.0
+      },
+      {
+        "week": 27,
+        "counts": [
+          11.0,
+          22.0,
+          128.0,
+          3.0
+        ],
+        "total": 164.0
+      },
+      {
+        "week": 28,
+        "counts": [
+          5.0,
+          18.0,
+          119.0,
+          3.0
+        ],
+        "total": 145.0
+      },
+      {
+        "week": 29,
+        "counts": [
+          4.0,
+          12.0,
+          97.0,
+          3.0
+        ],
+        "total": 116.0
+      }
+    ]
+  },
+  "example_reports": [
+    {
+      "isolate_id": "SYN-000708",
+      "lineage": "L2_Beijing",
+      "country": "KZ",
+      "collection_date": "2024-11-11",
+      "submission_date": "2025-02-03",
+      "mutations": [
+        "eis_g-10a",
+        "gyrA_D94H",
+        "gyrA_S95T",
+        "inhA_S94A",
+        "katG_S315N",
+        "rpoB_S450L",
+        "rrs_a1484g"
+      ],
+      "n_resistant": 8,
+      "n_no_call": 0,
+      "drugs": [
+        {
+          "drug": "RIF",
+          "drug_name": "Рифампицин",
+          "decision": "resistant",
+          "probability": 0.5,
+          "source": "catalogue",
+          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: RRDR rpoB — устойчивость к рифампицину",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "RFB",
+          "drug_name": "Рифабутин",
+          "decision": "resistant",
+          "probability": 0.645,
+          "source": "catalogue",
+          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: перекрёстная устойчивость с рифампицином",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "INH",
+          "drug_name": "Изониазид",
+          "decision": "resistant",
+          "probability": 0.93,
+          "source": "catalogue",
+          "explanation": "katG_S315N — каталог ВОЗ, группа 1: katG S315N",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "EMB",
+          "drug_name": "Этамбутол",
+          "decision": "susceptible",
+          "probability": 0.072,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.68), lineage_L2_Beijing (+0.11)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "LEV",
+          "drug_name": "Левофлоксацин",
+          "decision": "resistant",
+          "probability": 0.369,
+          "source": "catalogue",
+          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "MXF",
+          "drug_name": "Моксифлоксацин",
+          "decision": "resistant",
+          "probability": 0.457,
+          "source": "catalogue",
+          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "BDQ",
+          "drug_name": "Бедаквилин",
+          "decision": "susceptible",
+          "probability": 0.053,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.27), lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": null
+        },
+        {
+          "drug": "LZD",
+          "drug_name": "Линезолид",
+          "decision": "susceptible",
+          "probability": 0.042,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.57), lineage_L2_Beijing (-0.00)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "CFZ",
+          "drug_name": "Клофазимин",
+          "decision": "susceptible",
+          "probability": 0.048,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": null
+        },
+        {
+          "drug": "DLM",
+          "drug_name": "Деламанид",
+          "decision": "susceptible",
+          "probability": 0.094,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "AMI",
+          "drug_name": "Амикацин",
+          "decision": "resistant",
+          "probability": 0.628,
+          "source": "catalogue",
+          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК",
+          "ood": false,
+          "phenotype": null
+        },
+        {
+          "drug": "KAN",
+          "drug_name": "Канамицин",
+          "decision": "resistant",
+          "probability": 0.9,
+          "source": "catalogue",
+          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "ETH",
+          "drug_name": "Этионамид",
+          "decision": "resistant",
+          "probability": 0.565,
+          "source": "catalogue",
+          "explanation": "inhA_S94A — каталог ВОЗ, группа 1: общая мишень с изониазидом",
+          "ood": false,
+          "phenotype": 1
+        }
+      ]
+    },
+    {
+      "isolate_id": "SYN-003677",
+      "lineage": "L2_Beijing",
+      "country": "KZ",
+      "collection_date": "2022-10-31",
+      "submission_date": "2022-12-02",
+      "mutations": [
+        "fabG1_c-8t",
+        "gyrA_G88C",
+        "gyrA_S95T",
+        "rpoB_I491F",
+        "rpoB_S488A",
+        "rrs_c1402t"
+      ],
+      "n_resistant": 1,
+      "n_no_call": 6,
+      "drugs": [
+        {
+          "drug": "RIF",
+          "drug_name": "Рифампицин",
+          "decision": "no_call",
+          "probability": 0.5,
+          "source": "model",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.50)",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "RFB",
+          "drug_name": "Рифабутин",
+          "decision": "no_call",
+          "probability": 0.509,
+          "source": "model",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.51)",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "INH",
+          "drug_name": "Изониазид",
+          "decision": "resistant",
+          "probability": 0.93,
+          "source": "catalogue",
+          "explanation": "fabG1_c-8t — каталог ВОЗ, группа 2: промотор inhA",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "EMB",
+          "drug_name": "Этамбутол",
+          "decision": "susceptible",
+          "probability": 0.072,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.68), lineage_L2_Beijing (+0.11)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "LEV",
+          "drug_name": "Левофлоксацин",
+          "decision": "no_call",
+          "probability": 0.565,
+          "source": "model",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.57)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "MXF",
+          "drug_name": "Моксифлоксацин",
+          "decision": "no_call",
+          "probability": 0.457,
+          "source": "model",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.46)",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "BDQ",
+          "drug_name": "Бедаквилин",
+          "decision": "susceptible",
+          "probability": 0.053,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.27), lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "LZD",
+          "drug_name": "Линезолид",
+          "decision": "susceptible",
+          "probability": 0.042,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.57), lineage_L2_Beijing (-0.00)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "CFZ",
+          "drug_name": "Клофазимин",
+          "decision": "susceptible",
+          "probability": 0.048,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "DLM",
+          "drug_name": "Деламанид",
+          "decision": "susceptible",
+          "probability": 0.094,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "AMI",
+          "drug_name": "Амикацин",
+          "decision": "no_call",
+          "probability": 0.5,
+          "source": "model",
+          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.50)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "KAN",
+          "drug_name": "Канамицин",
+          "decision": "no_call",
+          "probability": 0.357,
+          "source": "model",
+          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.36)",
+          "ood": false,
+          "phenotype": null
+        },
+        {
+          "drug": "ETH",
+          "drug_name": "Этионамид",
+          "decision": "susceptible",
+          "probability": 0.107,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.09), fabG1_c-8t (+0.03), cat_min_group (-0.02)",
+          "ood": false,
+          "phenotype": 0
+        }
+      ]
+    },
+    {
+      "isolate_id": "SYN-002531",
+      "lineage": "L2_Beijing",
+      "country": "CN",
+      "collection_date": "2024-11-26",
+      "submission_date": "2025-01-19",
+      "mutations": [
+        "embA_c-16g",
+        "gyrA_S95T",
+        "rpoB_I491F",
+        "rpoB_S488A"
+      ],
+      "n_resistant": 0,
+      "n_no_call": 3,
+      "drugs": [
+        {
+          "drug": "RIF",
+          "drug_name": "Рифампицин",
+          "decision": "no_call",
+          "probability": 0.5,
+          "source": "model",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.50)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "RFB",
+          "drug_name": "Рифабутин",
+          "decision": "no_call",
+          "probability": 0.509,
+          "source": "model",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.51)",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "INH",
+          "drug_name": "Изониазид",
+          "decision": "susceptible",
+          "probability": 0.088,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.54), lineage_L2_Beijing (+0.12)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "EMB",
+          "drug_name": "Этамбутол",
+          "decision": "no_call",
+          "probability": 0.333,
+          "source": "model",
+          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.33)",
+          "ood": false,
+          "phenotype": 1
+        },
+        {
+          "drug": "LEV",
+          "drug_name": "Левофлоксацин",
+          "decision": "susceptible",
+          "probability": 0.037,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.60), gyrA_S95T (-0.06)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "MXF",
+          "drug_name": "Моксифлоксацин",
+          "decision": "susceptible",
+          "probability": 0.048,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.67), gyrA_S95T (-0.04), lineage_L2_Beijing (-0.01)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "BDQ",
+          "drug_name": "Бедаквилин",
+          "decision": "susceptible",
+          "probability": 0.053,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.27), lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": null
+        },
+        {
+          "drug": "LZD",
+          "drug_name": "Линезолид",
+          "decision": "susceptible",
+          "probability": 0.042,
+          "source": "model",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.57), lineage_L2_Beijing (-0.00)",
+          "ood": false,
+          "phenotype": null
+        },
+        {
+          "drug": "CFZ",
+          "drug_name": "Клофазимин",
+          "decision": "susceptible",
+          "probability": 0.048,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "DLM",
+          "drug_name": "Деламанид",
+          "decision": "susceptible",
+          "probability": 0.094,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "AMI",
+          "drug_name": "Амикацин",
+          "decision": "susceptible",
+          "probability": 0.043,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.11)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "KAN",
+          "drug_name": "Канамицин",
+          "decision": "susceptible",
+          "probability": 0.054,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.22), cat_min_group (-0.02)",
+          "ood": false,
+          "phenotype": 0
+        },
+        {
+          "drug": "ETH",
+          "drug_name": "Этионамид",
+          "decision": "susceptible",
+          "probability": 0.107,
+          "source": "model",
+          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.10), cat_min_group (-0.00)",
+          "ood": false,
+          "phenotype": 0
+        }
+      ]
+    }
+  ],
+  "catalogue_size": 82
+}

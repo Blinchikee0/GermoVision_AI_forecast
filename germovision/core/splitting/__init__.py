@@ -7,7 +7,7 @@
 4. Аугментация только после разделения и только в train.
 """
 
-from .cluster import cluster_by_distance, cluster_split
+from .cluster import cluster_by_distance, cluster_split, temporal_cluster_split
 from .grouped import holdout_group, leave_one_group_out
 from .guards import (
     GuardReport,
@@ -24,6 +24,7 @@ __all__ = [
     "temporal_split",
     "forward_chaining",
     "cluster_split",
+    "temporal_cluster_split",
     "cluster_by_distance",
     "holdout_group",
     "leave_one_group_out",
