@@ -16,7 +16,12 @@ from .catalogue import (
 from .cryptic import assign_clusters_by_genotype, load_cryptic
 from .features import FeatureBuilder, FeatureMatrix
 from .schema import IsolateDataset
-from .synthetic import SyntheticConfig, generate_isolates
+from .synthetic import (
+    SyntheticConfig,
+    generate_isolates,
+    generate_lineage_counts,
+    generate_protein_panel,
+)
 
 __all__ = [
     "DRUGS",
@@ -31,5 +36,7 @@ __all__ = [
     "load_cryptic",
     "assign_clusters_by_genotype",
     "generate_isolates",
+    "generate_lineage_counts",
+    "generate_protein_panel",
     "SyntheticConfig",
 ]

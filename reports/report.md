@@ -1,6 +1,6 @@
 # GermoVision training report
 
-Generated 2026-09-05 16:07:50 · source `synthetic` · run time 52.9s
+Generated 2026-09-05 22:52:16 · source `synthetic` · run time 67.3s
 
 > **Note.** SYNTHETIC DATA. These metrics show that the pipeline is correct, not that the model is clinically good. Hypothesis H1 requires the CRyPTIC dataset.
 

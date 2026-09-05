@@ -36,12 +36,21 @@
 
 from __future__ import annotations
 
+import re
+
 import numpy as np
 
-from .catalogue import DRUGS, MutationCatalogue
+from ..models.escape import _physicochemical_distance
+from .catalogue import CORE_CATALOGUE, DRUGS, MutationCatalogue
 from .schema import IsolateDataset
 
-__all__ = ["SyntheticConfig", "generate_isolates", "NOVEL_MARKERS"]
+__all__ = [
+    "SyntheticConfig",
+    "generate_isolates",
+    "generate_lineage_counts",
+    "generate_protein_panel",
+    "NOVEL_MARKERS",
+]
 
 
 #: Варианты, отсутствующие в каталоге, но реально повышающие устойчивость.
@@ -401,3 +410,197 @@ def generate_lineage_counts(
         lins,
         truth,
     )
+
+
+# --------------------------------------------------------------------------
+# Панель белковых последовательностей
+# --------------------------------------------------------------------------
+
+_MUT_RE = re.compile(r"^([A-Z])(\d+)([A-Z])$")
+
+
+def _catalogue_drivers(gene: str, drug: str, length: int) -> list[tuple[int, str, str]]:
+    """Замены-драйверы, взятые из того же каталога, что и модель устойчивости.
+
+    Позиции возвращаются индексами с нуля: каталог и GV-Escape говорят
+    в номерах кодонов с единицы, подложка индексируется с нуля.
+
+    Список замен не дублируется в генераторе: он читается из
+    `CORE_CATALOGUE`. Поэтому позиции и подстановки в панели — те же
+    самые, что видит GV-Resist, и вкладка мутаций согласована с вкладкой
+    устойчивости, а не живёт своей жизнью.
+    """
+    drivers: list[tuple[int, str, str]] = []
+    seen: set[tuple[int, str]] = set()
+    for entry in CORE_CATALOGUE:
+        if entry.gene != gene or entry.drug != drug or not entry.confers_resistance:
+            continue
+        m = _MUT_RE.match(entry.mutation)
+        if not m:
+            continue
+        wt, codon, mut = m.group(1), int(m.group(2)), m.group(3)
+        idx = codon - 1                      # каталог нумерует кодоны с единицы
+        if not 0 <= idx < length or (idx, mut) in seen:
+            continue
+        seen.add((idx, mut))
+        drivers.append((idx, wt, mut))
+    return sorted(drivers)
+
+
+def _conservative_alternatives(wt: str, n: int, rng, alphabet) -> list[str]:
+    """Остатки, химически близкие к исходному.
+
+    Нейтральная изменчивость в белке смещена к похожим остаткам: позиция,
+    которую белок терпит, набирает замены вроде D→E или I→V, а не D→K.
+    Резкие замены в терпимых позициях редки — резкими обычно оказываются
+    как раз функциональные, вроде S450L.
+
+    Близость считается той же функцией, которой пользуется GV-Escape.
+    Это не случайность: генератор обязан порождать вариацию, которую
+    оценщик признает нейтральной. Если мерить близость по-разному, эти
+    двое разойдутся по построению, и проверка перестанет что-либо значить.
+    """
+    others = [a for a in alphabet if a != wt]
+    ranked = sorted(others, key=lambda a: _physicochemical_distance(wt, a))
+    near = ranked[: max(n + 2, 6)]
+    take = min(n, len(near))
+    return [str(a) for a in rng.choice(near, take, replace=False)]
+
+
+def generate_protein_panel(
+    gene: str = "rpoB",
+    drug: str = "RIF",
+    length: int = 500,
+    n_sequences: int = 900,
+    n_weeks: int = 36,
+    start_date: str = "2024-01-01",
+    seed: int = 11,
+) -> tuple[list[tuple[str, str]], dict]:
+    """Сгенерировать панель белковых последовательностей одного белка.
+
+    Что воспроизводится и зачем именно так:
+
+    1. **Неравномерная переносимость позиций.** Большинство позиций
+       консервативны, меньшинство свободно дрейфует. Без этого перепада
+       у профиля нет структуры, и оценка переносимости в GV-Escape
+       вырождается в константу — модель нечего было бы проверять.
+    2. **Отбор в известных позициях.** Замены-драйверы берутся из
+       каталога ВОЗ (`CORE_CATALOGUE`), а не выдумываются здесь: те же
+       S450L, D435V, H445Y, что использует GV-Resist.
+    3. **Взаимная исключительность.** У изолята не больше одной
+       резистентной замены в RRDR — устойчивость возникает одним
+       механизмом, а не всеми сразу.
+    4. **Рост во времени.** Доля S450L растёт быстро, D435V медленнее,
+       остальные почти не меняются. Это и проверяет оценка тренда.
+
+    Сама последовательность-подложка синтетическая: настоящий белок в
+    репозиторий не кладётся. Реальны здесь нумерация позиций и набор
+    замен — то, что делает вывод сопоставимым с каталогом.
+
+    Args:
+        gene: ген, из которого берутся замены-драйверы.
+        drug: препарат, по которому отбираются драйверы.
+        length: длина последовательности в аминокислотах.
+        n_sequences: сколько последовательностей выдать.
+        n_weeks: на сколько недель растянуть выборку.
+        start_date: дата первой недели, попадает в заголовки FASTA.
+        seed: зерно генератора.
+
+    Returns:
+        Пара (записи, метаданные). Записи — пары «заголовок, последовательность»
+        в том же виде, в каком их отдаёт разбор FASTA.
+    """
+    rng = np.random.default_rng(seed)
+    alphabet = np.array(list("ACDEFGHIKLMNPQRSTVWY"))
+
+    backbone = list(rng.choice(alphabet, length))
+
+    drivers = _catalogue_drivers(gene, drug, length)
+    if not drivers:
+        raise ValueError(f"no catalogue drivers for {gene}/{drug} within {length} aa")
+    for pos, wt, _mut in drivers:
+        backbone[pos] = wt
+
+    by_pos: dict[int, list[tuple[int, str, str]]] = {}
+    for d in drivers:
+        by_pos.setdefault(d[0], []).append(d)
+
+    # Полиморфизм, а не случайный шум. В панели одного белка внутри вида
+    # изменчивая позиция колеблется между двумя-тремя остатками, а не
+    # принимает каждый раз новый: полиморфизмы повторяются. Если вместо
+    # этого рассыпать одиночные замены, каждая окажется уникальной,
+    # получит максимальную новизну и вытеснит из верха списка настоящий
+    # отбор — ровно тот случай, когда генератор ломает модель, а не
+    # проверяет её.
+    polymorphic: dict[int, tuple[list[str], np.ndarray]] = {}
+    for pos in range(length):
+        if pos in by_pos or rng.random() >= 0.18:
+            continue                       # консервативная позиция: не меняется
+        n_alt = int(rng.integers(3, 7))
+        alts = _conservative_alternatives(backbone[pos], n_alt, rng, alphabet)
+        if not alts:
+            continue
+        weights = rng.dirichlet(np.ones(len(alts)))
+        freqs = weights * rng.uniform(0.25, 0.60)
+        polymorphic[pos] = (alts, freqs)
+
+    # Скорость роста драйверов. Один механизм доминирует, остальные
+    # подбираются следом — так и выглядит вытеснение в реальной популяции.
+    order = sorted(by_pos, key=lambda pos: (-len(by_pos[pos]), pos))
+    ladder = (0.45, 0.20, 0.09, 0.04)
+    speed = {pos: (ladder[r] if r < len(ladder) else 0.015) for r, pos in enumerate(order)}
+    # Подъём приходится на вторую половину периода. Замена, ставшая
+    # обычной ещё в первой половине, к концу наблюдения уже никуда не
+    # растёт, и проверка тренда на ней ничего не показывает.
+    onset = {pos: n_weeks * (0.55 + 0.10 * r) for r, pos in enumerate(order)}
+
+    records: list[tuple[str, str]] = []
+    day0 = np.datetime64(start_date)
+    placed: dict[str, int] = {}
+
+    for i in range(n_sequences):
+        week = int(i * n_weeks / n_sequences)
+        seq = list(backbone)
+
+        # Не более одного механизма устойчивости на изолят: устойчивость
+        # возникает одним путём, а не всеми сразу.
+        share = {
+            pos: 1.0 / (1.0 + np.exp(-speed[pos] * (week - onset[pos])))
+            for pos in by_pos
+        }
+        weights = np.array(list(share.values()))
+        total = float(weights.sum())
+        if total > 0 and rng.random() < min(total, 0.45):
+            pick = int(rng.choice(len(weights), p=weights / total))
+            pos = list(share)[pick]
+            options = by_pos[pos]
+            _pos, wt, mut = options[int(rng.integers(0, len(options)))]
+            seq[pos] = mut
+            key = f"{wt}{pos + 1}{mut}"      # отчёт нумерует кодоны с единицы
+            placed[key] = placed.get(key, 0) + 1
+
+        # Полиморфные позиции.
+        for pos, (alts, freqs) in polymorphic.items():
+            u = rng.random()
+            acc = 0.0
+            for alt, f in zip(alts, freqs, strict=True):
+                acc += f
+                if u < acc:
+                    seq[pos] = alt
+                    break
+
+        date = day0 + np.timedelta64(week * 7, "D")
+        records.append((f"{gene}|isolate_{i:04d}|{date}", "".join(seq)))
+
+    meta = {
+        "gene": gene,
+        "drug": drug,
+        "length": length,
+        "n_sequences": n_sequences,
+        "n_weeks": n_weeks,
+        "driver_codons": [pos + 1 for pos in sorted(by_pos)],
+        "n_polymorphic": len(polymorphic),
+        "placed_counts": dict(sorted(placed.items(), key=lambda kv: -kv[1])),
+        "synthetic": True,
+    }
+    return records, meta

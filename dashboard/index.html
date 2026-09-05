@@ -6,7 +6,7 @@
 <title>GermoVision Mutation Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 /* GermoVision — Pathogen Mutation Intelligence
    ------------------------------------------------------------------
@@ -26,9 +26,11 @@
    every check still passes — worst adjacent CVD dE 13.8, normal-vision
    dE 20.0, all four above 3:1 against the surface.
 
-   Type carries weight instead of colour. Nothing below 500 appears
-   anywhere: a console is scanned, not read, and light strokes lose the
-   scan.
+   Type has exactly two weights: 500 for normal text and 700 for bold.
+   No third register exists, because a third weight always ends up
+   meaning something nobody can name. 500 rather than 400 as the normal
+   one — at 11-12px on white a 400 stem goes pale on a projector, which
+   is the thin look this design is meant to be rid of.
    ------------------------------------------------------------------ */
 
 :root {
@@ -74,7 +76,7 @@ body {
   margin: 0;
   background: var(--ground);
   color: var(--ink);
-  font: 600 14px/1.5 var(--font);
+  font: 500 14px/1.5 var(--font);
   -webkit-font-smoothing: antialiased;
   letter-spacing: -.004em;
 }
@@ -87,14 +89,24 @@ body {
   width: var(--rail-w); flex: none; background: var(--rail); color: var(--rail-ink);
   display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
 }
-.brand { padding: 20px 18px 16px; border-bottom: 1px solid var(--rail-soft); }
-.brand b { display: block; font-weight: 800; font-size: 13px; letter-spacing: .14em; }
+/* The rail wordmark is the way back to the landing page, so it is a real
+   button and has to look pressable. */
+.brand {
+  display: block; width: 100%; text-align: left; padding: 20px 18px 16px;
+  background: none; color: inherit; font: inherit; cursor: pointer;
+  border: none; border-bottom: 1px solid var(--rail-soft);
+  transition: background .15s var(--ease);
+}
+.brand:hover { background: var(--rail-soft); }
+.brand:focus-visible { outline: 2px solid var(--rail-ink); outline-offset: -2px; }
+.brand b { display: block; font-weight: 700; font-size: 13px; letter-spacing: .14em; }
 .brand span {
-  display: block; font: 600 9.5px var(--mono); color: var(--rail-faint);
+  display: block; font: 500 9.5px var(--mono); color: var(--rail-faint);
   letter-spacing: .1em; text-transform: uppercase; margin-top: 5px;
 }
 
 .nav { list-style: none; margin: 8px 0 0; padding: 0 8px; position: relative; flex: 1; }
+.to-landing { display: none; }
 .nav a {
   display: block; padding: 9px 12px; border-radius: var(--r);
   color: var(--rail-faint); text-decoration: none; font-weight: 700; font-size: 13.5px;
@@ -123,11 +135,11 @@ body {
   border-bottom: 1px solid var(--rule-strong); padding: 0 26px; height: 50px;
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
 }
-.crumb { font-weight: 800; font-size: 12px; letter-spacing: .13em; text-transform: uppercase; }
+.crumb { font-weight: 700; font-size: 12px; letter-spacing: .13em; text-transform: uppercase; }
 .topbar-right { display: flex; align-items: center; gap: 14px; }
-.stat { font: 600 11px var(--mono); color: var(--faint); }
+.stat { font: 500 11px var(--mono); color: var(--faint); }
 .badge {
-  font: 600 9.5px var(--mono); letter-spacing: .1em; padding: 4px 8px;
+  font: 500 9.5px var(--mono); letter-spacing: .1em; padding: 4px 8px;
   border: 1px solid var(--rule-strong); color: var(--soft);
 }
 
@@ -136,16 +148,12 @@ body {
 .view.on { display: block; animation: viewIn .2s var(--ease) both; }
 @keyframes viewIn { from { opacity: 0; } to { opacity: 1; } }
 
-.view-head { margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
-.view-head h1 { font-size: 25px; font-weight: 800; margin: 0 0 5px; letter-spacing: -.022em; line-height: 1.12; }
-.view-head p { margin: 0; color: var(--soft); font-weight: 600; max-width: 80ch; font-size: 13.5px; }
-
 /* ── panels ── */
 .panel { background: var(--surface); border: 1px solid var(--rule); padding: 18px 20px; margin-bottom: var(--gap); }
 .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
-.panel-head h2 { font-size: 12px; font-weight: 800; margin: 0; letter-spacing: .07em; text-transform: uppercase; }
-.hint { font: 600 11.5px var(--font); color: var(--faint); }
-.note { font-size: 12px; font-weight: 600; color: var(--soft); margin: 12px 0 0; border-top: 1px solid var(--rule); padding-top: 10px; line-height: 1.45; }
+.panel-head h2 { font-size: 12px; font-weight: 700; margin: 0; letter-spacing: .07em; text-transform: uppercase; }
+.hint { font: 500 11.5px var(--font); color: var(--faint); }
+.note { font-size: 12px; font-weight: 500; color: var(--soft); margin: 12px 0 0; border-top: 1px solid var(--rule); padding-top: 10px; line-height: 1.45; }
 
 .split { display: grid; grid-template-columns: 1fr 1.25fr; gap: var(--gap); }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
@@ -157,6 +165,10 @@ body {
   .nav li { flex: 1; }
   .nav a { text-align: center; padding: 9px 3px; font-size: 10.5px; }
   .nav-indicator { display: none; }
+  /* The wordmark is the way back on desktop; in the tab bar it does not
+     fit, so the route back becomes a tab of its own. Without it there is
+     no way off the console on a phone. */
+  .to-landing { display: list-item; }
   .shell { flex-direction: column-reverse; }
   .views { padding: 16px; padding-bottom: 74px; }
   .topbar { padding: 0 16px; }
@@ -184,8 +196,8 @@ body {
 .kpi.good { border-left-color: var(--good); }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .kpi .k-l { font-size: 10.5px; font-weight: 700; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; line-height: 1.35; min-height: 2.7em; }
-.kpi .k-v { font-size: 29px; font-weight: 800; letter-spacing: -.032em; line-height: 1.05; margin: 9px 0 4px; font-variant-numeric: tabular-nums; }
-.kpi .k-n { font: 600 10.5px var(--mono); color: var(--faint); }
+.kpi .k-v { font-size: 29px; font-weight: 700; letter-spacing: -.032em; line-height: 1.05; margin: 9px 0 4px; font-variant-numeric: tabular-nums; }
+.kpi .k-n { font: 500 10.5px var(--mono); color: var(--faint); }
 
 /* ── signals ── */
 .signals { display: flex; flex-direction: column; }
@@ -198,9 +210,9 @@ body {
 .signal.warn { border-left-color: var(--warn); }
 .signal.good { border-left-color: var(--good); }
 .signal .s-t { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 3px; }
-.signal .s-t b { font-weight: 800; font-size: 13px; }
-.signal .s-t span { font: 600 11.5px var(--mono); white-space: nowrap; color: var(--soft); }
-.signal p { margin: 0; font-size: 12px; font-weight: 600; color: var(--soft); line-height: 1.45; }
+.signal .s-t b { font-weight: 700; font-size: 13px; }
+.signal .s-t span { font: 500 11.5px var(--mono); white-space: nowrap; color: var(--soft); }
+.signal p { margin: 0; font-size: 12px; font-weight: 500; color: var(--soft); line-height: 1.45; }
 
 /* ── horizontal bars ── */
 .bars { display: flex; flex-direction: column; gap: 7px; }
@@ -216,7 +228,7 @@ body {
    cannot close — is marked. */
 .bar-fill.crit { background: var(--crit); }
 .bar-fill.warn, .bar-fill.good { background: var(--soft); }
-.bar-row .bv { font: 600 11.5px var(--mono); color: var(--soft); text-align: right; font-variant-numeric: tabular-nums; }
+.bar-row .bv { font: 500 11.5px var(--mono); color: var(--soft); text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ── legend & charts ── */
 .legend { display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 12px; }
@@ -227,8 +239,8 @@ body {
 .chart { width: 100%; display: block; overflow: visible; }
 .chart text { font-family: var(--font); font-weight: 700; }
 .chart .tick, .chart .axis { font-size: 10px; fill: var(--faint); font-weight: 700; }
-.chart .lbl { font-size: 11px; font-weight: 800; }
-.chart .val { font-family: var(--mono); font-size: 10.5px; font-weight: 600; fill: var(--soft); }
+.chart .lbl { font-size: 11px; font-weight: 700; }
+.chart .val { font-family: var(--mono); font-size: 10.5px; font-weight: 500; fill: var(--soft); }
 .chart .grid-line { stroke: var(--grid); stroke-width: 1; }
 .chart .zero { stroke: var(--rule-strong); stroke-width: 1; }
 .hit { fill: transparent; cursor: crosshair; }
@@ -240,13 +252,13 @@ body {
 /* ── tables ── */
 .tblwrap { overflow: auto; border: 1px solid var(--rule); max-height: 440px; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th, td { text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--rule); white-space: nowrap; font-weight: 600; }
+th, td { text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--rule); white-space: nowrap; font-weight: 500; }
 th { position: sticky; top: 0; background: var(--sunk); font: 700 9.5px var(--font); letter-spacing: .08em; text-transform: uppercase; color: var(--soft); z-index: 1; }
-td.num, th.num { text-align: right; font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+td.num, th.num { text-align: right; font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
 td.wrap { white-space: normal; min-width: 250px; }
 tbody tr:hover { background: var(--sunk); }
 
-.chip { display: inline-block; font: 600 10px var(--mono); padding: 2px 7px; letter-spacing: .03em; border: 1px solid var(--rule-strong); color: var(--soft); }
+.chip { display: inline-block; font: 500 10px var(--mono); padding: 2px 7px; letter-spacing: .03em; border: 1px solid var(--rule-strong); color: var(--soft); }
 .chip.r { color: var(--crit); border-color: var(--crit); }
 .chip.s { color: var(--good); border-color: var(--good); }
 .chip.n { color: var(--soft); }
@@ -260,8 +272,8 @@ tbody tr:hover { background: var(--sunk); }
 }
 #drop:hover, #drop:focus-visible, #drop.over { border-color: var(--accent); background: var(--sunk); outline: none; }
 #drop.busy { opacity: .5; pointer-events: none; }
-#drop h2 { font-size: 17px; font-weight: 800; margin: 0 0 6px; letter-spacing: -.016em; }
-#drop p { margin: 0 0 16px; color: var(--soft); font-weight: 600; font-size: 12.5px; }
+#drop h2 { font-size: 17px; font-weight: 700; margin: 0 0 6px; letter-spacing: -.016em; }
+#drop p { margin: 0 0 16px; color: var(--soft); font-weight: 500; font-size: 12.5px; }
 #file { display: none; }
 
 .btn {
@@ -283,65 +295,127 @@ tbody tr:hover { background: var(--sunk); }
 /* ── format cards ── */
 .fmt-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .fmt { background: var(--surface); padding: 13px 15px; }
-.fmt .t { font-weight: 800; font-size: 12.5px; margin-bottom: 3px; }
-.fmt .e { font: 600 10.5px var(--mono); color: var(--soft); margin-bottom: 6px; }
-.fmt .s { font-size: 11.5px; font-weight: 600; color: var(--soft); margin-bottom: 8px; line-height: 1.4; }
-.fmt .m { font: 600 10px var(--mono); color: var(--faint); border-top: 1px solid var(--rule); padding-top: 7px; }
+.fmt .t { font-weight: 700; font-size: 12.5px; margin-bottom: 3px; }
+.fmt .e { font: 500 10.5px var(--mono); color: var(--soft); margin-bottom: 6px; }
+.fmt .s { font-size: 11.5px; font-weight: 500; color: var(--soft); margin-bottom: 8px; line-height: 1.4; }
+.fmt .m { font: 500 10px var(--mono); color: var(--faint); border-top: 1px solid var(--rule); padding-top: 7px; }
 
 /* ── result cards ── */
 .card { background: var(--surface); border: 1px solid var(--rule); margin-bottom: var(--gap); animation: rise .28s var(--ease) both; }
 .card.bad { border-left: 2px solid var(--crit); }
 .card-head { padding: 16px 20px; border-bottom: 1px solid var(--rule); display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
 .card-head .who { flex: 1; min-width: 220px; }
-.card-head .fn { font: 600 11px var(--mono); color: var(--faint); margin-bottom: 4px; word-break: break-all; }
-.card-head h3 { font-size: 16px; font-weight: 800; margin: 0 0 4px; letter-spacing: -.018em; }
-.card-head .sm { font-size: 12px; font-weight: 600; color: var(--soft); }
+.card-head .fn { font: 500 11px var(--mono); color: var(--faint); margin-bottom: 4px; word-break: break-all; }
+.card-head h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; letter-spacing: -.018em; }
+.card-head .sm { font-size: 12px; font-weight: 500; color: var(--soft); }
 .card-body { padding: 18px 20px; }
 .acts { display: flex; gap: 7px; flex-wrap: wrap; }
-.err { font-size: 12.5px; font-weight: 600; white-space: pre-wrap; line-height: 1.55; }
+.err { font-size: 12.5px; font-weight: 500; white-space: pre-wrap; line-height: 1.55; }
 
-.alert { background: var(--surface); padding: 12px 16px; border: 1px solid var(--rule); border-left: 2px solid var(--rule-strong); margin-bottom: var(--gap); font-size: 12.5px; font-weight: 600; line-height: 1.5; }
+.alert { background: var(--surface); padding: 12px 16px; border: 1px solid var(--rule); border-left: 2px solid var(--rule-strong); margin-bottom: var(--gap); font-size: 12.5px; font-weight: 500; line-height: 1.5; }
 .alert.warn { border-left-color: var(--warn); }
 .alert.crit { border-left-color: var(--crit); }
-.alert b { display: block; font-weight: 800; margin-bottom: 4px; }
-.alert code { font: 600 11.5px var(--mono); background: var(--sunk); padding: 2px 6px; border: 1px solid var(--rule); }
+.alert b { display: block; font-weight: 700; margin-bottom: 4px; }
+.alert code { font: 500 11.5px var(--mono); background: var(--sunk); padding: 2px 6px; border: 1px solid var(--rule); }
 
 .empty { text-align: center; padding: 44px 24px; background: var(--surface); border: 1px dashed var(--rule-strong); }
-.empty h2 { font-size: 17px; font-weight: 800; margin: 0 0 7px; }
-.empty p { margin: 0 0 14px; color: var(--soft); font-weight: 600; max-width: 56ch; margin-inline: auto; font-size: 13px; }
+.empty h2 { font-size: 17px; font-weight: 700; margin: 0 0 7px; }
+.empty p { margin: 0 0 14px; color: var(--soft); font-weight: 500; max-width: 56ch; margin-inline: auto; font-size: 13px; }
 
 .tbl-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin: 18px 0 8px; }
-.tbl-head h4 { font: 800 11.5px var(--font); margin: 0; letter-spacing: .05em; text-transform: uppercase; }
-.tbl-head .cnt { display: flex; align-items: center; gap: 10px; font: 600 11px var(--mono); color: var(--faint); }
-.trunc { font-size: 11.5px; font-weight: 600; color: var(--faint); margin: 8px 0 0; }
+.tbl-head h4 { font: 700 11.5px var(--font); margin: 0; letter-spacing: .05em; text-transform: uppercase; }
+.tbl-head .cnt { display: flex; align-items: center; gap: 10px; font: 500 11px var(--mono); color: var(--faint); }
+.trunc { font-size: 11.5px; font-weight: 500; color: var(--faint); margin: 8px 0 0; }
 
 /* ── model cards ── */
 .mcards { grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); margin-bottom: var(--gap); }
 .mcard { background: var(--surface); padding: 18px; animation: rise .28s var(--ease) both; }
 .mcard .code { font: 700 10px var(--mono); letter-spacing: .1em; color: var(--soft); margin-bottom: 6px; }
-.mcard h3 { font-size: 15px; font-weight: 800; margin: 0 0 7px; letter-spacing: -.018em; }
-.mcard p { margin: 0 0 11px; font-size: 12px; font-weight: 600; color: var(--soft); line-height: 1.45; }
+.mcard h3 { font-size: 15px; font-weight: 700; margin: 0 0 7px; letter-spacing: -.018em; }
+.mcard p { margin: 0 0 11px; font-size: 12px; font-weight: 500; color: var(--soft); line-height: 1.45; }
 .mcard dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 11.5px; border-top: 1px solid var(--rule); padding-top: 10px; }
 .mcard dt { font-weight: 700; color: var(--faint); }
-.mcard dd { margin: 0; font-family: var(--mono); font-weight: 600; text-align: right; }
+.mcard dd { margin: 0; font-family: var(--mono); font-weight: 500; text-align: right; }
 
 .rules { list-style: none; padding: 0; margin: 0; counter-reset: r; }
-.rules li { counter-increment: r; padding: 10px 0 10px 34px; border-bottom: 1px solid var(--rule); position: relative; font-size: 12.5px; font-weight: 600; color: var(--soft); line-height: 1.45; }
+.rules li { counter-increment: r; padding: 10px 0 10px 34px; border-bottom: 1px solid var(--rule); position: relative; font-size: 12.5px; font-weight: 500; color: var(--soft); line-height: 1.45; }
 .rules li::before { content: counter(r, decimal-leading-zero); position: absolute; left: 0; top: 10px; font: 700 11.5px var(--mono); color: var(--faint); }
-.rules li b { color: var(--ink); font-weight: 800; }
+.rules li b { color: var(--ink); font-weight: 700; }
 .rules li:last-child { border-bottom: none; }
 
-.foot { border-top: 1px solid var(--rule); padding: 14px 26px 22px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 11.5px; font-weight: 600; color: var(--faint); }
-.mono { font-family: var(--mono); font-weight: 600; }
+.foot { border-top: 1px solid var(--rule); padding: 14px 26px 22px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 11.5px; font-weight: 500; color: var(--faint); }
+.mono { font-family: var(--mono); font-weight: 500; }
 
 #tip {
   position: fixed; pointer-events: none; z-index: 60; opacity: 0; transition: opacity .1s;
   background: var(--rail); color: #fff; padding: 9px 11px; border-radius: var(--r);
-  font-size: 11.5px; font-weight: 600; line-height: 1.45; max-width: 280px;
+  font-size: 11.5px; font-weight: 500; line-height: 1.45; max-width: 280px;
 }
-#tip .tt { font-weight: 800; margin-bottom: 4px; font-size: 12px; }
-#tip .tr { display: flex; justify-content: space-between; gap: 16px; font: 600 10.5px var(--mono); color: var(--rail-faint); }
-#tip .tr b { color: #fff; font-weight: 600; }
+#tip .tt { font-weight: 700; margin-bottom: 4px; font-size: 12px; }
+#tip .tr { display: flex; justify-content: space-between; gap: 16px; font: 500 10.5px var(--mono); color: var(--rail-faint); }
+#tip .tr b { color: #fff; font-weight: 500; }
+
+
+
+/* ══════════════════════ LANDING ══════════════════════
+   The only surface in the product that explains anything. It gets room
+   to breathe — long measures, real spacing — precisely because the
+   console it leads into has none of that. */
+
+.landing { max-width: 1000px; margin: 0 auto; padding: 0 28px 64px; }
+
+.lp-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding: 22px 0 20px; border-bottom: 1px solid var(--rule); margin-bottom: 56px;
+}
+.lp-brand b { font-weight: 700; font-size: 13px; letter-spacing: .14em; display: block; }
+.lp-brand span {
+  display: block; font: 500 9.5px var(--mono); color: var(--faint);
+  letter-spacing: .1em; text-transform: uppercase; margin-top: 4px;
+}
+
+.lp-hero { margin-bottom: 72px; }
+.lp-hero h1 {
+  font-size: clamp(30px, 5vw, 50px); font-weight: 700; letter-spacing: -.032em;
+  line-height: 1.08; margin: 0 0 22px;
+}
+.lp-lead { font-size: 16px; font-weight: 500; color: var(--soft); max-width: 66ch; margin: 0 0 30px; line-height: 1.6; }
+.lp-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.lp-cta-note { font: 500 11.5px var(--mono); color: var(--faint); }
+.btn.lg { font-size: 14px; padding: 12px 26px; }
+
+.lp-sec { margin-bottom: 60px; }
+.lp-sec > h2 {
+  font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  margin: 0 0 6px; padding-bottom: 12px; border-bottom: 1px solid var(--rule);
+}
+.lp-sub { font-size: 13.5px; font-weight: 500; color: var(--soft); max-width: 74ch; margin: 16px 0 20px; line-height: 1.55; }
+.lp-sec > h2 + .lp-grid3, .lp-sec > h2 + .mcards, .lp-sec > h2 + .fmt-grid { margin-top: 20px; }
+
+.lp-grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; }
+.lp-grid3 > * { box-shadow: 0 0 0 1px var(--rule); }
+.lp-card { background: var(--surface); padding: 20px; }
+.lp-card b { display: block; font-weight: 700; font-size: 14.5px; margin-bottom: 8px; }
+.lp-card p { margin: 0; font-size: 12.5px; font-weight: 500; color: var(--soft); line-height: 1.5; }
+
+.lp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+@media (max-width: 860px) { .lp-two { grid-template-columns: 1fr; gap: 44px; } }
+.lp-two h2 {
+  font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  margin: 0 0 6px; padding-bottom: 12px; border-bottom: 1px solid var(--rule);
+}
+
+.lp-code {
+  font: 500 12.5px/1.9 var(--mono); background: var(--surface); color: var(--ink);
+  border: 1px solid var(--rule); border-left: 2px solid var(--rule-strong);
+  padding: 16px 18px; margin: 0; overflow-x: auto;
+}
+
+.lp-foot {
+  border-top: 1px solid var(--rule); padding-top: 18px; margin-top: 64px;
+  display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  font-size: 11.5px; font-weight: 500; color: var(--faint);
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -352,14 +426,129 @@ tbody tr:hover { background: var(--sunk); }
 </head>
 <body>
 
-<div class="shell">
+<!-- ══════════════════════════════════════════════════════════════════
+     LANDING — every explanation in the product lives here and nowhere
+     else. The console past this page carries data and controls only.
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="landing" id="landing">
 
-  <!-- ══════════════ NAVIGATION RAIL ══════════════ -->
-  <nav class="rail" aria-label="Sections">
-    <div class="brand">
-      <b>GERMOVISION</b>
-      <span>Mutation Intelligence</span>
+  <header class="lp-top">
+    <div class="lp-brand"><b>GERMOVISION</b><span>Mutation Intelligence</span></div>
+    <button class="btn" type="button" id="enter-top">Open console</button>
+  </header>
+
+  <section class="lp-hero">
+    <h1>Mutations arise at random.<br>They survive predictably.</h1>
+    <p class="lp-lead">
+      GermoVision does not try to say which mutation will appear next — that is a
+      random event and nobody can forecast it. It answers the questions that can be
+      answered: what a mutation does to treatment, whether evolution will keep it,
+      and how fast the lineage carrying it is displacing the others.
+    </p>
+    <div class="lp-cta">
+      <button class="btn lg" type="button" id="enter-hero">Open console</button>
+      <span class="lp-cta-note" id="lp-run">Reads the last local training run</span>
     </div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>What it answers</h2>
+    <div class="lp-grid3">
+      <div class="lp-card">
+        <b>Will this treatment work?</b>
+        <p>Resistance called from the genome for 13 drugs, in about two days after
+        sequencing instead of the roughly 60 days a culture-based test takes.</p>
+      </div>
+      <div class="lp-card">
+        <b>Which substitutions matter?</b>
+        <p>Every substitution ranked by evolutionary risk — including ones that have
+        not appeared yet, which is what makes the warning early.</p>
+      </div>
+      <div class="lp-card">
+        <b>What is spreading, and where?</b>
+        <p>Growth advantage per lineage per region, with intervals that widen where
+        less was sequenced instead of pretending to precision.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>The four models</h2>
+    <div class="mcards" id="lp-models"></div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>What you can feed it</h2>
+    <p class="lp-sub">Format is detected from file contents, not from the extension, and
+    routed to the model that fits. A whole genome is refused on purpose: assembly and
+    variant calling are a separate pipeline with their own failure modes.</p>
+    <div class="fmt-grid" id="lp-formats"></div>
+  </section>
+
+  <section class="lp-sec lp-two">
+    <div>
+      <h2>How it is validated</h2>
+      <p class="lp-sub">Checked automatically on every run; a violation stops the run
+      rather than producing a better-looking number.</p>
+      <ol class="rules">
+        <li><b>Split by time, never at random.</b> Uses submission date, not collection
+        date: a sample collected on 1 November but deposited on the 20th was not
+        available to the system on the 5th.</li>
+        <li><b>Relatedness clusters stay intact.</b> Isolates from one outbreak are
+        near-identical and are not independent observations.</li>
+        <li><b>External geographic validation.</b> Train on 22 countries, test on the 23rd.</li>
+        <li><b>Augmentation only after the split, only on train.</b> A CI test fails if
+        the order is reversed.</li>
+        <li><b>Feature vocabulary built from train alone.</b> Collecting it over all data
+        is a quiet leak.</li>
+        <li><b>Calibration on a separate part</b> that overlaps neither training nor test.</li>
+        <li><b>Baselines are mandatory.</b> The reference is the standard in use today —
+        the WHO catalogue — not random guessing.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>Where it must not be trusted alone</h2>
+      <p class="lp-sub">Stated here because a system that hides its limits gets used
+      past them.</p>
+      <ol class="rules">
+        <li><b>It does not diagnose or prescribe.</b> It supplies information for a
+        clinician's decision.</li>
+        <li><b>It does not predict when a mutation will appear.</b> Mutation is a random
+        event; its consequences and its fate are what can be predicted.</li>
+        <li><b>Poorly characterised drugs stay weak.</b> Bedaquiline, delamanid and
+        linezolid carry a lab-confirmation flag that reaches the clinical report.</li>
+        <li><b>It degrades over time.</b> The pathogen evolves; without retraining the
+        estimates go stale.</li>
+        <li><b>Research use only.</b> Not a certified medical device.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>Run it on your own machine</h2>
+    <p class="lp-sub">Analysis is local by design. Uploading sequences would send patient
+    data to a server, so the published build offers no upload at all.</p>
+    <pre class="lp-code">pip install -e ".[app]"
+python -m germovision.train --save-models models
+python -m germovision.app</pre>
+  </section>
+
+  <footer class="lp-foot">
+    <span>Research use only. Not a certified medical device. Does not diagnose or prescribe.</span>
+    <span class="mono" id="lp-meta"></span>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CONSOLE — data and controls. No explanatory prose past this point.
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="shell" id="shell" hidden>
+
+  <nav class="rail" aria-label="Sections">
+    <button class="brand" type="button" id="back-landing">
+      <b>GERMOVISION</b>
+      <span>Back to overview page</span>
+    </button>
 
     <ul class="nav" id="nav">
       <li><a href="#overview"   data-view="overview">Overview</a></li>
@@ -367,12 +556,11 @@ tbody tr:hover { background: var(--sunk); }
       <li><a href="#mutations"  data-view="mutations">Mutations</a></li>
       <li><a href="#resistance" data-view="resistance">Resistance</a></li>
       <li><a href="#spread"     data-view="spread">Spread</a></li>
-      <li><a href="#models"     data-view="models">Models</a></li>
+      <li class="to-landing"><a href="#" id="back-landing-narrow">Info</a></li>
       <li class="nav-indicator" id="nav-indicator" aria-hidden="true"></li>
     </ul>
   </nav>
 
-  <!-- ══════════════ MAIN ══════════════ -->
   <main class="main">
     <header class="topbar">
       <div class="crumb" id="crumb">Overview</div>
@@ -384,15 +572,8 @@ tbody tr:hover { background: var(--sunk); }
 
     <div class="views" id="views">
 
-      <!-- ────────── OVERVIEW ────────── -->
       <section class="view" data-view="overview">
-        <div class="view-head">
-          <h1>Situation Overview</h1>
-          <p>Where the pathogen population stands right now, and what changed.</p>
-        </div>
-
         <div class="kpis" id="kpis"></div>
-
         <div class="split">
           <div class="panel">
             <div class="panel-head">
@@ -401,106 +582,74 @@ tbody tr:hover { background: var(--sunk); }
             </div>
             <div class="signals" id="signals"></div>
           </div>
-
           <div class="panel">
             <div class="panel-head"><h2>Lineage share, national</h2></div>
             <div class="legend" id="ov-legend"></div>
             <svg class="chart" id="ov-stack" viewBox="0 0 560 260" role="img"
                  aria-label="Lineage share over time"></svg>
-            <p class="note" id="ov-note"></p>
           </div>
         </div>
-
         <div class="panel">
-          <div class="panel-head">
-            <h2>Detection capability by drug</h2>
-            <span class="hint">Share of isolates correctly closed without a phenotypic test</span>
-          </div>
+          <div class="panel-head"><h2>Correctly closed without a lab test, by drug</h2></div>
           <div class="bars" id="ov-bars"></div>
         </div>
       </section>
 
-      <!-- ────────── ANALYZE ────────── -->
       <section class="view" data-view="analyze">
-        <div class="view-head">
-          <h1>Analyze Data</h1>
-          <p>Drop a file. The format is detected from its contents and routed to the model that fits it.</p>
-        </div>
-
         <div id="drop" tabindex="0" role="button" aria-label="Upload files for analysis">
           <div class="drop-inner">
             <h2>Drop files here</h2>
-            <p>Several at once is fine — each is parsed and analyzed independently</p>
+            <p>CSV · TSV · VCF · JSON · FASTA — several at once</p>
             <button class="btn" type="button" id="pick">Choose files</button>
             <input type="file" id="file" multiple
                    accept=".csv,.tsv,.txt,.vcf,.json,.fasta,.fa,.faa,.fna">
           </div>
         </div>
-
         <div id="model-status"></div>
         <div id="spinner" hidden><span class="bar"></span><b>Analyzing</b></div>
         <div id="results"></div>
-
-        <div class="panel">
-          <div class="panel-head"><h2>Accepted inputs</h2></div>
-          <div class="fmt-grid" id="formats"></div>
-        </div>
       </section>
 
-      <!-- ────────── MUTATIONS ────────── -->
       <section class="view" data-view="mutations">
-        <div class="view-head">
-          <h1>Mutation Landscape</h1>
-          <p>Which substitutions matter — the ones already circulating, and the ones that would matter if they appeared.</p>
-        </div>
         <div id="mut-content"></div>
       </section>
 
-      <!-- ────────── RESISTANCE ────────── -->
       <section class="view" data-view="resistance">
-        <div class="view-head">
-          <h1>Drug Resistance</h1>
-          <p>What the genome predicts about treatment, and how far that prediction can be trusted.</p>
-        </div>
         <div id="res-content"></div>
       </section>
 
-      <!-- ────────── SPREAD ────────── -->
       <section class="view" data-view="spread">
-        <div class="view-head">
-          <h1>Spread &amp; Growth</h1>
-          <p>Which lineages are displacing others, where, and how fast.</p>
-        </div>
         <div id="spread-content"></div>
-      </section>
-
-      <!-- ────────── MODELS ────────── -->
-      <section class="view" data-view="models">
-        <div class="view-head">
-          <h1>Models &amp; Validation</h1>
-          <p>What each model does, how it was tested, and where it must not be trusted alone.</p>
-        </div>
-        <div id="models-content"></div>
       </section>
 
     </div>
 
     <footer class="foot">
-      <span>Research use only. Not a certified medical device. Does not diagnose or prescribe.</span>
       <span class="mono" id="foot-meta"></span>
     </footer>
   </main>
 </div>
 
 <div id="tip" role="status" aria-live="polite"></div>
-<script>window.__GV_STATIC__ = {"status":{"formats":[{"kind":"mutations","title":"Mutation table","ext":".csv, .tsv, .txt","shape":"columns id, gene, mutation","model":"GV-Resist","result":"drug resistance across 13 drugs"},{"kind":"vcf","title":"Called variants","ext":".vcf, .vcf.gz (unpacked)","shape":"standard VCF, ideally snpEff-annotated (ANN=)","model":"GV-Resist","result":"drug resistance across 13 drugs"},{"kind":"tbprofiler","title":"TB-Profiler report","ext":".json","shape":"dr_variants or variants field","model":"GV-Resist","result":"drug resistance across 13 drugs"},{"kind":"protein_fasta","title":"Protein sequences","ext":".fasta, .fa, .faa","shape":"several sequences of one protein","model":"GV-Escape","result":"substitutions ranked by evolutionary risk"},{"kind":"gene_fasta","title":"Gene sequences","ext":".fasta, .fa, .fna","shape":"coding sequence, length divisible by 3","model":"GV-Escape","result":"translation, then the same risk ranking"},{"kind":"lineage_counts","title":"Surveillance lineage counts","ext":".csv, .tsv","shape":"columns region, week, lineage, count","model":"GV-Growth","result":"growth advantage and share forecast"}],"models_loaded":true,"models_error":"","models_info":"","models_synthetic":true,"max_file_mb":0},"surveillance":{"available":true,"meta":{"generated_at":"2026-09-05 16:07:50","elapsed_sec":52.9,"source":"synthetic","synthetic":true,"warning":"SYNTHETIC DATA. These metrics show that the pipeline is correct, not that the model is clinically good. Hypothesis H1 requires the CRyPTIC dataset.","catalogue_size":82,"n_isolates":6000,"n_clusters":1693,"n_countries":10,"n_variants":68,"date_min":"2015-01-23","date_max":"2025-04-22","split":{"train":3899,"test":1203,"calib":898},"split_meta":{"n_clusters":1693,"train_last_date":"2022-04-04","test_first_date":"2022-07-30","actual_test_size":0.2005,"date_semantics":"submission_date","note":"boundaries are shifted away from round calendar dates because the indivisible unit is a relatedness cluster, not an isolate"}},"kpi":{"mdr_kz":0.242914979757085,"mdr_kz_n":494,"rif_sens_external":0.8709677419354839,"answer_rate":0.9703200000000001,"closed":0.8806846153846153,"n_needs_confirmation":13,"n_drugs":13,"top_growth":{"region":"Shymkent","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.12099178371627312,"se":0.009370305440411108,"weekly_pct":12.861563930293784,"n_samples":780,"significant":true},"ece_rif":0.03340054404339478},"external":[{"drug":"RIF","name":"Rifampicin","n":466,"pos":217,"sens":[0.871,0.825,0.912],"spec":[0.667,0.598,0.717],"base_sens":0.737,"h1":false},{"drug":"RFB","name":"Rifabutin","n":406,"pos":151,"sens":[0.868,0.815,0.921],"spec":[0.824,0.78,0.871],"base_sens":0.746,"h1":null},{"drug":"INH","name":"Isoniazid","n":487,"pos":246,"sens":[0.874,0.833,0.913],"spec":[0.734,0.676,0.793],"base_sens":0.709,"h1":false},{"drug":"EMB","name":"Ethambutol","n":441,"pos":123,"sens":[0.837,0.772,0.894],"spec":[0.987,0.975,0.997],"base_sens":0.741,"h1":null},{"drug":"LEV","name":"Levofloxacin","n":440,"pos":111,"sens":[0.694,0.604,0.77],"spec":[0.79,0.743,0.836],"base_sens":0.655,"h1":null},{"drug":"MXF","name":"Moxifloxacin","n":419,"pos":97,"sens":[0.835,0.763,0.907],"spec":[0.783,0.741,0.825],"base_sens":0.686,"h1":null},{"drug":"BDQ","name":"Bedaquiline","n":342,"pos":23,"sens":[0.391,0.174,0.565],"spec":[0.972,0.954,0.987],"base_sens":0.36,"h1":null},{"drug":"LZD","name":"Linezolid","n":384,"pos":27,"sens":[0.481,0.259,0.667],"spec":[0.992,0.98,1.0],"base_sens":0.419,"h1":null},{"drug":"CFZ","name":"Clofazimine","n":350,"pos":22,"sens":[0.5,0.273,0.727],"spec":[0.994,0.985,1.0],"base_sens":0.458,"h1":null},{"drug":"DLM","name":"Delamanid","n":316,"pos":19,"sens":[0.263,0.078,0.474],"spec":[1.0,1.0,1.0],"base_sens":0.263,"h1":null},{"drug":"AMI","name":"Amikacin","n":429,"pos":65,"sens":[0.677,0.569,0.8],"spec":[0.934,0.909,0.959],"base_sens":0.647,"h1":null},{"drug":"KAN","name":"Kanamycin","n":418,"pos":80,"sens":[0.762,0.662,0.85],"spec":[0.867,0.828,0.902],"base_sens":0.7,"h1":null},{"drug":"ETH","name":"Ethionamide","n":432,"pos":139,"sens":[0.871,0.809,0.921],"spec":[0.857,0.816,0.894],"base_sens":0.705,"h1":null}],"internal":[{"drug":"RIF","name":"Rifampicin","n":1161,"pos":319,"sens":[0.774,0.729,0.815],"spec":[0.842,0.816,0.866],"pr_auc":0.75,"base_sens":0.679,"answer_rate":0.981,"closed":0.8081,"missed":0.2182,"needs_confirmation":true,"ece":0.033,"by_catalogue":351,"by_model":832,"no_call":22},{"drug":"RFB","name":"Rifabutin","n":988,"pos":217,"sens":[0.756,0.696,0.806],"spec":[0.903,0.883,0.924],"pr_auc":0.633,"base_sens":0.613,"answer_rate":0.93,"closed":0.8098,"missed":0.207,"needs_confirmation":true,"ece":0.031,"by_catalogue":229,"by_model":833,"no_call":74},{"drug":"INH","name":"Isoniazid","n":1133,"pos":349,"sens":[0.822,0.781,0.862],"spec":[0.876,0.853,0.899],"pr_auc":0.78,"base_sens":0.663,"answer_rate":0.959,"closed":0.8247,"missed":0.1645,"needs_confirmation":true,"ece":0.026,"by_catalogue":333,"by_model":848,"no_call":48},{"drug":"EMB","name":"Ethambutol","n":1096,"pos":197,"sens":[0.756,0.695,0.812],"spec":[0.99,0.983,0.997],"pr_auc":0.785,"base_sens":0.673,"answer_rate":0.966,"closed":0.9154,"missed":0.2182,"needs_confirmation":true,"ece":0.019,"by_catalogue":156,"by_model":979,"no_call":39},{"drug":"LEV","name":"Levofloxacin","n":1108,"pos":157,"sens":[0.548,0.471,0.618],"spec":[0.906,0.887,0.922],"pr_auc":0.435,"base_sens":0.541,"answer_rate":0.994,"closed":0.8502,"missed":0.4465,"needs_confirmation":true,"ece":0.027,"by_catalogue":175,"by_model":940,"no_call":7},{"drug":"MXF","name":"Moxifloxacin","n":1040,"pos":132,"sens":[0.735,0.667,0.811],"spec":[0.913,0.892,0.932],"pr_auc":0.446,"base_sens":0.642,"answer_rate":0.952,"closed":0.8472,"missed":0.2318,"needs_confirmation":true,"ece":0.028,"by_catalogue":176,"by_model":917,"no_call":53},{"drug":"BDQ","name":"Bedaquiline","n":860,"pos":56,"sens":[0.446,0.312,0.581],"spec":[0.966,0.952,0.978],"pr_auc":0.398,"base_sens":0.446,"answer_rate":1.0,"closed":0.9326,"missed":0.5536,"needs_confirmation":true,"ece":0.017,"by_catalogue":52,"by_model":808,"no_call":0},{"drug":"LZD","name":"Linezolid","n":920,"pos":55,"sens":[0.327,0.218,0.455],"spec":[0.998,0.994,1.0],"pr_auc":0.366,"base_sens":0.327,"answer_rate":1.0,"closed":0.9576,"missed":0.6727,"needs_confirmation":true,"ece":0.007,"by_catalogue":20,"by_model":900,"no_call":0},{"drug":"CFZ","name":"Clofazimine","n":857,"pos":46,"sens":[0.391,0.249,0.522],"spec":[0.99,0.984,0.996],"pr_auc":0.305,"base_sens":0.333,"answer_rate":0.978,"closed":0.9372,"missed":0.5185,"needs_confirmation":true,"ece":0.011,"by_catalogue":26,"by_model":850,"no_call":19},{"drug":"DLM","name":"Delamanid","n":670,"pos":39,"sens":[0.436,0.282,0.59],"spec":[1.0,1.0,1.0],"pr_auc":0.084,"base_sens":0.425,"answer_rate":0.929,"closed":0.8988,"missed":0.55,"needs_confirmation":true,"ece":0.023,"by_catalogue":17,"by_model":704,"no_call":51},{"drug":"AMI","name":"Amikacin","n":1005,"pos":83,"sens":[0.578,0.47,0.675],"spec":[0.966,0.956,0.977],"pr_auc":0.395,"base_sens":0.5,"answer_rate":0.963,"closed":0.8994,"missed":0.3646,"needs_confirmation":true,"ece":0.009,"by_catalogue":79,"by_model":965,"no_call":39},{"drug":"KAN","name":"Kanamycin","n":955,"pos":111,"sens":[0.676,0.59,0.757],"spec":[0.932,0.915,0.948],"pr_auc":0.563,"base_sens":0.589,"answer_rate":0.975,"closed":0.8796,"missed":0.2903,"needs_confirmation":true,"ece":0.031,"by_catalogue":130,"by_model":850,"no_call":25},{"drug":"ETH","name":"Ethionamide","n":1009,"pos":171,"sens":[0.825,0.766,0.877],"spec":[0.914,0.895,0.93],"pr_auc":0.723,"base_sens":0.687,"answer_rate":0.988,"closed":0.8883,"missed":0.1676,"needs_confirmation":true,"ece":0.018,"by_catalogue":180,"by_model":841,"no_call":12}],"tradeoff":[{"alpha":0.02,"answer_rate":0.3364327979712595,"accuracy":0.6658291457286433,"sensitivity":0.9739130434782609,"specificity":0.24404761904761904,"n_answered":398},{"alpha":0.05,"answer_rate":0.9137785291631445,"accuracy":0.8353376503237743,"sensitivity":0.8152173913043478,"specificity":0.8422360248447205,"n_answered":1081},{"alpha":0.1,"answer_rate":0.981403212172443,"accuracy":0.8234280792420328,"sensitivity":0.774294670846395,"specificity":0.8420427553444181,"n_answered":1161},{"alpha":0.15,"answer_rate":1.0,"accuracy":0.8174133558748944,"sensitivity":0.7484848484848485,"specificity":0.8440797186400938,"n_answered":1183},{"alpha":0.2,"answer_rate":0.981403212172443,"accuracy":0.8234280792420328,"sensitivity":0.774294670846395,"specificity":0.8420427553444181,"n_answered":1161},{"alpha":0.3,"answer_rate":0.9095519864750634,"accuracy":0.8364312267657993,"sensitivity":0.8205128205128205,"specificity":0.8418430884184309,"n_answered":1076}],"ablations":[{"config":"WHO catalogue only (baseline)","sensitivity":0.6787878787878788,"specificity":0.8511137162954279,"pr_auc":0.5227892715072202,"abstention_rate":0.0},{"config":"mutations, no catalogue features","sensitivity":0.8804347826086957,"specificity":0.686777920410783,"pr_auc":0.768265881977928,"abstention_rate":0.10819949281487742},{"config":"+ catalogue features","sensitivity":0.8653061224489796,"specificity":0.7328767123287672,"pr_auc":0.7805903069783392,"abstention_rate":0.17582417582417584},{"config":"+ per-gene burden","sensitivity":0.8653061224489796,"specificity":0.7328767123287672,"pr_auc":0.7773974869056004,"abstention_rate":0.17582417582417584},{"config":"+ variants outside target genes","sensitivity":0.6338028169014085,"specificity":0.9528061224489796,"pr_auc":0.7674150341206878,"abstention_rate":0.09721048182586645},{"config":"full model (+ rule tier)","sensitivity":0.774294670846395,"specificity":0.8420427553444181,"pr_auc":0.7503114281273497,"abstention_rate":0.018596787827557058},{"config":"... plus lineage context (hurts)","sensitivity":0.7767295597484277,"specificity":0.8418549346016647,"pr_auc":0.7577597443506809,"abstention_rate":0.02028740490278952}],"countries":[{"country":"KZ","n":512,"RIF_rate":0.4701195219123506,"RIF_n":502,"INH_rate":0.5119047619047619,"INH_n":504,"mdr_rate":0.242914979757085,"mdr_n":494,"label":"Kazakhstan"},{"country":"RU","n":599,"RIF_rate":0.4074074074074074,"RIF_n":594,"INH_rate":0.5085324232081911,"INH_n":586,"mdr_rate":0.2306368330464716,"mdr_n":581,"label":"Russia"},{"country":"UZ","n":266,"RIF_rate":0.42911877394636017,"RIF_n":261,"INH_rate":0.5,"INH_n":260,"mdr_rate":0.22745098039215686,"mdr_n":255,"label":"Uzbekistan"},{"country":"ZA","n":786,"RIF_rate":0.24805194805194805,"RIF_n":770,"INH_rate":0.31537450722733246,"INH_n":761,"mdr_rate":0.08322147651006712,"mdr_n":745,"label":"South Africa"},{"country":"IN","n":1104,"RIF_rate":0.25092250922509224,"RIF_n":1084,"INH_rate":0.3081180811808118,"INH_n":1084,"mdr_rate":0.07894736842105263,"mdr_n":1064,"label":"India"},{"country":"CN","n":660,"RIF_rate":0.2406832298136646,"RIF_n":644,"INH_rate":0.2801857585139319,"INH_n":646,"mdr_rate":0.06666666666666667,"mdr_n":630,"label":"China"},{"country":"BR","n":534,"RIF_rate":0.18199233716475097,"RIF_n":522,"INH_rate":0.23091603053435114,"INH_n":524,"mdr_rate":0.04483430799220273,"mdr_n":513,"label":"Brazil"},{"country":"PE","n":612,"RIF_rate":0.20930232558139536,"RIF_n":602,"INH_rate":0.24958402662229617,"INH_n":601,"mdr_rate":0.043993231810490696,"mdr_n":591,"label":"Peru"},{"country":"DE","n":372,"RIF_rate":0.10054347826086957,"RIF_n":368,"INH_rate":0.1448087431693989,"INH_n":366,"mdr_rate":0.024861878453038673,"mdr_n":362,"label":"Germany"},{"country":"GB","n":555,"RIF_rate":0.11009174311926606,"RIF_n":545,"INH_rate":0.1270718232044199,"INH_n":543,"mdr_rate":0.013133208255159476,"mdr_n":533,"label":"United Kingdom"}],"lineages":[{"key":"L4_Euro_American","label":"L4 Euro-American"},{"key":"L2_Beijing","label":"L2 Beijing"},{"key":"L2_Beijing_MDR","label":"L2 Beijing (MDR)"},{"key":"L3_CAS","label":"L3 CAS"}],"observed":[{"week":0,"fracs":[0.1847,0.2293,0.2229,0.3631],"total":157},{"week":1,"fracs":[0.1958,0.3007,0.3217,0.1818],"total":143},{"week":2,"fracs":[0.203,0.1955,0.3158,0.2857],"total":133},{"week":3,"fracs":[0.2051,0.2051,0.3462,0.2436],"total":156},{"week":4,"fracs":[0.142,0.2346,0.3457,0.2778],"total":162},{"week":5,"fracs":[0.1419,0.2703,0.3851,0.2027],"total":148},{"week":6,"fracs":[0.1544,0.255,0.4228,0.1678],"total":149},{"week":7,"fracs":[0.1589,0.2583,0.3907,0.1921],"total":151},{"week":8,"fracs":[0.1375,0.2375,0.4688,0.1562],"total":160},{"week":9,"fracs":[0.1235,0.2222,0.5247,0.1296],"total":162},{"week":10,"fracs":[0.1183,0.2249,0.5325,0.1243],"total":169},{"week":11,"fracs":[0.1026,0.2244,0.5385,0.1346],"total":156},{"week":12,"fracs":[0.1757,0.1757,0.5135,0.1351],"total":148},{"week":13,"fracs":[0.1567,0.1343,0.6194,0.0896],"total":134},{"week":14,"fracs":[0.1228,0.193,0.6199,0.0643],"total":171},{"week":15,"fracs":[0.1439,0.1655,0.6331,0.0576],"total":139},{"week":16,"fracs":[0.0938,0.15,0.7312,0.025],"total":160},{"week":17,"fracs":[0.058,0.1594,0.7536,0.029],"total":138},{"week":18,"fracs":[0.1022,0.146,0.6569,0.0949],"total":137},{"week":19,"fracs":[0.1117,0.1006,0.7151,0.0726],"total":179},{"week":20,"fracs":[0.076,0.1579,0.7485,0.0175],"total":171},{"week":21,"fracs":[0.0671,0.1275,0.7785,0.0268],"total":149},{"week":22,"fracs":[0.0657,0.1533,0.7372,0.0438],"total":137},{"week":23,"fracs":[0.0738,0.1544,0.7584,0.0134],"total":149},{"week":24,"fracs":[0.0651,0.1243,0.7811,0.0296],"total":169},{"week":25,"fracs":[0.0655,0.0893,0.8036,0.0417],"total":168},{"week":26,"fracs":[0.0347,0.1389,0.8125,0.0139],"total":144},{"week":27,"fracs":[0.0671,0.1341,0.7805,0.0183],"total":164},{"week":28,"fracs":[0.0345,0.1241,0.8207,0.0207],"total":145},{"week":29,"fracs":[0.0345,0.1034,0.8362,0.0259],"total":116}],"forecasts":{"Aktobe":{"horizons":[0,2,4,8],"point":[[0.1121,0.5626,0.2956,0.0297],[0.1058,0.5639,0.3053,0.025],[0.0997,0.5644,0.3148,0.0211],[0.0883,0.5633,0.3335,0.0149]],"lo":[[0.1121,0.3824,0.1423,0.0138],[0.1058,0.3718,0.1401,0.011],[0.0997,0.3606,0.1378,0.0087],[0.0883,0.3368,0.1328,0.0055]],"hi":[[0.1121,0.7276,0.5149,0.0628],[0.1058,0.7385,0.5423,0.0561],[0.0997,0.7485,0.5691,0.05],[0.0883,0.7662,0.6205,0.0395]],"n_samples":377},"Almaty":{"horizons":[0,2,4,8],"point":[[0.0488,0.0606,0.8757,0.0149],[0.0413,0.0526,0.8951,0.011],[0.0348,0.0454,0.9117,0.0081],[0.0245,0.0336,0.9375,0.0043]],"lo":[[0.0488,0.0327,0.8027,0.007],[0.0413,0.0271,0.826,0.0049],[0.0348,0.0223,0.8467,0.0034],[0.0245,0.015,0.8816,0.0016]],"hi":[[0.0488,0.1095,0.9242,0.0315],[0.0413,0.0996,0.9388,0.0246],[0.0348,0.0903,0.9507,0.0192],[0.0245,0.0735,0.968,0.0115]],"n_samples":1186},"Astana":{"horizons":[0,2,4,8],"point":[[0.0192,0.01,0.9652,0.0056],[0.0152,0.0077,0.973,0.0041],[0.012,0.0059,0.9791,0.003],[0.0075,0.0035,0.9875,0.0016]],"lo":[[0.0192,0.0045,0.9382,0.0021],[0.0152,0.0032,0.9498,0.0015],[0.012,0.0024,0.9593,0.001],[0.0075,0.0012,0.9733,0.0005]],"hi":[[0.0192,0.0223,0.9807,0.0146],[0.0152,0.0181,0.9857,0.0114],[0.012,0.0148,0.9894,0.0089],[0.0075,0.0097,0.9942,0.0054]],"n_samples":1061},"Atyrau":{"horizons":[0,2,4,8],"point":[[0.0527,0.0878,0.8565,0.003],[0.0445,0.0746,0.8787,0.0022],[0.0375,0.0631,0.8978,0.0016],[0.0263,0.0447,0.9281,0.0008]],"lo":[[0.0527,0.0452,0.7391,0.0015],[0.0445,0.0364,0.7655,0.001],[0.0375,0.0292,0.79,0.0007],[0.0263,0.0186,0.833,0.0003]],"hi":[[0.0527,0.1635,0.9264,0.0061],[0.0445,0.1467,0.9414,0.0046],[0.0375,0.1311,0.9535,0.0035],[0.0263,0.1037,0.971,0.002]],"n_samples":212},"Karaganda":{"horizons":[0,2,4,8],"point":[[0.0121,0.0201,0.9603,0.0076],[0.0098,0.0163,0.9684,0.0054],[0.008,0.0132,0.9749,0.0039],[0.0052,0.0086,0.9841,0.002]],"lo":[[0.0121,0.0096,0.9252,0.003],[0.0098,0.0074,0.9375,0.002],[0.008,0.0056,0.9478,0.0014],[0.0052,0.0033,0.9635,0.0006]],"hi":[[0.0121,0.0417,0.9793,0.0188],[0.0098,0.0357,0.9843,0.0144],[0.008,0.0305,0.9881,0.0111],[0.0052,0.0222,0.9932,0.0065]],"n_samples":453},"Kostanay":{"horizons":[0,2,4,8],"point":[[0.0842,0.1289,0.7345,0.0524],[0.0763,0.1175,0.7619,0.0444],[0.0688,0.1067,0.7871,0.0374],[0.0554,0.087,0.8312,0.0264]],"lo":[[0.0842,0.0627,0.5574,0.0215],[0.0763,0.0539,0.5797,0.0171],[0.0688,0.0462,0.6014,0.0135],[0.0554,0.0335,0.6433,0.0083]],"hi":[[0.0842,0.2466,0.8588,0.1218],[0.0763,0.2373,0.8813,0.1104],[0.0688,0.2276,0.9005,0.0998],[0.0554,0.2078,0.9308,0.0806]],"n_samples":277},"Pavlodar":{"horizons":[0,2,4,8],"point":[[0.0536,0.4212,0.5018,0.0235],[0.0494,0.411,0.5196,0.0199],[0.0456,0.4005,0.5371,0.0169],[0.0385,0.3783,0.5711,0.0121]],"lo":[[0.0536,0.2467,0.324,0.0106],[0.0494,0.2291,0.3284,0.0085],[0.0456,0.2121,0.3326,0.0068],[0.0385,0.1801,0.3405,0.0044]],"hi":[[0.0536,0.6178,0.6792,0.0509],[0.0494,0.621,0.7052,0.0458],[0.0456,0.6236,0.7298,0.0411],[0.0385,0.6276,0.7745,0.0329]],"n_samples":218},"Shymkent":{"horizons":[0,2,4,8],"point":[[0.0234,0.043,0.9287,0.0049],[0.0187,0.0341,0.9438,0.0034],[0.0149,0.027,0.9558,0.0023],[0.0093,0.0168,0.9728,0.0011]],"lo":[[0.0234,0.0246,0.8843,0.0021],[0.0187,0.0187,0.9048,0.0013],[0.0149,0.0142,0.9219,0.0009],[0.0093,0.0081,0.9478,0.0004]],"hi":[[0.0234,0.0739,0.9569,0.0116],[0.0187,0.0613,0.9674,0.0084],[0.0149,0.0507,0.9754,0.0061],[0.0093,0.0343,0.986,0.0032]],"n_samples":780}},"growth_table":[{"region":"Aktobe","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":377,"significant":false},{"region":"Aktobe","lineage":"L2_Beijing","is_reference":false,"beta":0.03005241446669778,"se":0.012857960069453288,"weekly_pct":3.0508546093866737,"n_samples":377,"significant":true},{"region":"Aktobe","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.04495202807616399,"se":0.016325653532641777,"weekly_pct":4.597768114348663,"n_samples":377,"significant":true},{"region":"Aktobe","lineage":"L3_CAS","is_reference":false,"beta":-0.05621822048144269,"se":0.01380652534526471,"weekly_pct":-5.4667177603326955,"n_samples":377,"significant":true},{"region":"Almaty","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":1186,"significant":false},{"region":"Almaty","lineage":"L2_Beijing","is_reference":false,"beta":0.012529475820599182,"se":0.01135733983103033,"weekly_pct":1.260829856129514,"n_samples":1186,"significant":false},{"region":"Almaty","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.09458330133113585,"se":0.00965824931242217,"weekly_pct":9.920072420286925,"n_samples":1186,"significant":true},{"region":"Almaty","lineage":"L3_CAS","is_reference":false,"beta":-0.0677850971136041,"se":0.01350647427598467,"weekly_pct":-6.553872957523084,"n_samples":1186,"significant":true},{"region":"Astana","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":1061,"significant":false},{"region":"Astana","lineage":"L2_Beijing","is_reference":false,"beta":-0.014211284988067566,"se":0.014306115812364793,"weekly_pct":-1.411078133620028,"n_samples":1061,"significant":false},{"region":"Astana","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.12067922789622333,"se":0.010628436824606647,"weekly_pct":12.826293903840602,"n_samples":1061,"significant":true},{"region":"Astana","lineage":"L3_CAS","is_reference":false,"beta":-0.0405766508943405,"se":0.017026895666722757,"weekly_pct":-3.9764441223881426,"n_samples":1061,"significant":true},{"region":"Atyrau","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":212,"significant":false},{"region":"Atyrau","lineage":"L2_Beijing","is_reference":false,"beta":0.0024990096062669936,"se":0.01246933624467865,"weekly_pct":0.2502134733471852,"n_samples":212,"significant":false},{"region":"Atyrau","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.09675650656097701,"se":0.013117297920536456,"weekly_pct":10.159211051079351,"n_samples":212,"significant":true},{"region":"Atyrau","lineage":"L3_CAS","is_reference":false,"beta":-0.07894178363659313,"se":0.01235314862884147,"weekly_pct":-7.590627974498622,"n_samples":212,"significant":true},{"region":"Karaganda","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":453,"significant":false},{"region":"Karaganda","lineage":"L2_Beijing","is_reference":false,"beta":-0.0011101427108643057,"se":0.013242622705693182,"weekly_pct":-0.110952673040822,"n_samples":453,"significant":false},{"region":"Karaganda","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.10766725509807426,"se":0.01177540350256129,"weekly_pct":11.36771133450692,"n_samples":453,"significant":true},{"region":"Karaganda","lineage":"L3_CAS","is_reference":false,"beta":-0.061788528441563025,"se":0.016228643977385448,"weekly_pct":-5.991833369272688,"n_samples":453,"significant":true},{"region":"Kostanay","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":277,"significant":false},{"region":"Kostanay","lineage":"L2_Beijing","is_reference":false,"beta":0.003064441550064203,"se":0.013965542388150167,"weekly_pct":0.30691417510084484,"n_samples":277,"significant":false},{"region":"Kostanay","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.06767864323490114,"se":0.013850329125903227,"weekly_pct":7.00213946082517,"n_samples":277,"significant":true},{"region":"Kostanay","lineage":"L3_CAS","is_reference":false,"beta":-0.03342330713402945,"se":0.016189309482388108,"weekly_pct":-3.2870919711821447,"n_samples":277,"significant":true},{"region":"Pavlodar","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":218,"significant":false},{"region":"Pavlodar","lineage":"L2_Beijing","is_reference":false,"beta":0.027848302719893515,"se":0.014047368577734008,"weekly_pct":2.8239691425380817,"n_samples":218,"significant":true},{"region":"Pavlodar","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.057413921663801736,"se":0.013064615293604892,"weekly_pct":5.909410167280199,"n_samples":218,"significant":true},{"region":"Pavlodar","lineage":"L3_CAS","is_reference":false,"beta":-0.0418525483538645,"se":0.014139783159903533,"weekly_pct":-4.0988822075560485,"n_samples":218,"significant":true},{"region":"Shymkent","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":780,"significant":false},{"region":"Shymkent","lineage":"L2_Beijing","is_reference":false,"beta":-0.0024405013360937157,"se":0.010121267966596298,"weekly_pct":-0.24375257338539463,"n_samples":780,"significant":false},{"region":"Shymkent","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.12099178371627312,"se":0.009370305440411108,"weekly_pct":12.861563930293784,"n_samples":780,"significant":true},{"region":"Shymkent","lineage":"L3_CAS","is_reference":false,"beta":-0.074880260946177,"se":0.015206917252666353,"weekly_pct":-7.214541989320446,"n_samples":780,"significant":true}],"recovery":[{"lineage":"L4_Euro_American","true_beta":0.0,"mean_estimated_beta":0.0,"sd_across_regions":0.0},{"lineage":"L2_Beijing","true_beta":0.02,"mean_estimated_beta":0.007278964391062011,"sd_across_regions":0.014302891747795329},{"lineage":"L2_Beijing_MDR","true_beta":0.11,"mean_estimated_beta":0.0888403334471938,"sd_across_regions":0.02706277713122403},{"lineage":"L3_CAS","true_beta":-0.03,"mean_estimated_beta":-0.0569332996252018,"sd_across_regions":0.015795575513630054}],"tau":0.0322613281895427,"examples":[{"isolate_id":"SYN-000708","lineage":"L2_Beijing","country":"KZ","collection_date":"2024-11-11","submission_date":"2025-02-03","mutations":["eis_g-10a","gyrA_D94H","gyrA_S95T","inhA_S94A","katG_S315N","rpoB_S450L","rrs_a1484g"],"n_resistant":8,"n_no_call":0,"drugs":[{"drug":"RIF","drug_name":"Rifampicin","decision":"resistant","probability":0.07,"source":"catalogue","explanation":"rpoB_S450L — WHO catalogue, group 1: rpoB RRDR — rifampicin resistance","ood":false,"phenotype":1},{"drug":"RFB","drug_name":"Rifabutin","decision":"resistant","probability":0.539,"source":"catalogue","explanation":"rpoB_S450L — WHO catalogue, group 1: cross-resistance with rifampicin","ood":false,"phenotype":0},{"drug":"INH","drug_name":"Isoniazid","decision":"resistant","probability":0.932,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: inhA target","ood":false,"phenotype":1},{"drug":"EMB","drug_name":"Ethambutol","decision":"susceptible","probability":0.068,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.62), rpoB_S450L (+0.28), eis_g-10a (+0.22)","ood":false,"phenotype":0},{"drug":"LEV","drug_name":"Levofloxacin","decision":"resistant","probability":0.286,"source":"catalogue","explanation":"gyrA_D94H — WHO catalogue, group 1: gyrA QRDR — fluoroquinolone resistance","ood":false,"phenotype":0},{"drug":"MXF","drug_name":"Moxifloxacin","decision":"resistant","probability":0.656,"source":"catalogue","explanation":"gyrA_D94H — WHO catalogue, group 1: gyrA QRDR — fluoroquinolone resistance","ood":false,"phenotype":0},{"drug":"BDQ","drug_name":"Bedaquiline","decision":"susceptible","probability":0.053,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.23), inhA_S94A (+0.11), gyrA_S95T (-0.04)","ood":false,"phenotype":null},{"drug":"LZD","drug_name":"Linezolid","decision":"susceptible","probability":0.045,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.32), rrs_a1484g (+0.19), eis_g-10a (-0.09)","ood":false,"phenotype":0},{"drug":"CFZ","drug_name":"Clofazimine","decision":"susceptible","probability":0.0,"source":"model","explanation":"model, feature contributions: gyrA_D94H (-0.14), eis_g-10a (-0.01)","ood":false,"phenotype":null},{"drug":"DLM","drug_name":"Delamanid","decision":"susceptible","probability":0.0,"source":"model","explanation":"model, feature contributions: inhA_S94A (-0.14)","ood":false,"phenotype":0},{"drug":"AMI","drug_name":"Amikacin","decision":"resistant","probability":0.654,"source":"catalogue","explanation":"rrs_a1484g — WHO catalogue, group 1: 16S rRNA","ood":false,"phenotype":null},{"drug":"KAN","drug_name":"Kanamycin","decision":"resistant","probability":0.949,"source":"catalogue","explanation":"rrs_a1484g — WHO catalogue, group 1: 16S rRNA","ood":false,"phenotype":1},{"drug":"ETH","drug_name":"Ethionamide","decision":"resistant","probability":0.556,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: shared target with isoniazid","ood":false,"phenotype":1}]},{"isolate_id":"SYN-001314","lineage":"L2_Beijing","country":"ZA","collection_date":"2024-11-10","submission_date":"2024-11-30","mutations":["inhA_S94A","katG_S315T","rpoB_I491F","rpoB_S488A","rrs_c1402t","whiB7_c-73t"],"n_resistant":2,"n_no_call":4,"drugs":[{"drug":"RIF","drug_name":"Rifampicin","decision":"no_call","probability":0.444,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.44)","ood":false,"phenotype":0},{"drug":"RFB","drug_name":"Rifabutin","decision":"no_call","probability":0.5,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.50)","ood":false,"phenotype":null},{"drug":"INH","drug_name":"Isoniazid","decision":"resistant","probability":0.932,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: inhA target","ood":false,"phenotype":1},{"drug":"EMB","drug_name":"Ethambutol","decision":"susceptible","probability":0.067,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.73), rpoB_S488A (+0.19), whiB7_c-73t (+0.14)","ood":false,"phenotype":0},{"drug":"LEV","drug_name":"Levofloxacin","decision":"susceptible","probability":0.036,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.48), rpoB_I491F (-0.08), rpoB_S488A (-0.05)","ood":false,"phenotype":null},{"drug":"MXF","drug_name":"Moxifloxacin","decision":"susceptible","probability":0.055,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.69), katG_S315T (-0.05), rrs_c1402t (+0.03)","ood":false,"phenotype":null},{"drug":"BDQ","drug_name":"Bedaquiline","decision":"susceptible","probability":0.065,"source":"model","explanation":"model, feature contributions: inhA_S94A (+0.24), cat_min_group (-0.15), rrs_c1402t (+0.00)","ood":false,"phenotype":null},{"drug":"LZD","drug_name":"Linezolid","decision":"susceptible","probability":0.035,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.60), rpoB_I491F (-0.04), inhA_S94A (+0.03)","ood":false,"phenotype":0},{"drug":"CFZ","drug_name":"Clofazimine","decision":"susceptible","probability":0.047,"source":"model","explanation":"model, feature contributions: rrs_c1402t (-0.05), inhA_S94A (-0.04), rpoB_S488A (-0.03)","ood":false,"phenotype":0},{"drug":"DLM","drug_name":"Delamanid","decision":"susceptible","probability":0.0,"source":"model","explanation":"model, feature contributions: inhA_S94A (-0.37)","ood":false,"phenotype":null},{"drug":"AMI","drug_name":"Amikacin","decision":"no_call","probability":0.5,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.50)","ood":false,"phenotype":1},{"drug":"KAN","drug_name":"Kanamycin","decision":"no_call","probability":0.535,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.54)","ood":false,"phenotype":0},{"drug":"ETH","drug_name":"Ethionamide","decision":"resistant","probability":0.857,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: shared target with isoniazid","ood":false,"phenotype":1}]},{"isolate_id":"SYN-005671","lineage":"L2_Beijing","country":"UZ","collection_date":"2023-09-21","submission_date":"2023-11-05","mutations":["embA_c-16g","ethR_LoF","rpoB_I491F","rpoB_S488A"],"n_resistant":0,"n_no_call":4,"drugs":[{"drug":"RIF","drug_name":"Rifampicin","decision":"no_call","probability":0.444,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.44)","ood":false,"phenotype":1},{"drug":"RFB","drug_name":"Rifabutin","decision":"no_call","probability":0.539,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.54)","ood":false,"phenotype":0},{"drug":"INH","drug_name":"Isoniazid","decision":"susceptible","probability":0.019,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.88), embA_c-16g (-0.26), rpoB_S488A (+0.05)","ood":false,"phenotype":0},{"drug":"EMB","drug_name":"Ethambutol","decision":"no_call","probability":0.167,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.17)","ood":false,"phenotype":0},{"drug":"LEV","drug_name":"Levofloxacin","decision":"susceptible","probability":0.036,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.64), ethR_LoF (-0.27), rpoB_S488A (-0.01)","ood":false,"phenotype":0},{"drug":"MXF","drug_name":"Moxifloxacin","decision":"susceptible","probability":0.055,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.65), ethR_LoF (-0.05), rpoB_S488A (-0.03)","ood":false,"phenotype":0},{"drug":"BDQ","drug_name":"Bedaquiline","decision":"susceptible","probability":0.045,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.51), embA_c-16g (-0.07), rpoB_I491F (-0.04)","ood":false,"phenotype":null},{"drug":"LZD","drug_name":"Linezolid","decision":"susceptible","probability":0.037,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.49), rpoB_I491F (-0.16), ethR_LoF (+0.15)","ood":false,"phenotype":0},{"drug":"CFZ","drug_name":"Clofazimine","decision":"susceptible","probability":0.047,"source":"model","explanation":"model, feature contributions: rpoB_S488A (+0.35), ethR_LoF (-0.02)","ood":false,"phenotype":0},{"drug":"DLM","drug_name":"Delamanid","decision":"susceptible","probability":0.059,"source":"model","explanation":"model, feature contributions: embA_c-16g (-0.12), ethR_LoF (-0.03), rpoB_S488A (+0.02)","ood":false,"phenotype":null},{"drug":"AMI","drug_name":"Amikacin","decision":"susceptible","probability":0.038,"source":"model","explanation":"model, feature contributions: ethR_LoF (-0.20), rpoB_S488A (+0.01), rpoB_I491F (+0.01)","ood":false,"phenotype":0},{"drug":"KAN","drug_name":"Kanamycin","decision":"susceptible","probability":0.012,"source":"model","explanation":"model, feature contributions: embA_c-16g (-0.31), rpoB_S488A (+0.03), ethR_LoF (+0.01)","ood":false,"phenotype":0},{"drug":"ETH","drug_name":"Ethionamide","decision":"no_call","probability":0.556,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.56)","ood":false,"phenotype":0}]}]}};</script>
+<script>window.__GV_STATIC__ = {"status":{"formats":[{"kind":"mutations","title":"Mutation table","ext":".csv, .tsv, .txt","shape":"columns id, gene, mutation","model":"GV-Resist","result":"drug resistance across 13 drugs"},{"kind":"vcf","title":"Called variants","ext":".vcf, .vcf.gz (unpacked)","shape":"standard VCF, ideally snpEff-annotated (ANN=)","model":"GV-Resist","result":"drug resistance across 13 drugs"},{"kind":"tbprofiler","title":"TB-Profiler report","ext":".json","shape":"dr_variants or variants field","model":"GV-Resist","result":"drug resistance across 13 drugs"},{"kind":"protein_fasta","title":"Protein sequences","ext":".fasta, .fa, .faa","shape":"several sequences of one protein","model":"GV-Escape","result":"substitutions ranked by evolutionary risk"},{"kind":"gene_fasta","title":"Gene sequences","ext":".fasta, .fa, .fna","shape":"coding sequence, length divisible by 3","model":"GV-Escape","result":"translation, then the same risk ranking"},{"kind":"lineage_counts","title":"Surveillance lineage counts","ext":".csv, .tsv","shape":"columns region, week, lineage, count","model":"GV-Growth","result":"growth advantage and share forecast"}],"models_loaded":true,"models_error":"","models_info":"","models_synthetic":true,"max_file_mb":0},"surveillance":{"available":true,"meta":{"generated_at":"2026-09-05 22:52:16","elapsed_sec":67.3,"source":"synthetic","synthetic":true,"warning":"SYNTHETIC DATA. These metrics show that the pipeline is correct, not that the model is clinically good. Hypothesis H1 requires the CRyPTIC dataset.","catalogue_size":82,"n_isolates":6000,"n_clusters":1693,"n_countries":10,"n_variants":68,"date_min":"2015-01-23","date_max":"2025-04-22","split":{"train":3899,"test":1203,"calib":898},"split_meta":{"n_clusters":1693,"train_last_date":"2022-04-04","test_first_date":"2022-07-30","actual_test_size":0.2005,"date_semantics":"submission_date","note":"boundaries are shifted away from round calendar dates because the indivisible unit is a relatedness cluster, not an isolate"}},"kpi":{"mdr_kz":0.242914979757085,"mdr_kz_n":494,"rif_sens_external":0.8709677419354839,"answer_rate":0.9703200000000001,"closed":0.8806846153846153,"n_needs_confirmation":13,"n_drugs":13,"top_growth":{"region":"Shymkent","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.12099178371627312,"se":0.009370305440411108,"weekly_pct":12.861563930293784,"n_samples":780,"significant":true},"ece_rif":0.03340054404339478},"external":[{"drug":"RIF","name":"Rifampicin","n":466,"pos":217,"sens":[0.871,0.825,0.912],"spec":[0.667,0.598,0.717],"base_sens":0.737,"h1":false},{"drug":"RFB","name":"Rifabutin","n":406,"pos":151,"sens":[0.868,0.815,0.921],"spec":[0.824,0.78,0.871],"base_sens":0.746,"h1":null},{"drug":"INH","name":"Isoniazid","n":487,"pos":246,"sens":[0.874,0.833,0.913],"spec":[0.734,0.676,0.793],"base_sens":0.709,"h1":false},{"drug":"EMB","name":"Ethambutol","n":441,"pos":123,"sens":[0.837,0.772,0.894],"spec":[0.987,0.975,0.997],"base_sens":0.741,"h1":null},{"drug":"LEV","name":"Levofloxacin","n":440,"pos":111,"sens":[0.694,0.604,0.77],"spec":[0.79,0.743,0.836],"base_sens":0.655,"h1":null},{"drug":"MXF","name":"Moxifloxacin","n":419,"pos":97,"sens":[0.835,0.763,0.907],"spec":[0.783,0.741,0.825],"base_sens":0.686,"h1":null},{"drug":"BDQ","name":"Bedaquiline","n":342,"pos":23,"sens":[0.391,0.174,0.565],"spec":[0.972,0.954,0.987],"base_sens":0.36,"h1":null},{"drug":"LZD","name":"Linezolid","n":384,"pos":27,"sens":[0.481,0.259,0.667],"spec":[0.992,0.98,1.0],"base_sens":0.419,"h1":null},{"drug":"CFZ","name":"Clofazimine","n":350,"pos":22,"sens":[0.5,0.273,0.727],"spec":[0.994,0.985,1.0],"base_sens":0.458,"h1":null},{"drug":"DLM","name":"Delamanid","n":316,"pos":19,"sens":[0.263,0.078,0.474],"spec":[1.0,1.0,1.0],"base_sens":0.263,"h1":null},{"drug":"AMI","name":"Amikacin","n":429,"pos":65,"sens":[0.677,0.569,0.8],"spec":[0.934,0.909,0.959],"base_sens":0.647,"h1":null},{"drug":"KAN","name":"Kanamycin","n":418,"pos":80,"sens":[0.762,0.662,0.85],"spec":[0.867,0.828,0.902],"base_sens":0.7,"h1":null},{"drug":"ETH","name":"Ethionamide","n":432,"pos":139,"sens":[0.871,0.809,0.921],"spec":[0.857,0.816,0.894],"base_sens":0.705,"h1":null}],"internal":[{"drug":"RIF","name":"Rifampicin","n":1161,"pos":319,"sens":[0.774,0.729,0.815],"spec":[0.842,0.816,0.866],"pr_auc":0.75,"base_sens":0.679,"answer_rate":0.981,"closed":0.8081,"missed":0.2182,"needs_confirmation":true,"ece":0.033,"by_catalogue":351,"by_model":832,"no_call":22},{"drug":"RFB","name":"Rifabutin","n":988,"pos":217,"sens":[0.756,0.696,0.806],"spec":[0.903,0.883,0.924],"pr_auc":0.633,"base_sens":0.613,"answer_rate":0.93,"closed":0.8098,"missed":0.207,"needs_confirmation":true,"ece":0.031,"by_catalogue":229,"by_model":833,"no_call":74},{"drug":"INH","name":"Isoniazid","n":1133,"pos":349,"sens":[0.822,0.781,0.862],"spec":[0.876,0.853,0.899],"pr_auc":0.78,"base_sens":0.663,"answer_rate":0.959,"closed":0.8247,"missed":0.1645,"needs_confirmation":true,"ece":0.026,"by_catalogue":333,"by_model":848,"no_call":48},{"drug":"EMB","name":"Ethambutol","n":1096,"pos":197,"sens":[0.756,0.695,0.812],"spec":[0.99,0.983,0.997],"pr_auc":0.785,"base_sens":0.673,"answer_rate":0.966,"closed":0.9154,"missed":0.2182,"needs_confirmation":true,"ece":0.019,"by_catalogue":156,"by_model":979,"no_call":39},{"drug":"LEV","name":"Levofloxacin","n":1108,"pos":157,"sens":[0.548,0.471,0.618],"spec":[0.906,0.887,0.922],"pr_auc":0.435,"base_sens":0.541,"answer_rate":0.994,"closed":0.8502,"missed":0.4465,"needs_confirmation":true,"ece":0.027,"by_catalogue":175,"by_model":940,"no_call":7},{"drug":"MXF","name":"Moxifloxacin","n":1040,"pos":132,"sens":[0.735,0.667,0.811],"spec":[0.913,0.892,0.932],"pr_auc":0.446,"base_sens":0.642,"answer_rate":0.952,"closed":0.8472,"missed":0.2318,"needs_confirmation":true,"ece":0.028,"by_catalogue":176,"by_model":917,"no_call":53},{"drug":"BDQ","name":"Bedaquiline","n":860,"pos":56,"sens":[0.446,0.312,0.581],"spec":[0.966,0.952,0.978],"pr_auc":0.398,"base_sens":0.446,"answer_rate":1.0,"closed":0.9326,"missed":0.5536,"needs_confirmation":true,"ece":0.017,"by_catalogue":52,"by_model":808,"no_call":0},{"drug":"LZD","name":"Linezolid","n":920,"pos":55,"sens":[0.327,0.218,0.455],"spec":[0.998,0.994,1.0],"pr_auc":0.366,"base_sens":0.327,"answer_rate":1.0,"closed":0.9576,"missed":0.6727,"needs_confirmation":true,"ece":0.007,"by_catalogue":20,"by_model":900,"no_call":0},{"drug":"CFZ","name":"Clofazimine","n":857,"pos":46,"sens":[0.391,0.249,0.522],"spec":[0.99,0.984,0.996],"pr_auc":0.305,"base_sens":0.333,"answer_rate":0.978,"closed":0.9372,"missed":0.5185,"needs_confirmation":true,"ece":0.011,"by_catalogue":26,"by_model":850,"no_call":19},{"drug":"DLM","name":"Delamanid","n":670,"pos":39,"sens":[0.436,0.282,0.59],"spec":[1.0,1.0,1.0],"pr_auc":0.084,"base_sens":0.425,"answer_rate":0.929,"closed":0.8988,"missed":0.55,"needs_confirmation":true,"ece":0.023,"by_catalogue":17,"by_model":704,"no_call":51},{"drug":"AMI","name":"Amikacin","n":1005,"pos":83,"sens":[0.578,0.47,0.675],"spec":[0.966,0.956,0.977],"pr_auc":0.395,"base_sens":0.5,"answer_rate":0.963,"closed":0.8994,"missed":0.3646,"needs_confirmation":true,"ece":0.009,"by_catalogue":79,"by_model":965,"no_call":39},{"drug":"KAN","name":"Kanamycin","n":955,"pos":111,"sens":[0.676,0.59,0.757],"spec":[0.932,0.915,0.948],"pr_auc":0.563,"base_sens":0.589,"answer_rate":0.975,"closed":0.8796,"missed":0.2903,"needs_confirmation":true,"ece":0.031,"by_catalogue":130,"by_model":850,"no_call":25},{"drug":"ETH","name":"Ethionamide","n":1009,"pos":171,"sens":[0.825,0.766,0.877],"spec":[0.914,0.895,0.93],"pr_auc":0.723,"base_sens":0.687,"answer_rate":0.988,"closed":0.8883,"missed":0.1676,"needs_confirmation":true,"ece":0.018,"by_catalogue":180,"by_model":841,"no_call":12}],"tradeoff":[{"alpha":0.02,"answer_rate":0.3364327979712595,"accuracy":0.6658291457286433,"sensitivity":0.9739130434782609,"specificity":0.24404761904761904,"n_answered":398},{"alpha":0.05,"answer_rate":0.9137785291631445,"accuracy":0.8353376503237743,"sensitivity":0.8152173913043478,"specificity":0.8422360248447205,"n_answered":1081},{"alpha":0.1,"answer_rate":0.981403212172443,"accuracy":0.8234280792420328,"sensitivity":0.774294670846395,"specificity":0.8420427553444181,"n_answered":1161},{"alpha":0.15,"answer_rate":1.0,"accuracy":0.8174133558748944,"sensitivity":0.7484848484848485,"specificity":0.8440797186400938,"n_answered":1183},{"alpha":0.2,"answer_rate":0.981403212172443,"accuracy":0.8234280792420328,"sensitivity":0.774294670846395,"specificity":0.8420427553444181,"n_answered":1161},{"alpha":0.3,"answer_rate":0.9095519864750634,"accuracy":0.8364312267657993,"sensitivity":0.8205128205128205,"specificity":0.8418430884184309,"n_answered":1076}],"ablations":[{"config":"WHO catalogue only (baseline)","sensitivity":0.6787878787878788,"specificity":0.8511137162954279,"pr_auc":0.5227892715072202,"abstention_rate":0.0},{"config":"mutations, no catalogue features","sensitivity":0.8804347826086957,"specificity":0.686777920410783,"pr_auc":0.768265881977928,"abstention_rate":0.10819949281487742},{"config":"+ catalogue features","sensitivity":0.8653061224489796,"specificity":0.7328767123287672,"pr_auc":0.7805903069783392,"abstention_rate":0.17582417582417584},{"config":"+ per-gene burden","sensitivity":0.8653061224489796,"specificity":0.7328767123287672,"pr_auc":0.7773974869056004,"abstention_rate":0.17582417582417584},{"config":"+ variants outside target genes","sensitivity":0.6338028169014085,"specificity":0.9528061224489796,"pr_auc":0.7674150341206878,"abstention_rate":0.09721048182586645},{"config":"full model (+ rule tier)","sensitivity":0.774294670846395,"specificity":0.8420427553444181,"pr_auc":0.7503114281273497,"abstention_rate":0.018596787827557058},{"config":"... plus lineage context (hurts)","sensitivity":0.7767295597484277,"specificity":0.8418549346016647,"pr_auc":0.7577597443506809,"abstention_rate":0.02028740490278952}],"countries":[{"country":"KZ","n":512,"RIF_rate":0.4701195219123506,"RIF_n":502,"INH_rate":0.5119047619047619,"INH_n":504,"mdr_rate":0.242914979757085,"mdr_n":494,"label":"Kazakhstan"},{"country":"RU","n":599,"RIF_rate":0.4074074074074074,"RIF_n":594,"INH_rate":0.5085324232081911,"INH_n":586,"mdr_rate":0.2306368330464716,"mdr_n":581,"label":"Russia"},{"country":"UZ","n":266,"RIF_rate":0.42911877394636017,"RIF_n":261,"INH_rate":0.5,"INH_n":260,"mdr_rate":0.22745098039215686,"mdr_n":255,"label":"Uzbekistan"},{"country":"ZA","n":786,"RIF_rate":0.24805194805194805,"RIF_n":770,"INH_rate":0.31537450722733246,"INH_n":761,"mdr_rate":0.08322147651006712,"mdr_n":745,"label":"South Africa"},{"country":"IN","n":1104,"RIF_rate":0.25092250922509224,"RIF_n":1084,"INH_rate":0.3081180811808118,"INH_n":1084,"mdr_rate":0.07894736842105263,"mdr_n":1064,"label":"India"},{"country":"CN","n":660,"RIF_rate":0.2406832298136646,"RIF_n":644,"INH_rate":0.2801857585139319,"INH_n":646,"mdr_rate":0.06666666666666667,"mdr_n":630,"label":"China"},{"country":"BR","n":534,"RIF_rate":0.18199233716475097,"RIF_n":522,"INH_rate":0.23091603053435114,"INH_n":524,"mdr_rate":0.04483430799220273,"mdr_n":513,"label":"Brazil"},{"country":"PE","n":612,"RIF_rate":0.20930232558139536,"RIF_n":602,"INH_rate":0.24958402662229617,"INH_n":601,"mdr_rate":0.043993231810490696,"mdr_n":591,"label":"Peru"},{"country":"DE","n":372,"RIF_rate":0.10054347826086957,"RIF_n":368,"INH_rate":0.1448087431693989,"INH_n":366,"mdr_rate":0.024861878453038673,"mdr_n":362,"label":"Germany"},{"country":"GB","n":555,"RIF_rate":0.11009174311926606,"RIF_n":545,"INH_rate":0.1270718232044199,"INH_n":543,"mdr_rate":0.013133208255159476,"mdr_n":533,"label":"United Kingdom"}],"lineages":[{"key":"L4_Euro_American","label":"L4 Euro-American"},{"key":"L2_Beijing","label":"L2 Beijing"},{"key":"L2_Beijing_MDR","label":"L2 Beijing (MDR)"},{"key":"L3_CAS","label":"L3 CAS"}],"observed":[{"week":0,"fracs":[0.1847,0.2293,0.2229,0.3631],"total":157},{"week":1,"fracs":[0.1958,0.3007,0.3217,0.1818],"total":143},{"week":2,"fracs":[0.203,0.1955,0.3158,0.2857],"total":133},{"week":3,"fracs":[0.2051,0.2051,0.3462,0.2436],"total":156},{"week":4,"fracs":[0.142,0.2346,0.3457,0.2778],"total":162},{"week":5,"fracs":[0.1419,0.2703,0.3851,0.2027],"total":148},{"week":6,"fracs":[0.1544,0.255,0.4228,0.1678],"total":149},{"week":7,"fracs":[0.1589,0.2583,0.3907,0.1921],"total":151},{"week":8,"fracs":[0.1375,0.2375,0.4688,0.1562],"total":160},{"week":9,"fracs":[0.1235,0.2222,0.5247,0.1296],"total":162},{"week":10,"fracs":[0.1183,0.2249,0.5325,0.1243],"total":169},{"week":11,"fracs":[0.1026,0.2244,0.5385,0.1346],"total":156},{"week":12,"fracs":[0.1757,0.1757,0.5135,0.1351],"total":148},{"week":13,"fracs":[0.1567,0.1343,0.6194,0.0896],"total":134},{"week":14,"fracs":[0.1228,0.193,0.6199,0.0643],"total":171},{"week":15,"fracs":[0.1439,0.1655,0.6331,0.0576],"total":139},{"week":16,"fracs":[0.0938,0.15,0.7312,0.025],"total":160},{"week":17,"fracs":[0.058,0.1594,0.7536,0.029],"total":138},{"week":18,"fracs":[0.1022,0.146,0.6569,0.0949],"total":137},{"week":19,"fracs":[0.1117,0.1006,0.7151,0.0726],"total":179},{"week":20,"fracs":[0.076,0.1579,0.7485,0.0175],"total":171},{"week":21,"fracs":[0.0671,0.1275,0.7785,0.0268],"total":149},{"week":22,"fracs":[0.0657,0.1533,0.7372,0.0438],"total":137},{"week":23,"fracs":[0.0738,0.1544,0.7584,0.0134],"total":149},{"week":24,"fracs":[0.0651,0.1243,0.7811,0.0296],"total":169},{"week":25,"fracs":[0.0655,0.0893,0.8036,0.0417],"total":168},{"week":26,"fracs":[0.0347,0.1389,0.8125,0.0139],"total":144},{"week":27,"fracs":[0.0671,0.1341,0.7805,0.0183],"total":164},{"week":28,"fracs":[0.0345,0.1241,0.8207,0.0207],"total":145},{"week":29,"fracs":[0.0345,0.1034,0.8362,0.0259],"total":116}],"forecasts":{"Aktobe":{"horizons":[0,2,4,8],"point":[[0.1121,0.5626,0.2956,0.0297],[0.1058,0.5639,0.3053,0.025],[0.0997,0.5644,0.3148,0.0211],[0.0883,0.5633,0.3335,0.0149]],"lo":[[0.1121,0.3824,0.1423,0.0138],[0.1058,0.3718,0.1401,0.011],[0.0997,0.3606,0.1378,0.0087],[0.0883,0.3368,0.1328,0.0055]],"hi":[[0.1121,0.7276,0.5149,0.0628],[0.1058,0.7385,0.5423,0.0561],[0.0997,0.7485,0.5691,0.05],[0.0883,0.7662,0.6205,0.0395]],"n_samples":377},"Almaty":{"horizons":[0,2,4,8],"point":[[0.0488,0.0606,0.8757,0.0149],[0.0413,0.0526,0.8951,0.011],[0.0348,0.0454,0.9117,0.0081],[0.0245,0.0336,0.9375,0.0043]],"lo":[[0.0488,0.0327,0.8027,0.007],[0.0413,0.0271,0.826,0.0049],[0.0348,0.0223,0.8467,0.0034],[0.0245,0.015,0.8816,0.0016]],"hi":[[0.0488,0.1095,0.9242,0.0315],[0.0413,0.0996,0.9388,0.0246],[0.0348,0.0903,0.9507,0.0192],[0.0245,0.0735,0.968,0.0115]],"n_samples":1186},"Astana":{"horizons":[0,2,4,8],"point":[[0.0192,0.01,0.9652,0.0056],[0.0152,0.0077,0.973,0.0041],[0.012,0.0059,0.9791,0.003],[0.0075,0.0035,0.9875,0.0016]],"lo":[[0.0192,0.0045,0.9382,0.0021],[0.0152,0.0032,0.9498,0.0015],[0.012,0.0024,0.9593,0.001],[0.0075,0.0012,0.9733,0.0005]],"hi":[[0.0192,0.0223,0.9807,0.0146],[0.0152,0.0181,0.9857,0.0114],[0.012,0.0148,0.9894,0.0089],[0.0075,0.0097,0.9942,0.0054]],"n_samples":1061},"Atyrau":{"horizons":[0,2,4,8],"point":[[0.0527,0.0878,0.8565,0.003],[0.0445,0.0746,0.8787,0.0022],[0.0375,0.0631,0.8978,0.0016],[0.0263,0.0447,0.9281,0.0008]],"lo":[[0.0527,0.0452,0.7391,0.0015],[0.0445,0.0364,0.7655,0.001],[0.0375,0.0292,0.79,0.0007],[0.0263,0.0186,0.833,0.0003]],"hi":[[0.0527,0.1635,0.9264,0.0061],[0.0445,0.1467,0.9414,0.0046],[0.0375,0.1311,0.9535,0.0035],[0.0263,0.1037,0.971,0.002]],"n_samples":212},"Karaganda":{"horizons":[0,2,4,8],"point":[[0.0121,0.0201,0.9603,0.0076],[0.0098,0.0163,0.9684,0.0054],[0.008,0.0132,0.9749,0.0039],[0.0052,0.0086,0.9841,0.002]],"lo":[[0.0121,0.0096,0.9252,0.003],[0.0098,0.0074,0.9375,0.002],[0.008,0.0056,0.9478,0.0014],[0.0052,0.0033,0.9635,0.0006]],"hi":[[0.0121,0.0417,0.9793,0.0188],[0.0098,0.0357,0.9843,0.0144],[0.008,0.0305,0.9881,0.0111],[0.0052,0.0222,0.9932,0.0065]],"n_samples":453},"Kostanay":{"horizons":[0,2,4,8],"point":[[0.0842,0.1289,0.7345,0.0524],[0.0763,0.1175,0.7619,0.0444],[0.0688,0.1067,0.7871,0.0374],[0.0554,0.087,0.8312,0.0264]],"lo":[[0.0842,0.0627,0.5574,0.0215],[0.0763,0.0539,0.5797,0.0171],[0.0688,0.0462,0.6014,0.0135],[0.0554,0.0335,0.6433,0.0083]],"hi":[[0.0842,0.2466,0.8588,0.1218],[0.0763,0.2373,0.8813,0.1104],[0.0688,0.2276,0.9005,0.0998],[0.0554,0.2078,0.9308,0.0806]],"n_samples":277},"Pavlodar":{"horizons":[0,2,4,8],"point":[[0.0536,0.4212,0.5018,0.0235],[0.0494,0.411,0.5196,0.0199],[0.0456,0.4005,0.5371,0.0169],[0.0385,0.3783,0.5711,0.0121]],"lo":[[0.0536,0.2467,0.324,0.0106],[0.0494,0.2291,0.3284,0.0085],[0.0456,0.2121,0.3326,0.0068],[0.0385,0.1801,0.3405,0.0044]],"hi":[[0.0536,0.6178,0.6792,0.0509],[0.0494,0.621,0.7052,0.0458],[0.0456,0.6236,0.7298,0.0411],[0.0385,0.6276,0.7745,0.0329]],"n_samples":218},"Shymkent":{"horizons":[0,2,4,8],"point":[[0.0234,0.043,0.9287,0.0049],[0.0187,0.0341,0.9438,0.0034],[0.0149,0.027,0.9558,0.0023],[0.0093,0.0168,0.9728,0.0011]],"lo":[[0.0234,0.0246,0.8843,0.0021],[0.0187,0.0187,0.9048,0.0013],[0.0149,0.0142,0.9219,0.0009],[0.0093,0.0081,0.9478,0.0004]],"hi":[[0.0234,0.0739,0.9569,0.0116],[0.0187,0.0613,0.9674,0.0084],[0.0149,0.0507,0.9754,0.0061],[0.0093,0.0343,0.986,0.0032]],"n_samples":780}},"growth_table":[{"region":"Aktobe","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":377,"significant":false},{"region":"Aktobe","lineage":"L2_Beijing","is_reference":false,"beta":0.03005241446669778,"se":0.012857960069453288,"weekly_pct":3.0508546093866737,"n_samples":377,"significant":true},{"region":"Aktobe","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.04495202807616399,"se":0.016325653532641777,"weekly_pct":4.597768114348663,"n_samples":377,"significant":true},{"region":"Aktobe","lineage":"L3_CAS","is_reference":false,"beta":-0.05621822048144269,"se":0.01380652534526471,"weekly_pct":-5.4667177603326955,"n_samples":377,"significant":true},{"region":"Almaty","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":1186,"significant":false},{"region":"Almaty","lineage":"L2_Beijing","is_reference":false,"beta":0.012529475820599182,"se":0.01135733983103033,"weekly_pct":1.260829856129514,"n_samples":1186,"significant":false},{"region":"Almaty","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.09458330133113585,"se":0.00965824931242217,"weekly_pct":9.920072420286925,"n_samples":1186,"significant":true},{"region":"Almaty","lineage":"L3_CAS","is_reference":false,"beta":-0.0677850971136041,"se":0.01350647427598467,"weekly_pct":-6.553872957523084,"n_samples":1186,"significant":true},{"region":"Astana","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":1061,"significant":false},{"region":"Astana","lineage":"L2_Beijing","is_reference":false,"beta":-0.014211284988067566,"se":0.014306115812364793,"weekly_pct":-1.411078133620028,"n_samples":1061,"significant":false},{"region":"Astana","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.12067922789622333,"se":0.010628436824606647,"weekly_pct":12.826293903840602,"n_samples":1061,"significant":true},{"region":"Astana","lineage":"L3_CAS","is_reference":false,"beta":-0.0405766508943405,"se":0.017026895666722757,"weekly_pct":-3.9764441223881426,"n_samples":1061,"significant":true},{"region":"Atyrau","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":212,"significant":false},{"region":"Atyrau","lineage":"L2_Beijing","is_reference":false,"beta":0.0024990096062669936,"se":0.01246933624467865,"weekly_pct":0.2502134733471852,"n_samples":212,"significant":false},{"region":"Atyrau","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.09675650656097701,"se":0.013117297920536456,"weekly_pct":10.159211051079351,"n_samples":212,"significant":true},{"region":"Atyrau","lineage":"L3_CAS","is_reference":false,"beta":-0.07894178363659313,"se":0.01235314862884147,"weekly_pct":-7.590627974498622,"n_samples":212,"significant":true},{"region":"Karaganda","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":453,"significant":false},{"region":"Karaganda","lineage":"L2_Beijing","is_reference":false,"beta":-0.0011101427108643057,"se":0.013242622705693182,"weekly_pct":-0.110952673040822,"n_samples":453,"significant":false},{"region":"Karaganda","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.10766725509807426,"se":0.01177540350256129,"weekly_pct":11.36771133450692,"n_samples":453,"significant":true},{"region":"Karaganda","lineage":"L3_CAS","is_reference":false,"beta":-0.061788528441563025,"se":0.016228643977385448,"weekly_pct":-5.991833369272688,"n_samples":453,"significant":true},{"region":"Kostanay","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":277,"significant":false},{"region":"Kostanay","lineage":"L2_Beijing","is_reference":false,"beta":0.003064441550064203,"se":0.013965542388150167,"weekly_pct":0.30691417510084484,"n_samples":277,"significant":false},{"region":"Kostanay","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.06767864323490114,"se":0.013850329125903227,"weekly_pct":7.00213946082517,"n_samples":277,"significant":true},{"region":"Kostanay","lineage":"L3_CAS","is_reference":false,"beta":-0.03342330713402945,"se":0.016189309482388108,"weekly_pct":-3.2870919711821447,"n_samples":277,"significant":true},{"region":"Pavlodar","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":218,"significant":false},{"region":"Pavlodar","lineage":"L2_Beijing","is_reference":false,"beta":0.027848302719893515,"se":0.014047368577734008,"weekly_pct":2.8239691425380817,"n_samples":218,"significant":true},{"region":"Pavlodar","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.057413921663801736,"se":0.013064615293604892,"weekly_pct":5.909410167280199,"n_samples":218,"significant":true},{"region":"Pavlodar","lineage":"L3_CAS","is_reference":false,"beta":-0.0418525483538645,"se":0.014139783159903533,"weekly_pct":-4.0988822075560485,"n_samples":218,"significant":true},{"region":"Shymkent","lineage":"L4_Euro_American","is_reference":true,"beta":0.0,"se":0.0,"weekly_pct":0.0,"n_samples":780,"significant":false},{"region":"Shymkent","lineage":"L2_Beijing","is_reference":false,"beta":-0.0024405013360937157,"se":0.010121267966596298,"weekly_pct":-0.24375257338539463,"n_samples":780,"significant":false},{"region":"Shymkent","lineage":"L2_Beijing_MDR","is_reference":false,"beta":0.12099178371627312,"se":0.009370305440411108,"weekly_pct":12.861563930293784,"n_samples":780,"significant":true},{"region":"Shymkent","lineage":"L3_CAS","is_reference":false,"beta":-0.074880260946177,"se":0.015206917252666353,"weekly_pct":-7.214541989320446,"n_samples":780,"significant":true}],"recovery":[{"lineage":"L4_Euro_American","true_beta":0.0,"mean_estimated_beta":0.0,"sd_across_regions":0.0},{"lineage":"L2_Beijing","true_beta":0.02,"mean_estimated_beta":0.007278964391062011,"sd_across_regions":0.014302891747795329},{"lineage":"L2_Beijing_MDR","true_beta":0.11,"mean_estimated_beta":0.0888403334471938,"sd_across_regions":0.02706277713122403},{"lineage":"L3_CAS","true_beta":-0.03,"mean_estimated_beta":-0.0569332996252018,"sd_across_regions":0.015795575513630054}],"tau":0.0322613281895427,"examples":[{"isolate_id":"SYN-000708","lineage":"L2_Beijing","country":"KZ","collection_date":"2024-11-11","submission_date":"2025-02-03","mutations":["eis_g-10a","gyrA_D94H","gyrA_S95T","inhA_S94A","katG_S315N","rpoB_S450L","rrs_a1484g"],"n_resistant":8,"n_no_call":0,"drugs":[{"drug":"RIF","drug_name":"Rifampicin","decision":"resistant","probability":0.07,"source":"catalogue","explanation":"rpoB_S450L — WHO catalogue, group 1: rpoB RRDR — rifampicin resistance","ood":false,"phenotype":1},{"drug":"RFB","drug_name":"Rifabutin","decision":"resistant","probability":0.539,"source":"catalogue","explanation":"rpoB_S450L — WHO catalogue, group 1: cross-resistance with rifampicin","ood":false,"phenotype":0},{"drug":"INH","drug_name":"Isoniazid","decision":"resistant","probability":0.932,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: inhA target","ood":false,"phenotype":1},{"drug":"EMB","drug_name":"Ethambutol","decision":"susceptible","probability":0.068,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.62), rpoB_S450L (+0.28), eis_g-10a (+0.22)","ood":false,"phenotype":0},{"drug":"LEV","drug_name":"Levofloxacin","decision":"resistant","probability":0.286,"source":"catalogue","explanation":"gyrA_D94H — WHO catalogue, group 1: gyrA QRDR — fluoroquinolone resistance","ood":false,"phenotype":0},{"drug":"MXF","drug_name":"Moxifloxacin","decision":"resistant","probability":0.656,"source":"catalogue","explanation":"gyrA_D94H — WHO catalogue, group 1: gyrA QRDR — fluoroquinolone resistance","ood":false,"phenotype":0},{"drug":"BDQ","drug_name":"Bedaquiline","decision":"susceptible","probability":0.053,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.23), inhA_S94A (+0.11), gyrA_S95T (-0.04)","ood":false,"phenotype":null},{"drug":"LZD","drug_name":"Linezolid","decision":"susceptible","probability":0.045,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.32), rrs_a1484g (+0.19), eis_g-10a (-0.09)","ood":false,"phenotype":0},{"drug":"CFZ","drug_name":"Clofazimine","decision":"susceptible","probability":0.0,"source":"model","explanation":"model, feature contributions: gyrA_D94H (-0.14), eis_g-10a (-0.01)","ood":false,"phenotype":null},{"drug":"DLM","drug_name":"Delamanid","decision":"susceptible","probability":0.0,"source":"model","explanation":"model, feature contributions: inhA_S94A (-0.14)","ood":false,"phenotype":0},{"drug":"AMI","drug_name":"Amikacin","decision":"resistant","probability":0.654,"source":"catalogue","explanation":"rrs_a1484g — WHO catalogue, group 1: 16S rRNA","ood":false,"phenotype":null},{"drug":"KAN","drug_name":"Kanamycin","decision":"resistant","probability":0.949,"source":"catalogue","explanation":"rrs_a1484g — WHO catalogue, group 1: 16S rRNA","ood":false,"phenotype":1},{"drug":"ETH","drug_name":"Ethionamide","decision":"resistant","probability":0.556,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: shared target with isoniazid","ood":false,"phenotype":1}]},{"isolate_id":"SYN-001314","lineage":"L2_Beijing","country":"ZA","collection_date":"2024-11-10","submission_date":"2024-11-30","mutations":["inhA_S94A","katG_S315T","rpoB_I491F","rpoB_S488A","rrs_c1402t","whiB7_c-73t"],"n_resistant":2,"n_no_call":4,"drugs":[{"drug":"RIF","drug_name":"Rifampicin","decision":"no_call","probability":0.444,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.44)","ood":false,"phenotype":0},{"drug":"RFB","drug_name":"Rifabutin","decision":"no_call","probability":0.5,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.50)","ood":false,"phenotype":null},{"drug":"INH","drug_name":"Isoniazid","decision":"resistant","probability":0.932,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: inhA target","ood":false,"phenotype":1},{"drug":"EMB","drug_name":"Ethambutol","decision":"susceptible","probability":0.067,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.73), rpoB_S488A (+0.19), whiB7_c-73t (+0.14)","ood":false,"phenotype":0},{"drug":"LEV","drug_name":"Levofloxacin","decision":"susceptible","probability":0.036,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.48), rpoB_I491F (-0.08), rpoB_S488A (-0.05)","ood":false,"phenotype":null},{"drug":"MXF","drug_name":"Moxifloxacin","decision":"susceptible","probability":0.055,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.69), katG_S315T (-0.05), rrs_c1402t (+0.03)","ood":false,"phenotype":null},{"drug":"BDQ","drug_name":"Bedaquiline","decision":"susceptible","probability":0.065,"source":"model","explanation":"model, feature contributions: inhA_S94A (+0.24), cat_min_group (-0.15), rrs_c1402t (+0.00)","ood":false,"phenotype":null},{"drug":"LZD","drug_name":"Linezolid","decision":"susceptible","probability":0.035,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.60), rpoB_I491F (-0.04), inhA_S94A (+0.03)","ood":false,"phenotype":0},{"drug":"CFZ","drug_name":"Clofazimine","decision":"susceptible","probability":0.047,"source":"model","explanation":"model, feature contributions: rrs_c1402t (-0.05), inhA_S94A (-0.04), rpoB_S488A (-0.03)","ood":false,"phenotype":0},{"drug":"DLM","drug_name":"Delamanid","decision":"susceptible","probability":0.0,"source":"model","explanation":"model, feature contributions: inhA_S94A (-0.37)","ood":false,"phenotype":null},{"drug":"AMI","drug_name":"Amikacin","decision":"no_call","probability":0.5,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.50)","ood":false,"phenotype":1},{"drug":"KAN","drug_name":"Kanamycin","decision":"no_call","probability":0.535,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.54)","ood":false,"phenotype":0},{"drug":"ETH","drug_name":"Ethionamide","decision":"resistant","probability":0.857,"source":"catalogue","explanation":"inhA_S94A — WHO catalogue, group 1: shared target with isoniazid","ood":false,"phenotype":1}]},{"isolate_id":"SYN-005671","lineage":"L2_Beijing","country":"UZ","collection_date":"2023-09-21","submission_date":"2023-11-05","mutations":["embA_c-16g","ethR_LoF","rpoB_I491F","rpoB_S488A"],"n_resistant":0,"n_no_call":4,"drugs":[{"drug":"RIF","drug_name":"Rifampicin","decision":"no_call","probability":0.444,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.44)","ood":false,"phenotype":1},{"drug":"RFB","drug_name":"Rifabutin","decision":"no_call","probability":0.539,"source":"model","explanation":"no call — both hypotheses are compatible with the data at the 90% level (probability 0.54)","ood":false,"phenotype":0},{"drug":"INH","drug_name":"Isoniazid","decision":"susceptible","probability":0.019,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.88), embA_c-16g (-0.26), rpoB_S488A (+0.05)","ood":false,"phenotype":0},{"drug":"EMB","drug_name":"Ethambutol","decision":"no_call","probability":0.167,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.17)","ood":false,"phenotype":0},{"drug":"LEV","drug_name":"Levofloxacin","decision":"susceptible","probability":0.036,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.64), ethR_LoF (-0.27), rpoB_S488A (-0.01)","ood":false,"phenotype":0},{"drug":"MXF","drug_name":"Moxifloxacin","decision":"susceptible","probability":0.055,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.65), ethR_LoF (-0.05), rpoB_S488A (-0.03)","ood":false,"phenotype":0},{"drug":"BDQ","drug_name":"Bedaquiline","decision":"susceptible","probability":0.045,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.51), embA_c-16g (-0.07), rpoB_I491F (-0.04)","ood":false,"phenotype":null},{"drug":"LZD","drug_name":"Linezolid","decision":"susceptible","probability":0.037,"source":"model","explanation":"model, feature contributions: cat_min_group (-0.49), rpoB_I491F (-0.16), ethR_LoF (+0.15)","ood":false,"phenotype":0},{"drug":"CFZ","drug_name":"Clofazimine","decision":"susceptible","probability":0.047,"source":"model","explanation":"model, feature contributions: rpoB_S488A (+0.35), ethR_LoF (-0.02)","ood":false,"phenotype":0},{"drug":"DLM","drug_name":"Delamanid","decision":"susceptible","probability":0.059,"source":"model","explanation":"model, feature contributions: embA_c-16g (-0.12), ethR_LoF (-0.03), rpoB_S488A (+0.02)","ood":false,"phenotype":null},{"drug":"AMI","drug_name":"Amikacin","decision":"susceptible","probability":0.038,"source":"model","explanation":"model, feature contributions: ethR_LoF (-0.20), rpoB_S488A (+0.01), rpoB_I491F (+0.01)","ood":false,"phenotype":0},{"drug":"KAN","drug_name":"Kanamycin","decision":"susceptible","probability":0.012,"source":"model","explanation":"model, feature contributions: embA_c-16g (-0.31), rpoB_S488A (+0.03), ethR_LoF (+0.01)","ood":false,"phenotype":0},{"drug":"ETH","drug_name":"Ethionamide","decision":"no_call","probability":0.556,"source":"model","explanation":"no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.56)","ood":false,"phenotype":0}]}],"escape":{"kind":"protein_fasta","model":"GV-Escape","title":"Evolutionary risk of substitutions","summary":"Reference: rpoB|isolate_0000|2024-01-01 (500 aa) · Sequences: 900, used 900 · Observed substitutions: 444 · Candidates not yet observed: 60 · Period: 2024-01-01 — 2024-09-02","highlights":[{"label":"Sequences used","value":"900"},{"label":"Observed substitutions","value":"444"},{"label":"Hotspots","value":"25"},{"label":"Highest risk","value":"D435V · 0.62","tone":"warn"},{"label":"Rising substitutions","value":"7","tone":"crit"}],"notes":[],"tables":[{"name":"observed_mutations","title":"Observed substitutions, by descending risk","columns":["Mutation","Position","Wild type","Mutant","Risk","Tolerance","Salience","Novelty","Conservation","Count","Frequency","Growth per week"],"rows":[["D435V",435,"D","V",0.6178,0.5512,0.5247,0.8151,0.8887,23,0.025556,""],["R375P",375,"R","P",0.583,0.535,0.4122,0.8988,0.555,12,0.013333,""],["D435Y",435,"D","Y",0.574,0.5706,0.4213,0.7866,0.8887,27,0.03,""],["V476Y",476,"V","Y",0.5689,0.8353,0.2632,0.8371,0.6349,20,0.022222,""],["H421G",421,"H","G",0.5632,0.9081,0.2546,0.7728,0.4909,29,0.032222,""],["R7P",7,"R","P",0.5627,0.7435,0.4122,0.5815,0.5814,61,0.067778,""],["Q41F",41,"Q","F",0.5613,0.8431,0.2787,0.7524,0.5339,32,0.035556,""],["R375T",375,"R","T",0.5533,0.7348,0.4371,0.5273,0.555,72,0.08,""],["W76A",76,"W","A",0.5488,0.7857,0.2975,0.707,0.632,39,0.043333,""],["W76I",76,"W","I",0.5485,0.6895,0.2711,0.883,0.632,14,0.015556,""],["K85Y",85,"K","Y",0.5454,0.5361,0.3489,0.8674,0.6921,16,0.017778,""],["E443P",443,"E","P",0.5437,0.609,0.3266,0.8079,0.6137,24,0.026667,""],["K333Y",333,"K","Y",0.5436,0.6452,0.3489,0.7134,0.6477,38,0.042222,""],["W76V",76,"W","V",0.5435,0.553,0.3009,0.9651,0.632,4,0.004444,""],["H421E",421,"H","E",0.5425,0.9313,0.2796,0.6133,0.4909,55,0.061111,""],["H25R",25,"H","R",0.5359,0.8101,0.2759,0.6884,0.6775,42,0.046667,""],["T115F",115,"T","F",0.5357,0.7477,0.2267,0.9069,0.4873,11,0.012222,""],["R7N",7,"R","N",0.5336,0.7404,0.3467,0.5919,0.5814,59,0.065556,""],["A304Y",304,"A","Y",0.5312,0.7666,0.2599,0.7524,0.4867,32,0.035556,""],["W76C",76,"W","C",0.5306,0.8072,0.2912,0.6355,0.632,51,0.056667,""],["V107Y",107,"V","Y",0.5295,0.8488,0.2632,0.6644,0.5389,46,0.051111,""],["C411Q",411,"C","Q",0.5276,0.6882,0.2526,0.8446,0.6315,19,0.021111,""],["S34H",34,"S","H",0.5251,0.7985,0.1982,0.9149,0.6561,10,0.011111,""],["R7H",7,"R","H",0.5236,0.6555,0.2759,0.7937,0.5814,26,0.028889,""],["Q41M",41,"Q","M",0.5234,0.7928,0.2085,0.8674,0.5339,16,0.017778,""],["H445D",445,"H","D",0.5217,0.5156,0.3203,0.8598,0.8722,17,0.018889,0.13896],["D202S",202,"D","S",0.5214,0.6884,0.3479,0.5919,0.6755,59,0.065556,""],["K85P",85,"K","P",0.5153,0.7173,0.385,0.4955,0.6921,79,0.087778,""],["R375H",375,"R","H",0.5135,0.6462,0.2759,0.7592,0.555,31,0.034444,""],["M131S",131,"M","S",0.5101,0.8134,0.2002,0.8151,0.4483,23,0.025556,""],["Q174W",174,"Q","W",0.506,0.7636,0.2119,0.8007,0.5764,25,0.027778,""],["K333P",333,"K","P",0.5056,0.7339,0.385,0.4574,0.6477,88,0.097778,""],["H177E",177,"H","E",0.504,0.9001,0.2796,0.5089,0.6436,76,0.084444,""],["E443N",443,"E","N",0.5039,0.6226,0.2612,0.7866,0.6137,27,0.03,""],["R375N",375,"R","N",0.5037,0.3784,0.3467,0.9737,0.555,3,0.003333,""],["K333Q",333,"K","Q",0.4992,0.6565,0.2753,0.6884,0.6477,42,0.046667,""],["Y211A",211,"Y","A",0.4988,0.5082,0.2599,0.9397,0.5685,7,0.007778,""],["T146V",146,"T","V",0.4986,0.6691,0.199,0.9314,0.5969,8,0.008889,""],["T146L",146,"T","L",0.4982,0.8255,0.2254,0.6644,0.5969,46,0.051111,""],["Q432K",432,"Q","K",0.4981,0.5558,0.2753,0.8079,0.8938,24,0.026667,0.08873],["H445R",445,"H","R",0.4964,0.5156,0.2759,0.8598,0.8722,17,0.018889,0.20536],["S450L",450,"S","L",0.4944,0.5862,0.2692,0.7659,0.8634,30,0.033333,""],["D202P",202,"D","P",0.4934,0.4396,0.2907,0.9397,0.6755,7,0.007778,""],["Y211I",211,"Y","I",0.4924,0.6859,0.2334,0.7458,0.5685,33,0.036667,""],["C411N",411,"C","N",0.4916,0.629,0.2083,0.9069,0.6315,11,0.012222,""],["M86Q",86,"M","Q",0.4901,0.657,0.2085,0.8598,0.545,17,0.018889,""],["M131P",131,"M","P",0.4897,0.8446,0.1915,0.7261,0.4483,36,0.04,""],["I22T",22,"I","T",0.4895,0.5786,0.2488,0.8151,0.6599,23,0.025556,""],["D30N",30,"D","N",0.4882,0.6564,0.2295,0.7728,0.6588,29,0.032222,""],["G458Q",458,"G","Q",0.4842,0.6442,0.2281,0.7728,0.529,29,0.032222,""],["D220T",220,"D","T",0.4839,0.7272,0.3258,0.4782,0.6796,83,0.092222,""],["M86S",86,"M","S",0.4836,0.6691,0.2002,0.8446,0.545,19,0.021111,""],["D198N",198,"D","N",0.4805,0.5379,0.2295,0.8988,0.5733,12,0.013333,""],["F499T",499,"F","T",0.4802,0.7895,0.2267,0.6188,0.5256,54,0.06,""],["C411Y",411,"C","Y",0.479,0.8076,0.2535,0.5368,0.6315,70,0.077778,""],["R93P",93,"R","P",0.4784,0.8069,0.4122,0.3292,0.4999,125,0.138889,""],["D202N",202,"D","N",0.4773,0.5864,0.2295,0.8079,0.6755,24,0.026667,""],["Y205I",205,"Y","I",0.476,0.8685,0.2334,0.532,0.452,71,0.078889,0.03351],["E201Q",201,"E","Q",0.4759,0.6962,0.2331,0.6644,0.545,46,0.051111,""],["R93H",93,"R","H",0.4754,0.7654,0.2759,0.5089,0.4999,76,0.084444,""],["T323E",323,"T","E",0.4742,0.8428,0.3516,0.3598,0.5101,115,0.127778,""],["V29P",29,"V","P",0.474,0.7353,0.234,0.6188,0.4799,54,0.06,""],["S34M",34,"S","M",0.4736,0.9049,0.2002,0.5866,0.6561,60,0.066667,""],["C321Y",321,"C","Y",0.4726,0.863,0.2535,0.4824,0.5038,82,0.091111,""],["F499A",499,"F","A",0.4718,0.7306,0.1843,0.7797,0.5256,28,0.031111,""],["R468Y",468,"R","Y",0.4712,0.7754,0.3618,0.3728,0.5868,111,0.123333,""],["M389W",389,"M","W",0.4703,0.6143,0.1901,0.8909,0.5896,13,0.014444,""],["S94Y",94,"S","Y",0.4697,0.692,0.1726,0.8674,0.6422,16,0.017778,""],["A235Y",235,"A","Y",0.468,0.8322,0.2599,0.4739,0.5052,84,0.093333,""],["V29T",29,"V","T",0.4674,0.5709,0.199,0.8988,0.4799,12,0.013333,""],["Q26M",26,"Q","M",0.4672,0.5947,0.2085,0.8224,0.5931,22,0.024444,""],["R93Y",93,"R","Y",0.4668,0.8024,0.3618,0.3503,0.4999,118,0.131111,""],["I22Y",22,"I","Y",0.4667,0.6613,0.2334,0.6585,0.6599,47,0.052222,""],["K333N",333,"K","N",0.4646,0.7432,0.3196,0.4222,0.6477,97,0.107778,""],["W196S",196,"W","S",0.4645,0.6925,0.2103,0.6884,0.5014,42,0.046667,""],["H117W",117,"H","W",0.4642,0.6665,0.2104,0.7134,0.5188,38,0.042222,""],["D202Q",202,"D","Q",0.4639,0.378,0.2737,0.9651,0.6755,4,0.004444,""],["N376C",376,"N","C",0.4623,0.5277,0.2083,0.8988,0.5825,12,0.013333,""],["E417Q",417,"E","Q",0.4593,0.4426,0.2331,0.9397,0.7057,7,0.007778,""],["N195C",195,"N","C",0.4572,0.4969,0.2083,0.9231,0.5849,9,0.01,""],["P463W",463,"P","W",0.4549,0.9076,0.1949,0.532,0.4792,71,0.078889,""],["I22A",22,"I","A",0.4543,0.51,0.2064,0.8909,0.6599,13,0.014444,0.08836],["A304V",304,"A","V",0.4536,0.7442,0.1566,0.8007,0.4867,25,0.027778,""],["R468P",468,"R","P",0.4528,0.7961,0.4122,0.283,0.5868,142,0.157778,""],["L408T",408,"L","T",0.4515,0.6897,0.2254,0.5919,0.6431,59,0.065556,""],["Y205F",205,"Y","F",0.4509,0.7911,0.1422,0.8151,0.452,23,0.025556,""],["S450W",450,"S","W",0.4498,0.623,0.2103,0.6946,0.8634,41,0.045556,-0.05826],["D423Q",423,"D","Q",0.4494,0.7443,0.2737,0.4454,0.6418,91,0.101111,-0.02952],["A101L",101,"A","L",0.4491,0.8664,0.1831,0.5712,0.4449,63,0.07,""],["H25Y",25,"H","Y",0.4484,0.6685,0.1461,0.9231,0.6775,9,0.01,""],["Y205V",205,"Y","V",0.4465,0.891,0.2632,0.3795,0.452,109,0.121111,""],["Q174Y",174,"Q","Y",0.4465,0.7735,0.1476,0.7797,0.5764,28,0.031111,""],["Y211L",211,"Y","L",0.4462,0.7533,0.2101,0.5611,0.5685,65,0.072222,""],["R375Q",375,"R","Q",0.446,0.773,0.3025,0.3795,0.555,109,0.121111,""],["S81Q",81,"S","Q",0.4459,0.5397,0.1717,0.9565,0.532,5,0.005556,""],["N195Y",195,"N","Y",0.4455,0.6813,0.1918,0.6763,0.5849,44,0.048889,""],["Q26W",26,"Q","W",0.4454,0.7047,0.2119,0.5919,0.5931,59,0.065556,""],["S81H",81,"S","H",0.4446,0.8042,0.1982,0.5513,0.532,67,0.074444,""],["P463H",463,"P","H",0.4424,0.8752,0.1362,0.7261,0.4792,36,0.04,""],["L408A",408,"L","A",0.4412,0.6179,0.1831,0.7592,0.6431,31,0.034444,""],["A101V",101,"A","V",0.4407,0.8525,0.1566,0.6412,0.4449,50,0.055556,""],["T115Y",115,"T","Y",0.4405,0.8306,0.1355,0.7592,0.4873,31,0.034444,""],["S378Y",378,"S","Y",0.4396,0.6259,0.1726,0.7866,0.5644,27,0.03,""],["A286L",286,"A","L",0.4388,0.6705,0.1831,0.6884,0.6268,42,0.046667,""],["L430P",430,"L","P",0.4388,0.7092,0.2605,0.4574,0.8658,88,0.097778,-0.07569],["I397Y",397,"I","Y",0.4382,0.8313,0.2334,0.4336,0.4984,94,0.104444,""],["N382G",382,"N","G",0.4376,0.6623,0.1838,0.6884,0.6398,42,0.046667,""],["W259P",259,"W","P",0.4376,0.6947,0.1949,0.6188,0.6459,54,0.06,""],["R468N",468,"R","N",0.4369,0.7914,0.3467,0.3039,0.5868,134,0.148889,""],["Q174T",174,"Q","T",0.4338,0.6509,0.1346,0.9314,0.5764,8,0.008889,""],["D202H",202,"D","H",0.4327,0.7617,0.3203,0.3321,0.6755,124,0.137778,""],["N112Y",112,"N","Y",0.4315,0.7015,0.1918,0.5972,0.656,58,0.064444,""],["E417N",417,"E","N",0.4307,0.744,0.2612,0.4111,0.7057,100,0.111111,""],["T406Y",406,"T","Y",0.4304,0.6842,0.1355,0.8598,0.6726,17,0.018889,""],["Y211C",211,"Y","C",0.4298,0.3161,0.2535,0.9912,0.5685,1,0.001111,""],["T146A",146,"T","A",0.4298,0.7103,0.1243,0.8988,0.5969,12,0.013333,""],["M86T",86,"M","T",0.4277,0.7593,0.1564,0.6585,0.545,47,0.052222,""],["H89T",89,"H","T",0.4275,0.6385,0.1611,0.7592,0.6171,31,0.034444,""],["H117M",117,"H","M",0.4268,0.738,0.207,0.5089,0.5188,76,0.084444,""],["H117S",117,"H","S",0.4267,0.73,0.1982,0.5368,0.5188,70,0.077778,""],["E201H",201,"E","H",0.4264,0.7846,0.2796,0.3535,0.545,117,0.13,""],["M389Y",389,"M","Y",0.4264,0.7386,0.1524,0.6884,0.5896,42,0.046667,""],["A235V",235,"A","V",0.4263,0.7993,0.1566,0.6188,0.5052,54,0.06,""],["L452P",452,"L","P",0.4253,0.7247,0.2605,0.4075,0.8556,101,0.112222,-0.0403],["A286V",286,"A","V",0.425,0.5856,0.1566,0.8371,0.6268,20,0.022222,""],["S34N",34,"S","N",0.425,0.8908,0.1274,0.6763,0.6561,44,0.048889,""],["W196P",196,"W","P",0.4249,0.7463,0.1949,0.5273,0.5014,72,0.08,""],["V431A",431,"V","A",0.4235,0.5641,0.1566,0.8598,0.5604,17,0.018889,""],["P305Q",305,"P","Q",0.4231,0.803,0.1097,0.8598,0.6127,17,0.018889,""],["A101M",101,"A","M",0.4214,0.7904,0.1141,0.8297,0.4449,21,0.023333,""],["D198P",198,"D","P",0.4211,0.7874,0.2907,0.3263,0.5733,126,0.14,""],["E201P",201,"E","P",0.4198,0.8005,0.3266,0.283,0.545,142,0.157778,-0.02104],["Y442Q",442,"Y","Q",0.4179,0.6069,0.1476,0.8151,0.5886,23,0.025556,""],["K85H",85,"K","H",0.4177,0.745,0.2488,0.3932,0.6921,105,0.116667,""],["E443H",443,"E","H",0.4165,0.7783,0.2796,0.3321,0.6137,124,0.137778,""],["I22C",22,"I","C",0.416,0.5557,0.1534,0.8446,0.6599,19,0.021111,""],["A235I",235,"A","I",0.4153,0.844,0.2064,0.4111,0.5052,100,0.111111,""],["R375Y",375,"R","Y",0.4148,0.8038,0.3618,0.2455,0.555,158,0.175556,""],["H25T",25,"H","T",0.4142,0.4449,0.1611,0.9912,0.6775,1,0.001111,""],["T184Q",184,"T","Q",0.4142,0.6474,0.1346,0.8151,0.5039,23,0.025556,""],["Y90F",90,"Y","F",0.4139,0.8425,0.1422,0.5919,0.5832,59,0.065556,""],["S34Y",34,"S","Y",0.4137,0.9213,0.1726,0.4454,0.6561,91,0.101111,""],["F499V",499,"F","V",0.4125,0.7112,0.1211,0.8151,0.5256,23,0.025556,""],["H25P",25,"H","P",0.4118,0.8285,0.1362,0.6188,0.6775,54,0.06,""],["Y90T",90,"Y","T",0.4114,0.523,0.1355,0.9824,0.5832,2,0.002222,""],["D220P",220,"D","P",0.4107,0.7705,0.2907,0.3093,0.6796,132,0.146667,""],["P326Y",326,"P","Y",0.4107,0.5447,0.1306,0.9737,0.5043,3,0.003333,""],["C411T",411,"C","T",0.4093,0.67,0.118,0.8674,0.6315,16,0.017778,""],["S378C",378,"S","C",0.4093,0.5784,0.1391,0.8521,0.5644,18,0.02,""],["P326H",326,"P","H",0.4092,0.8278,0.1362,0.6079,0.5043,56,0.062222,""],["S487C",487,"S","C",0.4085,0.5804,0.1391,0.8446,0.6085,19,0.021111,""],["V107M",107,"V","M",0.4082,0.636,0.1108,0.9651,0.5389,4,0.004444,""],["G465Q",465,"G","Q",0.407,0.8589,0.2281,0.3442,0.5531,120,0.133333,""],["Y205T",205,"Y","T",0.4066,0.8606,0.1355,0.5763,0.452,62,0.068889,""],["P326R",326,"P","R",0.4066,0.8987,0.4122,0.1815,0.5043,192,0.213333,-0.01968],["W196M",196,"W","M",0.4051,0.7647,0.1901,0.4574,0.5014,88,0.097778,""],["Y270T",270,"Y","T",0.4051,0.536,0.1355,0.9149,0.7219,10,0.011111,""],["D198Q",198,"D","Q",0.404,0.7925,0.2737,0.3039,0.5733,134,0.148889,""],["H445Y",445,"H","Y",0.4036,0.5522,0.1461,0.8151,0.8722,23,0.025556,0.10322],["W196T",196,"W","T",0.4036,0.7525,0.1732,0.5044,0.5014,77,0.085556,""],["V431T",431,"V","T",0.4036,0.7484,0.199,0.4414,0.5604,92,0.102222,""],["C482P",482,"C","P",0.4035,0.6677,0.1429,0.6884,0.6018,42,0.046667,""],["W259T",259,"W","T",0.4034,0.7255,0.1732,0.5226,0.6459,73,0.081111,""],["Y211T",211,"Y","T",0.4033,0.7157,0.1355,0.6763,0.5685,44,0.048889,""],["H421P",421,"H","P",0.4025,0.9409,0.1362,0.5089,0.4909,76,0.084444,""],["H31P",31,"H","P",0.4023,0.6187,0.1362,0.7728,0.7096,29,0.032222,""],["P305Y",305,"P","Y",0.4022,0.8875,0.1306,0.5611,0.6127,65,0.072222,""],["T275Y",275,"T","Y",0.4019,0.6425,0.1355,0.7458,0.5606,33,0.036667,""],["T275Q",275,"T","Q",0.4006,0.6458,0.1346,0.7392,0.5606,34,0.037778,""],["G465Y",465,"G","Y",0.3986,0.8628,0.229,0.3205,0.5531,128,0.142222,""],["C321F",321,"C","F",0.397,0.8488,0.1313,0.5611,0.5038,65,0.072222,0.04054],["C341L",341,"C","L",0.3963,0.5514,0.1301,0.8674,0.6821,16,0.017778,""],["S479Q",479,"S","Q",0.3962,0.718,0.1717,0.5044,0.6423,77,0.085556,""],["V107A",107,"V","A",0.3956,0.8874,0.1566,0.4454,0.5389,91,0.101111,""],["Q481Y",481,"Q","Y",0.3955,0.8168,0.1476,0.5134,0.5676,75,0.083333,-0.03182],["A301V",301,"A","V",0.3953,0.6968,0.1566,0.5662,0.6925,64,0.071111,""],["S315N",315,"S","N",0.3943,0.606,0.1274,0.7937,0.615,26,0.028889,-0.05617],["P419A",419,"P","A",0.3942,0.9053,0.1493,0.4533,0.4793,89,0.098889,""],["Q26S",26,"Q","S",0.3929,0.7387,0.1717,0.4782,0.5931,83,0.092222,""],["F499S",499,"F","S",0.3924,0.8625,0.2704,0.259,0.5256,152,0.168889,""],["E443T",443,"E","T",0.3922,0.8061,0.3516,0.213,0.6137,174,0.193333,""],["V476C",476,"V","C",0.3914,0.8864,0.1036,0.6527,0.6349,48,0.053333,""],["D423P",423,"D","P",0.3914,0.7893,0.2907,0.2613,0.6418,151,0.167778,""],["V29A",29,"V","A",0.391,0.7704,0.1566,0.4955,0.4799,79,0.087778,0.02703],["P419Q",419,"P","Q",0.3901,0.8827,0.1097,0.6133,0.4793,55,0.061111,""],["M389A",389,"M","A",0.39,0.5583,0.1141,0.9314,0.5896,8,0.008889,""],["A286T",286,"A","T",0.3897,0.5342,0.1243,0.8909,0.6268,13,0.014444,""],["A440G",440,"A","G",0.3883,0.6428,0.1158,0.7866,0.5741,27,0.03,""],["H117T",117,"H","T",0.3869,0.7452,0.1611,0.4824,0.5188,82,0.091111,""],["L408C",408,"L","C",0.3859,0.4829,0.1301,0.9149,0.6431,10,0.011111,""],["A440M",440,"A","M",0.3857,0.6509,0.1141,0.7728,0.5741,29,0.032222,""],["P391C",391,"P","C",0.3846,0.722,0.1429,0.5513,0.5428,67,0.074444,""],["T115M",115,"T","M",0.3843,0.8984,0.1564,0.4039,0.4873,102,0.113333,""],["G465T",465,"G","T",0.3828,0.6859,0.0935,0.8752,0.5531,15,0.016667,""],["A286M",286,"A","M",0.3825,0.5914,0.1141,0.8297,0.6268,21,0.023333,""],["V453F",453,"V","F",0.3823,0.6587,0.1211,0.7008,0.6182,40,0.044444,""],["S81N",81,"S","N",0.3799,0.8087,0.1274,0.532,0.532,71,0.078889,""],["P316G",316,"P","G",0.3783,0.7197,0.1184,0.6355,0.6054,51,0.056667,""],["P20G",20,"P","G",0.3779,0.6985,0.1184,0.6527,0.6278,48,0.053333,0.03546],["T323N",323,"T","N",0.3777,0.7368,0.0963,0.7592,0.5101,31,0.034444,""],["H25N",25,"H","N",0.3775,0.6252,0.0908,0.9481,0.6775,6,0.006667,""],["S315C",315,"S","C",0.3774,0.7136,0.1391,0.5415,0.615,69,0.076667,""],["C338L",338,"C","L",0.3768,0.7072,0.1301,0.5815,0.5822,61,0.067778,""],["P230G",230,"P","G",0.3759,0.6809,0.1184,0.6585,0.6472,47,0.052222,""],["C384F",384,"C","F",0.375,0.7416,0.1313,0.5415,0.6249,69,0.076667,""],["P391Q",391,"P","Q",0.3744,0.6532,0.1097,0.7326,0.5428,35,0.038889,""],["S487Q",487,"S","Q",0.374,0.7611,0.1717,0.4003,0.6085,103,0.114444,0.02384],["T184A",184,"T","A",0.3738,0.7554,0.1243,0.5562,0.5039,66,0.073333,""],["Y442T",442,"Y","T",0.3738,0.7305,0.1355,0.5273,0.5886,72,0.08,""],["Q41W",41,"Q","W",0.3729,0.9201,0.2119,0.266,0.5339,149,0.165556,""],["V431C",431,"V","C",0.3697,0.6143,0.1036,0.7937,0.5604,26,0.028889,""],["Y270F",270,"Y","F",0.3693,0.3605,0.1422,0.9824,0.7219,2,0.002222,""],["M389I",389,"M","I",0.3686,0.7019,0.0923,0.7728,0.5896,29,0.032222,""],["A301T",301,"A","T",0.3677,0.4219,0.1243,0.9481,0.6925,6,0.006667,""],["C384L",384,"C","L",0.3675,0.3918,0.1301,0.9737,0.6249,3,0.003333,""],["V453M",453,"V","M",0.3675,0.6741,0.1108,0.6644,0.6182,46,0.051111,""],["C384M",384,"C","M",0.3668,0.6783,0.1011,0.7197,0.6249,37,0.041111,""],["C338M",338,"C","M",0.3666,0.5824,0.1011,0.8371,0.5822,20,0.022222,""],["Q432P",432,"Q","P",0.3664,0.5453,0.1097,0.8224,0.8938,22,0.024444,0.0677],["T124C",124,"T","C",0.3632,0.7046,0.118,0.5763,0.5905,62,0.068889,""],["A301G",301,"A","G",0.363,0.4394,0.1158,0.9397,0.6925,7,0.007778,""],["H117P",117,"H","P",0.3614,0.7508,0.1362,0.4615,0.5188,87,0.096667,""],["R93Q",93,"R","Q",0.3613,0.837,0.3025,0.1864,0.4999,189,0.21,""],["C482V",482,"C","V",0.3613,0.6728,0.1036,0.6763,0.6018,44,0.048889,""],["N195T",195,"N","T",0.3591,0.6563,0.0963,0.7326,0.5849,35,0.038889,""],["T275N",275,"T","N",0.3582,0.6458,0.0963,0.7392,0.5606,34,0.037778,""],["Y205M",205,"Y","M",0.3578,0.8967,0.1524,0.3351,0.452,123,0.136667,""],["G458T",458,"G","T",0.3576,0.6619,0.0935,0.7392,0.529,34,0.037778,""],["T184G",184,"T","G",0.3575,0.5248,0.0935,0.9314,0.5039,8,0.008889,""],["T275A",275,"T","A",0.3555,0.7358,0.1243,0.4911,0.5606,80,0.088889,""],["P310Y",310,"P","Y",0.3537,0.7605,0.1306,0.4454,0.5886,91,0.101111,""],["N195H",195,"N","H",0.353,0.6497,0.0908,0.7458,0.5849,33,0.036667,""],["N376T",376,"N","T",0.3523,0.6831,0.0963,0.6644,0.5825,46,0.051111,""],["C338V",338,"C","V",0.3515,0.702,0.1036,0.5972,0.5822,58,0.064444,""],["P305N",305,"P","N",0.3504,0.8363,0.0654,0.7866,0.6127,27,0.03,""],["S378A",378,"S","A",0.35,0.63,0.0873,0.7797,0.5644,28,0.031111,""],["L234C",234,"L","C",0.3498,0.7653,0.1301,0.4298,0.5489,95,0.105556,""],["L234A",234,"L","A",0.3479,0.7982,0.1831,0.2881,0.5489,140,0.155556,""],["M131H",131,"M","H",0.3478,0.9215,0.207,0.2207,0.4483,170,0.188889,""],["S315A",315,"S","A",0.3477,0.5808,0.0873,0.8297,0.615,21,0.023333,""],["S378N",378,"S","N",0.347,0.7562,0.1274,0.4336,0.5644,94,0.104444,""],["P230Q",230,"P","Q",0.3458,0.7277,0.1097,0.518,0.6472,74,0.082222,""],["A301S",301,"A","S",0.3456,0.5703,0.0873,0.8297,0.6925,21,0.023333,""],["C341V",341,"C","V",0.3441,0.7131,0.1036,0.5513,0.6821,67,0.074444,""],["M86Y",86,"M","Y",0.3419,0.84,0.1524,0.3121,0.545,131,0.145556,""],["T146F",146,"T","F",0.3408,0.9043,0.2267,0.1931,0.5969,185,0.205556,""],["S487A",487,"S","A",0.3408,0.4912,0.0873,0.9231,0.6085,9,0.01,""],["A402F",402,"A","F",0.3402,0.9176,0.1843,0.2328,0.5713,164,0.182222,""],["W76Y",76,"W","Y",0.3393,0.7253,0.0643,0.8371,0.632,20,0.022222,""],["N112H",112,"N","H",0.3391,0.4569,0.0908,0.9397,0.656,7,0.007778,""],["P114N",114,"P","N",0.3385,0.8022,0.0654,0.7392,0.6687,34,0.037778,""],["M36A",36,"M","A",0.3383,0.7418,0.1141,0.4574,0.6596,88,0.097778,""],["M131F",131,"M","F",0.3381,0.8658,0.0703,0.6355,0.4483,51,0.056667,""],["T184N",184,"T","N",0.3368,0.7658,0.0963,0.518,0.5039,74,0.082222,""],["T115H",115,"T","H",0.3368,0.9152,0.1611,0.259,0.4873,152,0.168889,""],["C482T",482,"C","T",0.3362,0.3277,0.118,0.9824,0.6018,2,0.002222,""],["C482S",482,"C","S",0.3355,0.2741,0.1391,0.9912,0.6018,1,0.001111,""],["G458P",458,"G","P",0.3346,0.7697,0.1184,0.4111,0.529,100,0.111111,""],["P391G",391,"P","G",0.3341,0.7592,0.1184,0.4148,0.5428,99,0.11,0.03826],["M389L",389,"M","L",0.3336,0.7087,0.069,0.7592,0.5896,31,0.034444,""],["T406N",406,"T","N",0.3327,0.8289,0.0963,0.4615,0.6726,87,0.096667,""],["A286S",286,"A","S",0.3322,0.4431,0.0873,0.9481,0.6268,6,0.006667,""],["V431M",431,"V","M",0.332,0.7484,0.1108,0.4414,0.5604,92,0.102222,""],["I54M",54,"I","M",0.331,0.8067,0.0923,0.4868,0.5412,81,0.09,""],["T124N",124,"T","N",0.3303,0.7226,0.0963,0.518,0.5905,74,0.082222,""],["S94Q",94,"S","Q",0.33,0.8754,0.1717,0.239,0.6422,161,0.178889,""],["P114Y",114,"P","Y",0.3298,0.8883,0.1306,0.3093,0.6687,132,0.146667,""],["T124G",124,"T","G",0.3294,0.7185,0.0935,0.532,0.5905,71,0.078889,""],["V476L",476,"V","L",0.3286,0.8568,0.0531,0.7797,0.6349,28,0.031111,""],["P462N",462,"P","N",0.3281,0.8344,0.0654,0.6469,0.5832,49,0.054444,""],["A304L",304,"A","L",0.3273,0.8833,0.1831,0.2168,0.4867,172,0.191111,""],["H89N",89,"H","N",0.3267,0.7282,0.0908,0.5273,0.6171,72,0.08,""],["Y442F",442,"Y","F",0.3266,0.785,0.1422,0.3121,0.5886,131,0.145556,""],["S479A",479,"S","A",0.3257,0.6991,0.0873,0.5662,0.6423,64,0.071111,""],["V29M",29,"V","M",0.3251,0.7952,0.1108,0.3898,0.4799,106,0.117778,""],["W196F",196,"W","F",0.3244,0.8159,0.1798,0.2328,0.5014,164,0.182222,""],["N382H",382,"N","H",0.3238,0.7219,0.0908,0.518,0.6398,74,0.082222,""],["V476F",476,"V","F",0.3235,0.9288,0.1211,0.3012,0.6349,135,0.15,""],["P316N",316,"P","N",0.3233,0.6061,0.0654,0.8521,0.6054,18,0.02,""],["M36L",36,"M","L",0.3216,0.6239,0.069,0.7728,0.6596,29,0.032222,""],["L234F",234,"L","F",0.3209,0.5412,0.0679,0.8988,0.5489,12,0.013333,""],["C482L",482,"C","L",0.3206,0.7762,0.1301,0.3263,0.6018,126,0.14,""],["S171N",171,"S","N",0.3204,0.7909,0.1274,0.3263,0.5819,126,0.14,""],["N376H",376,"N","H",0.3203,0.3716,0.0908,0.9737,0.5825,3,0.003333,""],["N195P",195,"N","P",0.3189,0.592,0.0654,0.8371,0.5849,20,0.022222,""],["N376P",376,"N","P",0.3184,0.5999,0.0654,0.8224,0.5825,22,0.024444,""],["C338T",338,"C","T",0.317,0.7703,0.118,0.3503,0.5822,118,0.131111,""],["L408M",408,"L","M",0.3169,0.6352,0.069,0.7261,0.6431,36,0.04,""],["Q26Y",26,"Q","Y",0.3169,0.7892,0.1476,0.2731,0.5931,146,0.162222,""],["N493H",493,"N","H",0.3167,0.8977,0.0908,0.3898,0.52,106,0.117778,""],["N112P",112,"N","P",0.3167,0.617,0.0654,0.7866,0.656,27,0.03,""],["P463N",463,"P","N",0.3161,0.9076,0.0654,0.532,0.4792,71,0.078889,""],["G458A",458,"G","A",0.3143,0.786,0.1158,0.3411,0.529,121,0.134444,""],["N112T",112,"N","T",0.3139,0.3269,0.0963,0.9824,0.656,2,0.002222,""],["C321A",321,"C","A",0.3137,0.8094,0.053,0.7197,0.5038,37,0.041111,""],["A101F",101,"A","F",0.3132,0.9186,0.1843,0.1815,0.4449,192,0.213333,""],["S378P",378,"S","P",0.3131,0.6073,0.062,0.8151,0.5644,23,0.025556,""],["S487P",487,"S","P",0.3123,0.6029,0.062,0.8151,0.6085,23,0.025556,""],["A235C",235,"A","C",0.3116,0.7518,0.053,0.7592,0.5052,31,0.034444,""],["T323H",323,"T","H",0.3091,0.8685,0.1611,0.2111,0.5101,175,0.194444,""],["S479P",479,"S","P",0.309,0.5837,0.062,0.8151,0.6423,23,0.025556,""],["C482M",482,"C","M",0.3066,0.765,0.1011,0.3728,0.6018,111,0.123333,""],["P462G",462,"P","G",0.3055,0.8972,0.1184,0.2683,0.5832,148,0.164444,""],["A101S",101,"A","S",0.3034,0.8978,0.0873,0.3566,0.4449,116,0.128889,""],["V29L",29,"V","L",0.3034,0.6507,0.0531,0.8079,0.4799,24,0.026667,""],["P310G",310,"P","G",0.3024,0.7962,0.1184,0.2933,0.5886,138,0.153333,""],["V453C",453,"V","C",0.3024,0.7683,0.1036,0.3472,0.6182,119,0.132222,""],["N376S",376,"N","S",0.3022,0.7928,0.1274,0.2731,0.5825,146,0.162222,""],["I397V",397,"I","V",0.3015,0.7513,0.0498,0.7326,0.4984,35,0.038889,""],["M131W",131,"M","W",0.3011,0.9288,0.1901,0.1546,0.4483,210,0.233333,""],["I54V",54,"I","V",0.2996,0.7308,0.0498,0.7392,0.5412,34,0.037778,""],["L234V",234,"L","V",0.2991,0.6017,0.0531,0.8371,0.5489,20,0.022222,""],["S479G",479,"S","G",0.2979,0.6225,0.0564,0.7524,0.6423,32,0.035556,""],["W259M",259,"W","M",0.2976,0.8132,0.1901,0.1705,0.6459,199,0.221111,""],["C321M",321,"C","M",0.297,0.8912,0.1011,0.2907,0.5038,139,0.154444,""],["I397F",397,"I","F",0.2969,0.8487,0.0913,0.3381,0.4984,122,0.135556,""],["P391N",391,"P","N",0.2944,0.7263,0.0654,0.5368,0.5428,70,0.077778,""],["L408V",408,"L","V",0.2923,0.5466,0.0531,0.8598,0.6431,17,0.018889,""],["P20S",20,"P","S",0.2911,0.735,0.062,0.5415,0.6278,69,0.076667,""],["T275G",275,"T","G",0.2888,0.776,0.0935,0.3321,0.5606,124,0.137778,""],["Q481N",481,"Q","N",0.2876,0.5667,0.0443,0.9481,0.5676,6,0.006667,""],["P391S",391,"P","S",0.2858,0.7331,0.062,0.5134,0.5428,75,0.083333,""],["H117Q",117,"H","Q",0.2849,0.5989,0.0465,0.8297,0.5188,21,0.023333,""],["P463T",463,"P","T",0.2828,0.8721,0.0351,0.7392,0.4792,34,0.037778,""],["V431L",431,"V","L",0.2827,0.6993,0.0531,0.6079,0.5604,56,0.062222,""],["L408F",408,"L","F",0.2817,0.7327,0.0679,0.4493,0.6431,90,0.1,""],["V431I",431,"V","I",0.2816,0.6807,0.0498,0.6585,0.5604,47,0.052222,""],["H89Q",89,"H","Q",0.2815,0.6489,0.0465,0.7392,0.6171,34,0.037778,0.05853],["H31Q",31,"H","Q",0.2807,0.5483,0.0465,0.8674,0.7096,16,0.017778,""],["Q26N",26,"Q","N",0.2786,0.5835,0.0443,0.8371,0.5931,20,0.022222,""],["N493T",493,"N","T",0.2778,0.9148,0.0963,0.2433,0.52,159,0.176667,""],["N382Q",382,"N","Q",0.2777,0.5879,0.0443,0.8224,0.6398,22,0.024444,""],["H421Q",421,"H","Q",0.2766,0.9429,0.0465,0.4824,0.4909,82,0.091111,""],["N493P",493,"N","P",0.2761,0.9018,0.0654,0.3566,0.52,116,0.128889,""],["C338A",338,"C","A",0.275,0.7182,0.053,0.5464,0.5822,68,0.075556,""],["S487G",487,"S","G",0.2728,0.3695,0.0564,0.9737,0.6085,3,0.003333,""],["N195G",195,"N","G",0.2718,0.8289,0.1838,0.1318,0.5849,228,0.253333,""],["D30E",30,"D","E",0.2715,0.6829,0.0407,0.7197,0.6588,37,0.041111,""],["T184S",184,"T","S",0.2711,0.7366,0.0437,0.6188,0.5039,54,0.06,""],["D202E",202,"D","E",0.2672,0.5451,0.0407,0.8598,0.6755,17,0.018889,""],["I22V",22,"I","V",0.266,0.704,0.0498,0.5368,0.6599,70,0.077778,""],["T115S",115,"T","S",0.2656,0.8881,0.0437,0.4824,0.4873,82,0.091111,""],["P310Q",310,"P","Q",0.2655,0.8152,0.1097,0.2092,0.5886,176,0.195556,""],["H31S",31,"H","S",0.2652,0.8237,0.1982,0.1143,0.7096,244,0.271111,""],["S479T",479,"S","T",0.2652,0.677,0.0437,0.6299,0.6423,52,0.057778,""],["N382T",382,"N","T",0.2647,0.7916,0.0963,0.2433,0.6398,159,0.176667,""],["T124S",124,"T","S",0.2631,0.6977,0.0437,0.5972,0.5905,58,0.064444,""],["H89Y",89,"H","Y",0.2631,0.821,0.1461,0.1519,0.6171,212,0.235556,""],["D220E",220,"D","E",0.263,0.6606,0.0407,0.6763,0.6796,44,0.048889,""],["P462T",462,"P","T",0.262,0.8433,0.0351,0.6079,0.5832,56,0.062222,""],["S315T",315,"S","T",0.2612,0.7009,0.0437,0.5815,0.615,61,0.067778,""],["P305S",305,"P","S",0.2587,0.9187,0.062,0.3039,0.6127,134,0.148889,""],["S171G",171,"S","G",0.2575,0.7764,0.0564,0.3898,0.5819,106,0.117778,""],["T275P",275,"T","P",0.2572,0.6277,0.0351,0.7728,0.5606,29,0.032222,""],["T124P",124,"T","P",0.2543,0.6458,0.0351,0.7261,0.5905,36,0.04,""],["P316T",316,"P","T",0.2537,0.7136,0.0351,0.6527,0.6054,48,0.053333,""],["S81T",81,"S","T",0.2532,0.8263,0.0437,0.4493,0.532,90,0.1,""],["V453L",453,"V","L",0.253,0.7543,0.0531,0.4039,0.6182,102,0.113333,""],["A440T",440,"A","T",0.2528,0.8324,0.1243,0.156,0.5741,209,0.232222,""],["S315G",315,"S","G",0.2512,0.7602,0.0564,0.3695,0.615,112,0.124444,""],["D423E",423,"D","E",0.251,0.7173,0.0407,0.5415,0.6418,69,0.076667,""],["P391T",391,"P","T",0.2502,0.4796,0.0351,0.9314,0.5428,8,0.008889,""],["A440S",440,"A","S",0.2492,0.8184,0.0873,0.2168,0.5741,172,0.191111,""],["L234M",234,"L","M",0.2492,0.7999,0.069,0.2805,0.5489,143,0.158889,""],["M36V",36,"M","V",0.2492,0.8114,0.1108,0.172,0.6596,198,0.22,""],["A304C",304,"A","C",0.2479,0.8654,0.053,0.3321,0.4867,124,0.137778,""],["Y442W",442,"Y","W",0.2473,0.7881,0.0643,0.2985,0.5886,136,0.151111,""],["G458S",458,"G","S",0.2447,0.7888,0.0564,0.3292,0.529,125,0.138889,""],["V107F",107,"V","F",0.2404,0.9267,0.1211,0.1238,0.5389,235,0.261111,""],["H421N",421,"H","N",0.239,0.9634,0.0908,0.156,0.4909,209,0.232222,-0.0178],["H177N",177,"H","N",0.2389,0.9367,0.0908,0.1602,0.6436,206,0.228889,""],["I397L",397,"I","L",0.2361,0.7368,0.0233,0.7659,0.4984,30,0.033333,""],["P419N",419,"P","N",0.2349,0.9303,0.0654,0.213,0.4793,174,0.193333,""],["K85R",85,"K","R",0.234,0.5943,0.0272,0.7937,0.6921,26,0.028889,""],["A402M",402,"A","M",0.2326,0.9308,0.1141,0.1184,0.5713,240,0.266667,""],["V29F",29,"V","F",0.2305,0.8537,0.1211,0.1184,0.4799,240,0.266667,""],["A301C",301,"A","C",0.2301,0.7698,0.053,0.2985,0.6925,136,0.151111,""],["T323D",323,"T","D",0.229,0.9045,0.3258,0.0408,0.5101,360,0.4,""],["E201D",201,"E","D",0.2273,0.7809,0.0407,0.3695,0.545,112,0.124444,""],["P463Q",463,"P","Q",0.2262,0.9481,0.1097,0.1113,0.4792,247,0.274444,""],["P419T",419,"P","T",0.2261,0.9157,0.0351,0.3598,0.4793,115,0.127778,""],["N376Q",376,"N","Q",0.2248,0.7798,0.0443,0.3292,0.5825,125,0.138889,""],["P463R",463,"P","R",0.2237,0.9588,0.4122,0.0283,0.4792,401,0.445556,""],["P326T",326,"P","T",0.2225,0.873,0.0351,0.3598,0.5043,115,0.127778,""],["D198E",198,"D","E",0.2193,0.7867,0.0407,0.3292,0.5733,125,0.138889,""],["P326K",326,"P","K",0.2162,0.9276,0.385,0.0283,0.5043,401,0.445556,""],["I22L",22,"I","L",0.2162,0.6636,0.0233,0.6527,0.6599,48,0.053333,""],["R468K",468,"R","K",0.2157,0.3796,0.0272,0.9737,0.5868,3,0.003333,""],["S171P",171,"S","P",0.2136,0.8212,0.062,0.1914,0.5819,186,0.206667,""],["S378G",378,"S","G",0.2133,0.8082,0.0564,0.213,0.5644,174,0.193333,""],["Q481H",481,"Q","H",0.2128,0.867,0.0465,0.239,0.5676,161,0.178889,""],["E417D",417,"E","D",0.2064,0.777,0.0407,0.278,0.7057,144,0.16,""],["D30H",30,"D","H",0.2042,0.8746,0.3203,0.0304,0.6588,393,0.436667,""],["Q41H",41,"Q","H",0.2039,0.9273,0.0465,0.1966,0.5339,183,0.203333,""],["P230N",230,"P","N",0.2023,0.8179,0.0654,0.1546,0.6472,210,0.233333,""],["T184C",184,"T","C",0.1951,0.8669,0.118,0.0726,0.5039,295,0.327778,""],["I54L",54,"I","L",0.1928,0.8306,0.0233,0.3695,0.5412,112,0.124444,""],["M131Y",131,"M","Y",0.1896,0.9434,0.1524,0.0474,0.4483,343,0.381111,""],["S487T",487,"S","T",0.1888,0.8109,0.0437,0.1897,0.6085,187,0.207778,""],["H421D",421,"H","D",0.188,0.9743,0.3203,0.0213,0.4909,433,0.481111,""],["A304I",304,"A","I",0.1847,0.9186,0.2064,0.0332,0.4867,383,0.425556,""],["C341A",341,"C","A",0.1825,0.8183,0.053,0.1402,0.6821,221,0.245556,""],["Q174N",174,"Q","N",0.1788,0.9045,0.0443,0.1427,0.5764,219,0.243333,""],["Y90S",90,"Y","S",0.1774,0.931,0.1726,0.0347,0.5832,378,0.42,""],["C384T",384,"C","T",0.1751,0.8624,0.118,0.0527,0.6249,331,0.367778,""],["A286C",286,"A","C",0.1743,0.8282,0.053,0.1206,0.6268,238,0.264444,""],["Y211M",211,"Y","M",0.1725,0.8785,0.1524,0.0383,0.5685,367,0.407778,""],["Q481R",481,"Q","R",0.1713,0.916,0.3025,0.0182,0.5676,451,0.501111,""],["N112Q",112,"N","Q",0.1687,0.8228,0.0443,0.1318,0.656,228,0.253333,""],["P316Y",316,"P","Y",0.1683,0.8712,0.1306,0.0419,0.6054,357,0.396667,""],["Y205L",205,"Y","L",0.1664,0.9414,0.2101,0.0233,0.452,423,0.47,""],["A402I",402,"A","I",0.1652,0.947,0.2064,0.0231,0.5713,424,0.471111,""],["M86H",86,"M","H",0.1619,0.9043,0.207,0.0227,0.545,426,0.473333,""],["Q174R",174,"Q","R",0.155,0.9339,0.3025,0.0132,0.5764,487,0.541111,""],["T115W",115,"T","W",0.144,0.9489,0.1732,0.0182,0.4873,451,0.501111,""],["P419G",419,"P","G",0.1418,0.9536,0.1184,0.0252,0.4793,414,0.46,""],["Y90W",90,"Y","W",0.1394,0.9283,0.0643,0.0454,0.5832,348,0.386667,""],["F499C",499,"F","C",0.1371,0.9135,0.1313,0.0215,0.5256,432,0.48,""],["Q41Y",41,"Q","Y",0.1335,0.9528,0.1476,0.0169,0.5339,459,0.51,""],["C321I",321,"C","I",0.1325,0.9373,0.1534,0.0162,0.5038,464,0.515556,""],["P20T",20,"P","T",0.1313,0.8501,0.0351,0.0759,0.6278,290,0.322222,""],["I397M",397,"I","M",0.1312,0.911,0.0923,0.0268,0.4984,407,0.452222,""],["Y270Q",270,"Y","Q",0.1302,0.8843,0.1476,0.0169,0.7219,459,0.51,""],["A235M",235,"A","M",0.1265,0.9192,0.1141,0.0193,0.5052,444,0.493333,""],["I54F",54,"I","F",0.1262,0.9044,0.0913,0.0243,0.5412,418,0.464444,""],["H177D",177,"H","D",0.1258,0.9608,0.3203,0.0065,0.6436,567,0.63,""],["G465P",465,"G","P",0.1223,0.9225,0.1184,0.0168,0.5531,460,0.511111,""],["A101C",101,"A","C",0.1208,0.9404,0.053,0.0354,0.4449,376,0.417778,""],["S94H",94,"S","H",0.1131,0.9281,0.1982,0.0079,0.6422,545,0.605556,-0.01754],["S81P",81,"S","P",0.1015,0.9138,0.062,0.0185,0.532,449,0.498889,""],["C411G",411,"C","G",0.1006,0.9225,0.1688,0.0065,0.6315,566,0.628889,""],["R7K",7,"R","K",0.1004,0.8745,0.0272,0.0426,0.5814,355,0.394444,""],["V107L",107,"V","L",0.099,0.9455,0.0531,0.0193,0.5389,444,0.493333,""],["T146C",146,"T","C",0.0982,0.9414,0.118,0.0085,0.5969,536,0.595556,""],["M389F",389,"M","F",0.0943,0.9054,0.0703,0.0132,0.5896,487,0.541111,""],["N493Q",493,"N","Q",0.0932,0.9472,0.0443,0.0193,0.52,444,0.493333,""],["W76F",76,"W","F",0.09,0.9352,0.1798,0.0043,0.632,612,0.68,""],["H25K",25,"H","K",0.087,0.9439,0.2488,0.0028,0.6775,661,0.734444,""],["P305G",305,"P","G",0.0819,0.9598,0.1184,0.0048,0.6127,600,0.666667,""],["P114H",114,"P","H",0.0804,0.9451,0.1362,0.004,0.6687,620,0.688889,""],["P462S",462,"P","S",0.0781,0.9434,0.062,0.0082,0.5832,541,0.601111,""],["S34Q",34,"S","Q",0.0781,0.9691,0.1717,0.0029,0.6561,659,0.732222,""],["V476I",476,"V","I",0.0569,0.9656,0.0498,0.0038,0.6349,626,0.695556,0.0192],["T406P",406,"T","P",0.0551,0.9266,0.0351,0.0051,0.6726,593,0.658889,""]],"note":"Risk is the geometric mean of three factors: how far the profile tolerates the substitution, its physicochemical salience, and its novelty. Growth per week appears where the headers carried dates."},{"name":"candidate_mutations","title":"Candidates: substitutions not yet seen in the data","columns":["Mutation","Position","Wild type","Mutant","Risk","Tolerance","Salience","Conservation"],"rows":[["V476R",476,"V","R",0.6297,0.442,0.5648,0.6349],["V476K",476,"V","K",0.6194,0.442,0.5376,0.6349],["V476D",476,"V","D",0.6144,0.442,0.5247,0.6349],["S34R",34,"S","R",0.6036,0.4638,0.4742,0.6561],["V476E",476,"V","E",0.5981,0.442,0.4841,0.6349],["A402R",402,"A","R",0.5977,0.3803,0.5614,0.5713],["V107R",107,"V","R",0.5924,0.368,0.5648,0.5389],["S34K",34,"S","K",0.5918,0.4638,0.447,0.6561],["A101R",101,"A","R",0.5897,0.3652,0.5614,0.4449],["A402K",402,"A","K",0.5879,0.3803,0.5343,0.5713],["V107K",107,"V","K",0.5827,0.368,0.5376,0.5389],["A101K",101,"A","K",0.58,0.3652,0.5343,0.4449],["V107D",107,"V","D",0.578,0.368,0.5247,0.5389],["M131D",131,"M","D",0.5723,0.3887,0.4822,0.4483],["C321R",321,"C","R",0.5674,0.3291,0.5551,0.5038],["A402E",402,"A","E",0.5656,0.3803,0.4759,0.5713],["S34E",34,"S","E",0.5649,0.4638,0.3886,0.6561],["V107E",107,"V","E",0.5627,0.368,0.4841,0.5389],["M131R",131,"M","R",0.5609,0.3887,0.454,0.4483],["A101E",101,"A","E",0.5581,0.3652,0.4759,0.4449],["C321K",321,"C","K",0.558,0.3291,0.5279,0.5038],["P463K",463,"P","K",0.5578,0.4509,0.385,0.4792],["P419R",419,"P","R",0.5558,0.4167,0.4122,0.4793],["M131E",131,"M","E",0.5557,0.3887,0.4415,0.4483],["H421I",421,"H","I",0.5522,0.5626,0.2993,0.4909],["P305R",305,"P","R",0.5519,0.4079,0.4122,0.6127],["T115R",115,"T","R",0.5506,0.3819,0.4371,0.4873],["M131K",131,"M","K",0.5495,0.3887,0.4268,0.4483],["A402D",402,"A","D",0.549,0.3803,0.4352,0.5713],["H421V",421,"H","V",0.5457,0.5626,0.2888,0.4909],["A304R",304,"A","R",0.5457,0.2895,0.5614,0.4867],["S34D",34,"S","D",0.5444,0.4638,0.3479,0.6561],["H421A",421,"H","A",0.5436,0.5626,0.2855,0.4909],["P419K",419,"P","K",0.5434,0.4167,0.385,0.4793],["A101D",101,"A","D",0.5417,0.3652,0.4352,0.4449],["P305K",305,"P","K",0.5395,0.4079,0.385,0.6127],["H421C",421,"H","C",0.5395,0.5626,0.2791,0.4909],["T115K",115,"T","K",0.539,0.3819,0.4099,0.4873],["H421F",421,"H","F",0.5383,0.5626,0.2772,0.4909],["H421L",421,"H","L",0.5375,0.5626,0.276,0.4909],["H421R",421,"H","R",0.5375,0.5626,0.2759,0.4909],["A235R",235,"A","R",0.5372,0.2762,0.5614,0.5052],["A304K",304,"A","K",0.5368,0.2895,0.5343,0.4867],["C321E",321,"C","E",0.5366,0.3291,0.4696,0.5038],["I397D",397,"I","D",0.5332,0.2639,0.5746,0.4984],["Y205D",205,"Y","D",0.5312,0.3558,0.4213,0.452],["G465R",465,"G","R",0.5307,0.2817,0.5306,0.5531],["A235K",235,"A","K",0.5284,0.2762,0.5343,0.5052],["P463E",463,"P","E",0.5281,0.4509,0.3266,0.4792],["F499D",499,"F","D",0.5266,0.2643,0.5525,0.5256],["C411R",411,"C","R",0.5253,0.2612,0.5551,0.6315],["T146R",146,"T","R",0.5239,0.3291,0.4371,0.5969],["G465K",465,"G","K",0.5215,0.2817,0.5034,0.5531],["W76D",76,"W","D",0.5215,0.292,0.4856,0.632],["I54D",54,"I","D",0.5211,0.2463,0.5746,0.5412],["I397R",397,"I","R",0.5207,0.2639,0.535,0.4984],["C321D",321,"C","D",0.5206,0.3291,0.4289,0.5038],["I397E",397,"I","E",0.5203,0.2639,0.5339,0.4984],["H421K",421,"H","K",0.5192,0.5626,0.2488,0.4909],["Y90D",90,"Y","D",0.5176,0.3291,0.4213,0.5832]],"note":"This list is the early-warning mechanism: a substitution can be scored before it is ever seen. The estimate comes from a profile model and does not account for epistasis — how other substitutions change the effect."},{"name":"hotspots","title":"Hotspots: positions with the most substitution diversity","columns":["Position","Wild type","Distinct substitutions","Total count","Max risk","Conservation","Substitutions"],"rows":[[421,"H",6,884,0.5632,0.4909,"H421D, H421N, H421Q, H421P, H421E, H421G"],[463,"P",6,860,0.4549,0.4792,"P463R, P463Q, P463W, P463N, P463H, P463T"],[131,"M",6,833,0.5101,0.4483,"M131Y, M131W, M131H, M131F, M131P, M131S"],[115,"T",6,829,0.5357,0.4873,"T115W, T115H, T115M, T115S, T115Y, T115F"],[101,"A",6,818,0.4491,0.4449,"A101C, A101F, A101S, A101L, A101V, A101M"],[205,"Y",6,811,0.476,0.452,"Y205L, Y205M, Y205V, Y205I, Y205T, Y205F"],[25,"H",6,773,0.5359,0.6775,"H25K, H25P, H25R, H25Y, H25N, H25T"],[76,"W",6,740,0.5488,0.632,"W76F, W76C, W76A, W76Y, W76I, W76V"],[389,"M",6,610,0.4703,0.5896,"M389F, M389Y, M389L, M389I, M389W, M389A"],[184,"T",6,520,0.4142,0.5039,"T184C, T184N, T184A, T184S, T184Q, T184G"],[211,"Y",6,517,0.4988,0.5685,"Y211M, Y211L, Y211T, Y211I, Y211A, Y211C"],[29,"V",6,515,0.474,0.4799,"V29F, V29M, V29A, V29P, V29L, V29T"],[375,"R",6,385,0.583,0.555,"R375Y, R375Q, R375T, R375H, R375P, R375N"],[117,"H",6,374,0.4642,0.5188,"H117P, H117T, H117M, H117S, H117W, H117Q"],[195,"N",6,369,0.4572,0.5849,"N195G, N195Y, N195T, N195H, N195P, N195C"],[378,"S",6,364,0.4396,0.5644,"S378G, S378N, S378A, S378Y, S378P, S378C"],[376,"N",6,354,0.4623,0.5825,"N376S, N376Q, N376T, N376P, N376C, N376H"],[391,"P",6,354,0.3846,0.5428,"P391G, P391S, P391N, P391C, P391Q, P391T"],[487,"S",6,344,0.4085,0.6085,"S487T, S487Q, S487P, S487C, S487A, S487G"],[286,"A",6,340,0.4388,0.6268,"A286C, A286L, A286M, A286V, A286T, A286S"],[275,"T",6,334,0.4019,0.5606,"T275G, T275A, T275Q, T275N, T275Y, T275P"],[431,"V",6,330,0.4235,0.5604,"V431T, V431M, V431L, V431I, V431C, V431A"],[482,"C",6,326,0.4035,0.6018,"C482L, C482M, C482V, C482P, C482T, C482S"],[408,"L",6,243,0.4515,0.6431,"L408F, L408T, L408M, L408A, L408V, L408C"],[202,"D",6,235,0.5214,0.6755,"D202H, D202S, D202N, D202E, D202P, D202Q"]],"note":"Repeated independent substitutions at one position are a classic signature of positive selection: evolution keeps revisiting that site."}],"payload":{"reference_id":"rpoB|isolate_0000|2024-01-01","reference_length":500,"date_range":["2024-01-01","2024-09-02"]},"panel":{"gene":"rpoB","drug":"RIF","length":500,"n_sequences":900,"n_weeks":36,"driver_codons":[430,432,435,445,450,452],"n_polymorphic":93,"placed_counts":{"L452P":101,"L430P":88,"S450W":41,"S450L":30,"D435Y":27,"Q432K":24,"D435V":23,"H445Y":23,"Q432P":22,"H445D":17,"H445R":17},"synthetic":true}}}};</script>
 <script>
 /* GermoVision — Pathogen Mutation Intelligence
    ------------------------------------------------------------------
-   Six views over one data model. Surveillance views read the last
-   training run; the Analyze view runs models on files the user drops
-   and feeds its results back into the Mutations and Resistance views,
-   so an upload changes what the whole system shows.
+   Two surfaces, deliberately separated.
+
+   The landing page carries every explanation the product has: what the
+   models do, what the system accepts, how it was validated, where it
+   must not be trusted. It is read once.
+
+   The console carries data and controls, and no prose at all. It is
+   read under time pressure, repeatedly, by someone who already knows
+   what the system is — and a paragraph re-explaining the method there
+   is something to scroll past, every single time.
+
+   Five console views over one data model. Surveillance views read the
+   last training run; Analyze runs models on dropped files and feeds
+   results back into Mutations and Resistance, so an upload changes what
+   the whole system shows.
    ------------------------------------------------------------------ */
 (function () {
   "use strict";
@@ -510,6 +659,11 @@ tbody tr:hover { background: var(--sunk); }
   const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const SVGNS = "http://www.w3.org/2000/svg";
   const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* Static build marker. Declared here rather than in the boot block: the
+     render helpers below branch on it, and a const read before its own
+     declaration throws rather than reading undefined. */
+  const STATIC = window.__GV_STATIC__ || null;
 
   let S = null;          // surveillance payload
   let store = [];        // raw analysis results, for downloads
@@ -787,10 +941,25 @@ tbody tr:hover { background: var(--sunk); }
 
   const TITLES = {
     overview: "Overview", analyze: "Analyze", mutations: "Mutations",
-    resistance: "Resistance", spread: "Spread", models: "Models",
+    resistance: "Resistance", spread: "Spread",
   };
   const rendered = {};
   let current = "overview";
+
+  /* Landing and console are separate surfaces, not two views of one
+     router: the landing has no rail, no crumb and no data dependency. */
+  function enterConsole(view) {
+    $("landing").hidden = true;
+    $("shell").hidden = false;
+    show(view || current);
+    window.scrollTo(0, 0);
+  }
+
+  function enterLanding() {
+    $("shell").hidden = true;
+    $("landing").hidden = false;
+    window.scrollTo(0, 0);
+  }
 
   function show(view) {
     if (!TITLES[view]) view = "overview";
@@ -804,7 +973,7 @@ tbody tr:hover { background: var(--sunk); }
 
     const build = {
       overview: buildOverview, mutations: buildMutations,
-      resistance: buildResistance, spread: buildSpread, models: buildModels,
+      resistance: buildResistance, spread: buildSpread,
     }[view];
     if (build) build();          // rebuilt each visit so animations replay
     rendered[view] = true;
@@ -818,17 +987,15 @@ tbody tr:hover { background: var(--sunk); }
     ind.style.height = link.parentElement.offsetHeight + "px";
   }
 
-  function needData(where) {
-    return '<div class="empty"><h2>No surveillance data yet</h2>' +
-      "<p>This view reads the last training run. Produce one, then reload:</p>" +
-      '<p><code class="mono">python -m germovision.train --save-models models</code></p>' +
-      "<p>" + esc(where) + "</p></div>";
+  function needData() {
+    return '<div class="empty"><h2>No training run found</h2>' +
+      '<p class="mono">python -m germovision.train --save-models models</p></div>';
   }
 
   /* ── OVERVIEW ── */
   function buildOverview() {
     const box = $("kpis");
-    if (!S || !S.available) { box.innerHTML = ""; $("signals").innerHTML = needData(""); return; }
+    if (!S || !S.available) { box.innerHTML = ""; $("signals").innerHTML = needData(); return; }
 
     const k = S.kpi;
     const tiles = [
@@ -877,9 +1044,6 @@ tbody tr:hover { background: var(--sunk); }
       $("ov-legend").innerHTML = S.lineages.map((l, i) =>
         '<span><i style="background:' + css(SC[i % 4]) + '"></i>' + esc(l.label) + "</span>").join("");
       stackedArea($("ov-stack"), S.observed, S.lineages, 560, 260);
-      const total = S.observed.reduce((a, o) => a + o.total, 0);
-      $("ov-note").textContent = total + " samples across " + S.observed.length +
-        " weeks. A widening band means displacement, not a rise in absolute cases.";
     }
 
     animatedBars($("ov-bars"), (S.internal || []).slice()
@@ -895,13 +1059,15 @@ tbody tr:hover { background: var(--sunk); }
   /* ── MUTATIONS ── */
   function buildMutations() {
     const box = $("mut-content");
-    const r = LAST.escape;
+    // An upload wins; otherwise the reference panel from the last training
+    // run. Without the fallback this view is empty in the published build,
+    // where uploading is deliberately switched off — a dead tab.
+    const r = LAST.escape || (S && S.escape) || null;
     if (!r) {
-      box.innerHTML = '<div class="empty"><h2>No sequence set loaded</h2>' +
-        "<p>Upload protein or gene sequences of one pathogen protein. The system builds a " +
-        "position profile, ranks every observed substitution by evolutionary risk, and scores " +
-        "substitutions that have not appeared yet.</p>" +
-        '<button class="btn" onclick="location.hash=\'#analyze\'">Go to Analyze</button></div>';
+      box.innerHTML = '<div class="empty"><h2>No sequence set</h2>' +
+        '<button class="btn" type="button" data-goto="analyze">Go to Analyze</button></div>';
+      const b = box.querySelector("[data-goto]");
+      if (b) b.addEventListener("click", () => show("analyze"));
       return;
     }
 
@@ -926,14 +1092,12 @@ tbody tr:hover { background: var(--sunk); }
       ].map(([l, v, t], i) =>
         '<div class="kpi ' + t + '" style="animation-delay:' + (i * 0.06) + 's">' +
         '<div class="k-l">' + l + '</div><div class="k-v">' + esc(v) + "</div>" +
-        '<div class="k-n">' + esc(r.payload.date_range ? r.payload.date_range.join(" → ") : "no dates in headers") +
+        '<div class="k-n">' + esc(r.payload.date_range ? r.payload.date_range.join(" → ") : "no dates") +
         "</div></div>").join("") + "</div>" +
 
       '<div class="panel"><div class="panel-head"><h2>Substitutions along the protein</h2>' +
-      '<span class="hint">Tick height is risk; thickness is how often it was seen</span></div>' +
-      '<svg class="chart" id="pos-map" viewBox="0 0 900 250"></svg>' +
-      '<p class="note">Clusters of ticks mark positions evolution keeps revisiting — repeated ' +
-      "independent substitutions at one site are a classic signature of positive selection.</p></div>" +
+      '<span class="hint">Height = risk · width = count</span></div>' +
+      '<svg class="chart" id="pos-map" viewBox="0 0 900 250"></svg></div>' +
 
       '<div class="two">' +
       panelTable("Observed substitutions, by risk", observed, 0) +
@@ -948,13 +1112,13 @@ tbody tr:hover { background: var(--sunk); }
   /* ── RESISTANCE ── */
   function buildResistance() {
     const box = $("res-content");
-    if (!S || !S.available) { box.innerHTML = needData("Resistance metrics come from the held-out test set."); return; }
+    if (!S || !S.available) { box.innerHTML = needData(); return; }
 
     const live = LAST.resistance;
     const ext = (S.external || []).slice().sort((a, b) => b.sens[0] - a.sens[0]);
 
     box.innerHTML =
-      (live ? '<div class="panel"><div class="panel-head"><h2>Your last upload</h2>' +
+      (live ? '<div class="panel"><div class="panel-head"><h2>Last upload</h2>' +
         '<span class="hint">' + esc(live.summary) + "</span></div>" +
         '<div class="kpis" style="margin-bottom:0">' + live.highlights.map((h, i) =>
           '<div class="kpi ' + (h.tone || "") + '" style="animation-delay:' + (i * 0.06) + 's">' +
@@ -962,14 +1126,11 @@ tbody tr:hover { background: var(--sunk); }
           '</div><div class="k-n">from uploaded file</div></div>').join("") + "</div></div>" : "") +
 
       '<div class="panel"><div class="panel-head"><h2>Sensitivity by drug — external validation</h2>' +
-      '<span class="hint">Trained without a single Kazakh isolate, tested on them</span></div>' +
+      '<span class="hint">Trained without Kazakh isolates, tested on them</span></div>' +
       '<div class="legend"><span><i style="background:' + css("--s1") + '"></i>GermoVision, 95% CI</span>' +
       '<span><i class="hollow"></i>WHO catalogue (current standard)</span>' +
       '<span><i style="background:' + css("--accent") + ';width:3px;height:14px;border-radius:0"></i>H1 target = 0.90</span></div>' +
-      '<svg class="chart" id="res-dots" viewBox="0 0 800 470"></svg>' +
-      '<p class="note">External validation is the only estimate that reflects real deployment: ' +
-      "the internal test is always more optimistic. The reference point is not random guessing " +
-      "but the standard in use today.</p></div>" +
+      '<svg class="chart" id="res-dots" viewBox="0 0 800 470"></svg></div>' +
 
       '<div class="two"><div class="panel"><div class="panel-head"><h2>MDR share by country</h2></div>' +
       '<div class="bars" id="res-countries"></div></div>' +
@@ -1002,7 +1163,7 @@ tbody tr:hover { background: var(--sunk); }
     const box = $("spread-content");
     const live = LAST.growth;
     if ((!S || !S.available) && !live) {
-      box.innerHTML = needData("Or upload lineage counts (region, week, lineage, count) in Analyze.");
+      box.innerHTML = needData();
       return;
     }
 
@@ -1022,7 +1183,7 @@ tbody tr:hover { background: var(--sunk); }
     box.innerHTML =
       (S && S.available && S.observed.length
         ? '<div class="panel"><div class="panel-head"><h2>Lineage share over time, national</h2>' +
-          '<span class="hint">Observed weekly frequencies</span></div>' +
+          "</div>" +
           '<div class="legend" id="sp-legend"></div>' +
           '<svg class="chart" id="sp-stack" viewBox="0 0 980 300"></svg></div>'
         : "") +
@@ -1030,11 +1191,7 @@ tbody tr:hover { background: var(--sunk); }
       '<div class="panel"><div class="panel-head"><h2>Growth advantage by region</h2>' +
       '<span class="hint">' + (target ? esc(target.lineage.replace(/_/g, " ")) : "—") +
       " · β ± 1.96 SE</span></div>" +
-      '<svg class="chart" id="sp-forest" viewBox="0 0 900 330"></svg>' +
-      '<p class="note">β is the log growth advantage per week relative to the most abundant ' +
-      "lineage. Red marks estimates whose interval excludes zero; grey marks the rest. " +
-      "The interval widens where fewer samples were sequenced — the model reports its " +
-      "uncertainty rather than hiding it.</p></div>" +
+      '<svg class="chart" id="sp-forest" viewBox="0 0 900 330"></svg></div>' +
 
       (live ? live.tables.map((t, j) => panelTable(t.title, t, j)).join("")
             : '<div class="panel"><div class="panel-head"><h2>Regional detail</h2></div>' +
@@ -1057,21 +1214,26 @@ tbody tr:hover { background: var(--sunk); }
     if (live) wireDownloads(box, live);
   }
 
-  /* ── MODELS ── */
-  function buildModels() {
-    const box = $("models-content");
+  /* ── LANDING ── */
+
+  /* The landing is the only place in the product that explains anything,
+     so the model descriptions live here rather than in the console. The
+     numbers beside them come from the last run: a claim about what a
+     model does is worth more next to what it actually scored. */
+  function buildLanding(st) {
     const q = {};
     if (S && S.available) (S.internal || []).forEach((d) => { q[d.drug] = d; });
     const rif = q.RIF;
+    const trained = S && S.available;
 
     const cards = [
       {
         code: "GV-RESIST", name: "Drug resistance from genome",
         body: "Two tiers. The WHO mutation catalogue decides first — it is the reference " +
           "standard, built on more than 52 000 isolates, and a clinician must see that the " +
-          "conclusion matches it. Gradient boosting handles what the catalogue is silent about: " +
-          "rare variants, combinations, recently introduced drugs.",
-        stats: S && S.available ? [
+          "conclusion matches it. Gradient boosting handles what the catalogue is silent " +
+          "about: rare variants, combinations, recently introduced drugs.",
+        stats: trained ? [
           ["Drugs", S.internal.length],
           ["Closed correctly", pct(S.kpi.closed, 0)],
           ["Calibration ECE", rif ? num(rif.ece) : "—"],
@@ -1080,10 +1242,14 @@ tbody tr:hover { background: var(--sunk); }
       {
         code: "GV-ESCAPE", name: "Evolutionary risk of substitutions",
         body: "Risk = tolerance × salience × novelty, the same decomposition EVEscape uses, " +
-          "built on a position-specific profile rather than a language model. It fits in seconds " +
-          "on the user's own data and needs no accelerator. The honest limit: a profile treats " +
-          "positions as independent and so cannot see epistasis.",
-        stats: [["Fitting", "on upload"], ["Weights required", "none"], ["Epistasis", "not modelled"]],
+          "built on a position-specific profile rather than a language model. It fits in " +
+          "seconds on your own data and needs no accelerator. The honest limit: a profile " +
+          "treats positions as independent and so cannot see epistasis.",
+        stats: trained && S.escape ? [
+          ["Reference panel", S.escape.highlights[0].value + " seq"],
+          ["Substitutions", S.escape.highlights[1].value],
+          ["Epistasis", "not modelled"],
+        ] : [["Fitting", "on upload"], ["Epistasis", "not modelled"]],
       },
       {
         code: "GV-GROWTH", name: "Lineage dynamics",
@@ -1091,7 +1257,7 @@ tbody tr:hover { background: var(--sunk); }
           "normalisation and uncertainty depends on how much was sequenced. Hierarchical " +
           "multinomial logistic regression handles both, and lets a region with few samples " +
           "borrow strength from the rest.",
-        stats: S && S.available ? [
+        stats: trained ? [
           ["Shrinkage τ", num(S.tau, 4)],
           ["Regions", Object.keys(S.forecasts || {}).length],
           ["Lineages", (S.lineages || []).length],
@@ -1106,43 +1272,31 @@ tbody tr:hover { background: var(--sunk); }
       },
     ];
 
-    box.innerHTML =
-      '<div class="mcards">' + cards.map((c, i) =>
-        '<div class="mcard" style="animation-delay:' + (i * 0.07) + 's">' +
-        '<div class="code">' + c.code + "</div><h3>" + esc(c.name) + "</h3><p>" + esc(c.body) + "</p>" +
-        "<dl>" + c.stats.map(([k, v]) => "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>").join("") +
-        "</dl></div>").join("") + "</div>" +
+    $("lp-models").innerHTML = cards.map((c) =>
+      '<div class="mcard"><div class="code">' + c.code + "</div><h3>" + esc(c.name) +
+      "</h3><p>" + esc(c.body) + "</p><dl>" +
+      c.stats.map(([k, v]) => "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>").join("") +
+      "</dl></div>").join("");
 
-      '<div class="two"><div class="panel"><div class="panel-head"><h2>Validation protocol</h2>' +
-      '<span class="hint">Checked automatically; a violation stops the run</span></div>' +
-      '<ol class="rules">' + [
-        "<b>Split by time, never at random.</b> Uses submission date, not collection date: a sample collected on 1 November but deposited on the 20th was not available to the system on the 5th.",
-        "<b>Relatedness clusters stay intact.</b> Isolates from one outbreak are near-identical and are not independent observations.",
-        "<b>External geographic validation.</b> Train on 22 countries, test on the 23rd.",
-        "<b>Augmentation only after the split, only on train.</b> A CI test fails if the order is reversed.",
-        "<b>Feature vocabulary built from train alone.</b> Collecting it over all data is a quiet leak.",
-        "<b>Calibration on a separate part</b> that overlaps neither training nor test.",
-        "<b>Baselines are mandatory.</b> The reference is the standard in use today, not random guessing.",
-      ].map((t) => "<li>" + t + "</li>").join("") + "</ol></div>" +
+    if (st && st.formats) {
+      $("lp-formats").innerHTML = st.formats.map((f) =>
+        '<div class="fmt"><div class="t">' + esc(f.title) + '</div><div class="e">' + esc(f.ext) +
+        '</div><div class="s">' + esc(f.shape) + '</div><div class="m">' + esc(f.model) +
+        " → " + esc(f.result) + "</div></div>").join("");
+    }
 
-      '<div class="panel"><div class="panel-head"><h2>Where the system must not be trusted alone</h2></div>' +
-      '<ol class="rules">' + [
-        "<b>It does not diagnose or prescribe.</b> It supplies information for a clinician's decision.",
-        "<b>It does not predict when a mutation will appear.</b> Mutation is a random event; its consequences and its fate are what can be predicted.",
-        "<b>Poorly characterised drugs stay weak.</b> Bedaquiline, delamanid and linezolid carry a lab-confirmation flag that reaches the clinical report.",
-        "<b>It degrades over time.</b> The pathogen evolves; without retraining the estimates go stale.",
-        "<b>Research use only.</b> Not a certified medical device.",
-      ].map((t) => "<li>" + t + "</li>").join("") + "</ol></div></div>" +
-
-      (S && S.available ? '<div class="panel"><div class="panel-head"><h2>Ablation — rifampicin</h2>' +
-        '<span class="hint">Each row adds one feature group to the row above</span></div>' +
-        '<div class="tblwrap"><table><thead><tr><th>Configuration</th><th class="num">Sens</th>' +
-        '<th class="num">Spec</th><th class="num">PR-AUC</th></tr></thead><tbody>' +
-        (S.ablations || []).map((a, i) =>
-          '<tr style="animation-delay:' + (i * 0.04) + 's"><td class="wrap">' + esc(a.config) +
-          '</td><td class="num">' + num(a.sensitivity) + '</td><td class="num">' + num(a.specificity) +
-          '</td><td class="num">' + num(a.pr_auc) + "</td></tr>").join("") +
-        "</tbody></table></div></div>" : "");
+    if (trained) {
+      const m = S.meta;
+      $("lp-meta").textContent =
+        m.n_isolates + " isolates · " + m.n_clusters + " clusters · " +
+        m.n_countries + " countries · run " + m.generated_at;
+      $("lp-run").textContent = m.synthetic
+        ? "Figures below come from a synthetic run — pipeline quality, not clinical quality"
+        : "Figures below come from the run of " + m.generated_at;
+    } else {
+      $("lp-meta").textContent = "no training run found";
+      $("lp-run").textContent = "No training run found — the console will be empty";
+    }
   }
 
   /* ═══════════════ shared table rendering ═══════════════ */
@@ -1151,9 +1305,13 @@ tbody tr:hover { background: var(--sunk); }
     if (!t) return "";
     const MAX = 200;
     const shown = t.rows.slice(0, MAX);
+    // The published build cannot hand the viewer a file — the artifact
+    // viewer grants no download permission — so the button is omitted
+    // there rather than rendered dead. Locally it works.
+    const dl = STATIC ? "" :
+      '<button class="btn ghost sm" data-tbl="' + idx + '">Download CSV</button>';
     return '<div class="panel"><div class="tbl-head"><h4>' + esc(title) + "</h4>" +
-      '<span class="cnt">' + t.rows.length + " rows" +
-      '<button class="btn ghost sm" data-tbl="' + idx + '">Download CSV</button></span></div>' +
+      '<span class="cnt">' + t.rows.length + " rows" + dl + "</span></div>" +
       (t.rows.length
         ? '<div class="tblwrap"><table><thead><tr>' +
           t.columns.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr></thead><tbody>" +
@@ -1163,9 +1321,8 @@ tbody tr:hover { background: var(--sunk); }
           "</tbody></table></div>"
         : '<p class="trunc">Empty.</p>') +
       (t.rows.length > shown.length
-        ? '<p class="trunc">Showing the first ' + MAX + " of " + t.rows.length +
-          " rows. The download contains all of them.</p>" : "") +
-      (t.note ? '<p class="note">' + esc(t.note) + "</p>" : "") + "</div>";
+        ? '<p class="trunc">First ' + MAX + " of " + t.rows.length +
+          " rows · download has all</p>" : "") + "</div>";
   }
 
   function wireDownloads(scope, result) {
@@ -1300,12 +1457,23 @@ tbody tr:hover { background: var(--sunk); }
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  /* ═══════════════ surface navigation ═══════════════ */
+
+  ["enter-top", "enter-hero"].forEach((id) => {
+    const b = $(id);
+    if (b) b.addEventListener("click", () => enterConsole());
+  });
+  $("back-landing").addEventListener("click", enterLanding);
+  $("back-landing-narrow").addEventListener("click", (e) => {
+    e.preventDefault();
+    enterLanding();
+  });
+
   /* ═══════════════ boot ═══════════════ */
 
   /* Static build: the same system without a backend. Surveillance data is
      baked in at build time; the Analyze view explains that running models
      needs the local app, rather than offering an upload that cannot work. */
-  const STATIC = window.__GV_STATIC__ || null;
   const boot = STATIC
     ? Promise.resolve([STATIC.status, STATIC.surveillance])
     : Promise.all([
@@ -1331,11 +1499,6 @@ tbody tr:hover { background: var(--sunk); }
     }
 
     if (st) {
-      $("formats").innerHTML = st.formats.map((f) =>
-        '<div class="fmt"><div class="t">' + esc(f.title) + '</div><div class="e">' + esc(f.ext) +
-        '</div><div class="s">' + esc(f.shape) + '</div><div class="m">' + esc(f.model) +
-        " → " + esc(f.result) + "</div></div>").join("");
-
       const box = $("model-status");
       if (!st.models_loaded) {
         box.innerHTML = '<div class="alert warn"><b>Resistance models are not loaded</b>' +
@@ -1361,7 +1524,12 @@ tbody tr:hover { background: var(--sunk); }
       $("topbar-stat").textContent = "No training report";
     }
 
-    show((location.hash || "#overview").slice(1));
+    buildLanding(st);
+
+    // A deep link goes straight to the console; a bare load starts on the
+    // landing page, which is where the explanations are.
+    const want = (location.hash || "").slice(1);
+    if (TITLES[want]) enterConsole(want); else current = "overview";
   });
 
   /* Navigation does not depend on the hash. Clicking a rail link switches the

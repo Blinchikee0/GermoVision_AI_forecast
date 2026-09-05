@@ -33,6 +33,7 @@ from pathlib import Path
 
 import numpy as np
 
+from .analysis import escape_from_records
 from .core.metrics.calibration import evaluate_calibration
 from .core.splitting import LeakageGuard, holdout_group, temporal_cluster_split
 from .core.types import LeakageError, Split
@@ -45,7 +46,7 @@ from .data import (
     generate_isolates,
     load_cryptic,
 )
-from .data.synthetic import generate_lineage_counts
+from .data.synthetic import generate_lineage_counts, generate_protein_panel
 from .models import CatalogueBaseline, GVGrowth, GVResist
 from .models.resist import Decision
 from .persistence import ModelBundle, save_bundle
@@ -315,6 +316,22 @@ def fit_growth() -> dict:
     }
 
 
+def fit_escape(top_candidates: int = 60) -> dict:
+    """Оценить эволюционный риск замен на панели последовательностей.
+
+    Панель порождается из тех же позиций каталога ВОЗ, что использует
+    GV-Resist, поэтому вкладка мутаций и вкладка устойчивости говорят об
+    одних и тех же заменах. Результат кладётся в отчёт, чтобы система
+    показывала карту замен и без загрузки файла: в опубликованной версии
+    загрузка отключена, и без этого раздел оставался бы пустым.
+    """
+    records, panel = generate_protein_panel()
+    result = escape_from_records(records, top_candidates=top_candidates)
+    payload = result.to_dict()
+    payload["panel"] = panel
+    return payload
+
+
 def build_example_reports(
     ds: IsolateDataset,
     split: Split,
@@ -564,6 +581,19 @@ def main(argv: list[str] | None = None) -> int:
             )
         _log(f"\nEstimated shrinkage tau = {growth['tau']:.4f}")
 
+    # --- 8-бис. Эволюционный риск замен ----------------------------------
+    _header("8-bis. GV-ESCAPE: evolutionary risk of substitutions")
+    escape = fit_escape()
+    _log(escape["summary"])
+    _log()
+    _log(f"{'Substitution':<16}{'Risk':>8}{'Count':>8}{'Growth/wk':>12}")
+    _log("-" * 76)
+    for row in escape["tables"][0]["rows"][:8]:
+        # NB: not `growth` — that name holds the GV-Growth result in this
+        # scope, and rebinding it here silently blanks the whole section.
+        per_week = "" if row[11] == "" else f"{row[11]:+.3f}"
+        _log(f"{row[0]:<16}{row[4]:>8.3f}{row[9]:>8}{per_week:>12}")
+
     # --- 9. Примеры заключений -------------------------------------------
     _header("9. EXAMPLE ISOLATE REPORTS")
     examples, trained = build_example_reports(ds, split, catalogue)
@@ -631,6 +661,7 @@ def main(argv: list[str] | None = None) -> int:
         "external_validation": external,
         "ablations": ablations,
         "growth": growth,
+        "escape": escape,
         "example_reports": examples,
         "catalogue_size": len(catalogue),
     }

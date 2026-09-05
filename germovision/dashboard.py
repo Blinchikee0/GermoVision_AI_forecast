@@ -172,6 +172,7 @@ def build_payload(metrics: dict) -> dict:
         "recovery": growth.get("recovery", []),
         "tau": growth.get("tau"),
         "examples": metrics.get("example_reports", []),
+        "escape": metrics.get("escape"),
     }
 
 

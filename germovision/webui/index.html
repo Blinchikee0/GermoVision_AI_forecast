@@ -6,19 +6,134 @@
 <title>GermoVision Mutation Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <link rel="stylesheet" href="/app.css">
 </head>
 <body>
 
-<div class="shell">
+<!-- ══════════════════════════════════════════════════════════════════
+     LANDING — every explanation in the product lives here and nowhere
+     else. The console past this page carries data and controls only.
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="landing" id="landing">
 
-  <!-- ══════════════ NAVIGATION RAIL ══════════════ -->
-  <nav class="rail" aria-label="Sections">
-    <div class="brand">
-      <b>GERMOVISION</b>
-      <span>Mutation Intelligence</span>
+  <header class="lp-top">
+    <div class="lp-brand"><b>GERMOVISION</b><span>Mutation Intelligence</span></div>
+    <button class="btn" type="button" id="enter-top">Open console</button>
+  </header>
+
+  <section class="lp-hero">
+    <h1>Mutations arise at random.<br>They survive predictably.</h1>
+    <p class="lp-lead">
+      GermoVision does not try to say which mutation will appear next — that is a
+      random event and nobody can forecast it. It answers the questions that can be
+      answered: what a mutation does to treatment, whether evolution will keep it,
+      and how fast the lineage carrying it is displacing the others.
+    </p>
+    <div class="lp-cta">
+      <button class="btn lg" type="button" id="enter-hero">Open console</button>
+      <span class="lp-cta-note" id="lp-run">Reads the last local training run</span>
     </div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>What it answers</h2>
+    <div class="lp-grid3">
+      <div class="lp-card">
+        <b>Will this treatment work?</b>
+        <p>Resistance called from the genome for 13 drugs, in about two days after
+        sequencing instead of the roughly 60 days a culture-based test takes.</p>
+      </div>
+      <div class="lp-card">
+        <b>Which substitutions matter?</b>
+        <p>Every substitution ranked by evolutionary risk — including ones that have
+        not appeared yet, which is what makes the warning early.</p>
+      </div>
+      <div class="lp-card">
+        <b>What is spreading, and where?</b>
+        <p>Growth advantage per lineage per region, with intervals that widen where
+        less was sequenced instead of pretending to precision.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>The four models</h2>
+    <div class="mcards" id="lp-models"></div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>What you can feed it</h2>
+    <p class="lp-sub">Format is detected from file contents, not from the extension, and
+    routed to the model that fits. A whole genome is refused on purpose: assembly and
+    variant calling are a separate pipeline with their own failure modes.</p>
+    <div class="fmt-grid" id="lp-formats"></div>
+  </section>
+
+  <section class="lp-sec lp-two">
+    <div>
+      <h2>How it is validated</h2>
+      <p class="lp-sub">Checked automatically on every run; a violation stops the run
+      rather than producing a better-looking number.</p>
+      <ol class="rules">
+        <li><b>Split by time, never at random.</b> Uses submission date, not collection
+        date: a sample collected on 1 November but deposited on the 20th was not
+        available to the system on the 5th.</li>
+        <li><b>Relatedness clusters stay intact.</b> Isolates from one outbreak are
+        near-identical and are not independent observations.</li>
+        <li><b>External geographic validation.</b> Train on 22 countries, test on the 23rd.</li>
+        <li><b>Augmentation only after the split, only on train.</b> A CI test fails if
+        the order is reversed.</li>
+        <li><b>Feature vocabulary built from train alone.</b> Collecting it over all data
+        is a quiet leak.</li>
+        <li><b>Calibration on a separate part</b> that overlaps neither training nor test.</li>
+        <li><b>Baselines are mandatory.</b> The reference is the standard in use today —
+        the WHO catalogue — not random guessing.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>Where it must not be trusted alone</h2>
+      <p class="lp-sub">Stated here because a system that hides its limits gets used
+      past them.</p>
+      <ol class="rules">
+        <li><b>It does not diagnose or prescribe.</b> It supplies information for a
+        clinician's decision.</li>
+        <li><b>It does not predict when a mutation will appear.</b> Mutation is a random
+        event; its consequences and its fate are what can be predicted.</li>
+        <li><b>Poorly characterised drugs stay weak.</b> Bedaquiline, delamanid and
+        linezolid carry a lab-confirmation flag that reaches the clinical report.</li>
+        <li><b>It degrades over time.</b> The pathogen evolves; without retraining the
+        estimates go stale.</li>
+        <li><b>Research use only.</b> Not a certified medical device.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="lp-sec">
+    <h2>Run it on your own machine</h2>
+    <p class="lp-sub">Analysis is local by design. Uploading sequences would send patient
+    data to a server, so the published build offers no upload at all.</p>
+    <pre class="lp-code">pip install -e ".[app]"
+python -m germovision.train --save-models models
+python -m germovision.app</pre>
+  </section>
+
+  <footer class="lp-foot">
+    <span>Research use only. Not a certified medical device. Does not diagnose or prescribe.</span>
+    <span class="mono" id="lp-meta"></span>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CONSOLE — data and controls. No explanatory prose past this point.
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="shell" id="shell" hidden>
+
+  <nav class="rail" aria-label="Sections">
+    <button class="brand" type="button" id="back-landing">
+      <b>GERMOVISION</b>
+      <span>Back to overview page</span>
+    </button>
 
     <ul class="nav" id="nav">
       <li><a href="#overview"   data-view="overview">Overview</a></li>
@@ -26,12 +141,11 @@
       <li><a href="#mutations"  data-view="mutations">Mutations</a></li>
       <li><a href="#resistance" data-view="resistance">Resistance</a></li>
       <li><a href="#spread"     data-view="spread">Spread</a></li>
-      <li><a href="#models"     data-view="models">Models</a></li>
+      <li class="to-landing"><a href="#" id="back-landing-narrow">Info</a></li>
       <li class="nav-indicator" id="nav-indicator" aria-hidden="true"></li>
     </ul>
   </nav>
 
-  <!-- ══════════════ MAIN ══════════════ -->
   <main class="main">
     <header class="topbar">
       <div class="crumb" id="crumb">Overview</div>
@@ -43,15 +157,8 @@
 
     <div class="views" id="views">
 
-      <!-- ────────── OVERVIEW ────────── -->
       <section class="view" data-view="overview">
-        <div class="view-head">
-          <h1>Situation Overview</h1>
-          <p>Where the pathogen population stands right now, and what changed.</p>
-        </div>
-
         <div class="kpis" id="kpis"></div>
-
         <div class="split">
           <div class="panel">
             <div class="panel-head">
@@ -60,92 +167,49 @@
             </div>
             <div class="signals" id="signals"></div>
           </div>
-
           <div class="panel">
             <div class="panel-head"><h2>Lineage share, national</h2></div>
             <div class="legend" id="ov-legend"></div>
             <svg class="chart" id="ov-stack" viewBox="0 0 560 260" role="img"
                  aria-label="Lineage share over time"></svg>
-            <p class="note" id="ov-note"></p>
           </div>
         </div>
-
         <div class="panel">
-          <div class="panel-head">
-            <h2>Detection capability by drug</h2>
-            <span class="hint">Share of isolates correctly closed without a phenotypic test</span>
-          </div>
+          <div class="panel-head"><h2>Correctly closed without a lab test, by drug</h2></div>
           <div class="bars" id="ov-bars"></div>
         </div>
       </section>
 
-      <!-- ────────── ANALYZE ────────── -->
       <section class="view" data-view="analyze">
-        <div class="view-head">
-          <h1>Analyze Data</h1>
-          <p>Drop a file. The format is detected from its contents and routed to the model that fits it.</p>
-        </div>
-
         <div id="drop" tabindex="0" role="button" aria-label="Upload files for analysis">
           <div class="drop-inner">
             <h2>Drop files here</h2>
-            <p>Several at once is fine — each is parsed and analyzed independently</p>
+            <p>CSV · TSV · VCF · JSON · FASTA — several at once</p>
             <button class="btn" type="button" id="pick">Choose files</button>
             <input type="file" id="file" multiple
                    accept=".csv,.tsv,.txt,.vcf,.json,.fasta,.fa,.faa,.fna">
           </div>
         </div>
-
         <div id="model-status"></div>
         <div id="spinner" hidden><span class="bar"></span><b>Analyzing</b></div>
         <div id="results"></div>
-
-        <div class="panel">
-          <div class="panel-head"><h2>Accepted inputs</h2></div>
-          <div class="fmt-grid" id="formats"></div>
-        </div>
       </section>
 
-      <!-- ────────── MUTATIONS ────────── -->
       <section class="view" data-view="mutations">
-        <div class="view-head">
-          <h1>Mutation Landscape</h1>
-          <p>Which substitutions matter — the ones already circulating, and the ones that would matter if they appeared.</p>
-        </div>
         <div id="mut-content"></div>
       </section>
 
-      <!-- ────────── RESISTANCE ────────── -->
       <section class="view" data-view="resistance">
-        <div class="view-head">
-          <h1>Drug Resistance</h1>
-          <p>What the genome predicts about treatment, and how far that prediction can be trusted.</p>
-        </div>
         <div id="res-content"></div>
       </section>
 
-      <!-- ────────── SPREAD ────────── -->
       <section class="view" data-view="spread">
-        <div class="view-head">
-          <h1>Spread &amp; Growth</h1>
-          <p>Which lineages are displacing others, where, and how fast.</p>
-        </div>
         <div id="spread-content"></div>
-      </section>
-
-      <!-- ────────── MODELS ────────── -->
-      <section class="view" data-view="models">
-        <div class="view-head">
-          <h1>Models &amp; Validation</h1>
-          <p>What each model does, how it was tested, and where it must not be trusted alone.</p>
-        </div>
-        <div id="models-content"></div>
       </section>
 
     </div>
 
     <footer class="foot">
-      <span>Research use only. Not a certified medical device. Does not diagnose or prescribe.</span>
       <span class="mono" id="foot-meta"></span>
     </footer>
   </main>

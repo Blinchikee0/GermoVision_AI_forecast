@@ -25,7 +25,13 @@ from .models.escape import GVEscape
 from .models.growth import GVGrowth
 from .models.resist import Decision
 
-__all__ = ["AnalysisResult", "Table", "AnalysisError", "analyze"]
+__all__ = [
+    "AnalysisResult",
+    "Table",
+    "AnalysisError",
+    "analyze",
+    "escape_from_records",
+]
 
 
 class AnalysisError(RuntimeError):
@@ -329,6 +335,31 @@ def _analyze_escape(parsed: ParsedInput, top_candidates: int = 100) -> AnalysisR
             "date_range": report.date_range,
         },
     )
+
+
+def escape_from_records(
+    records: list[tuple[str, str]],
+    *,
+    nucleotide: bool = False,
+    top_candidates: int = 100,
+    notes: list[str] | None = None,
+) -> AnalysisResult:
+    """Прогнать GV-Escape по готовым последовательностям, минуя разбор файла.
+
+    Нужна там, где последовательности уже в памяти: обучение строит
+    панель само и не пишет её во временный FASTA только ради того, чтобы
+    тут же его прочитать. Упаковка результата берётся общая — вкладка
+    мутаций не должна отличать заранее посчитанную панель от файла,
+    который пользователь принёс сам.
+    """
+    parsed = ParsedInput(
+        kind=InputKind.GENE_FASTA if nucleotide else InputKind.PROTEIN_FASTA,
+        payload=records,
+        n_records=len(records),
+        summary=f"{len(records)} sequences",
+        notes=list(notes or []),
+    )
+    return _analyze_escape(parsed, top_candidates=top_candidates)
 
 
 # --------------------------------------------------------------------------

@@ -1,9 +1,20 @@
 /* GermoVision — Pathogen Mutation Intelligence
    ------------------------------------------------------------------
-   Six views over one data model. Surveillance views read the last
-   training run; the Analyze view runs models on files the user drops
-   and feeds its results back into the Mutations and Resistance views,
-   so an upload changes what the whole system shows.
+   Two surfaces, deliberately separated.
+
+   The landing page carries every explanation the product has: what the
+   models do, what the system accepts, how it was validated, where it
+   must not be trusted. It is read once.
+
+   The console carries data and controls, and no prose at all. It is
+   read under time pressure, repeatedly, by someone who already knows
+   what the system is — and a paragraph re-explaining the method there
+   is something to scroll past, every single time.
+
+   Five console views over one data model. Surveillance views read the
+   last training run; Analyze runs models on dropped files and feeds
+   results back into Mutations and Resistance, so an upload changes what
+   the whole system shows.
    ------------------------------------------------------------------ */
 (function () {
   "use strict";
@@ -13,6 +24,11 @@
   const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const SVGNS = "http://www.w3.org/2000/svg";
   const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* Static build marker. Declared here rather than in the boot block: the
+     render helpers below branch on it, and a const read before its own
+     declaration throws rather than reading undefined. */
+  const STATIC = window.__GV_STATIC__ || null;
 
   let S = null;          // surveillance payload
   let store = [];        // raw analysis results, for downloads
@@ -290,10 +306,25 @@
 
   const TITLES = {
     overview: "Overview", analyze: "Analyze", mutations: "Mutations",
-    resistance: "Resistance", spread: "Spread", models: "Models",
+    resistance: "Resistance", spread: "Spread",
   };
   const rendered = {};
   let current = "overview";
+
+  /* Landing and console are separate surfaces, not two views of one
+     router: the landing has no rail, no crumb and no data dependency. */
+  function enterConsole(view) {
+    $("landing").hidden = true;
+    $("shell").hidden = false;
+    show(view || current);
+    window.scrollTo(0, 0);
+  }
+
+  function enterLanding() {
+    $("shell").hidden = true;
+    $("landing").hidden = false;
+    window.scrollTo(0, 0);
+  }
 
   function show(view) {
     if (!TITLES[view]) view = "overview";
@@ -307,7 +338,7 @@
 
     const build = {
       overview: buildOverview, mutations: buildMutations,
-      resistance: buildResistance, spread: buildSpread, models: buildModels,
+      resistance: buildResistance, spread: buildSpread,
     }[view];
     if (build) build();          // rebuilt each visit so animations replay
     rendered[view] = true;
@@ -321,17 +352,15 @@
     ind.style.height = link.parentElement.offsetHeight + "px";
   }
 
-  function needData(where) {
-    return '<div class="empty"><h2>No surveillance data yet</h2>' +
-      "<p>This view reads the last training run. Produce one, then reload:</p>" +
-      '<p><code class="mono">python -m germovision.train --save-models models</code></p>' +
-      "<p>" + esc(where) + "</p></div>";
+  function needData() {
+    return '<div class="empty"><h2>No training run found</h2>' +
+      '<p class="mono">python -m germovision.train --save-models models</p></div>';
   }
 
   /* ── OVERVIEW ── */
   function buildOverview() {
     const box = $("kpis");
-    if (!S || !S.available) { box.innerHTML = ""; $("signals").innerHTML = needData(""); return; }
+    if (!S || !S.available) { box.innerHTML = ""; $("signals").innerHTML = needData(); return; }
 
     const k = S.kpi;
     const tiles = [
@@ -380,9 +409,6 @@
       $("ov-legend").innerHTML = S.lineages.map((l, i) =>
         '<span><i style="background:' + css(SC[i % 4]) + '"></i>' + esc(l.label) + "</span>").join("");
       stackedArea($("ov-stack"), S.observed, S.lineages, 560, 260);
-      const total = S.observed.reduce((a, o) => a + o.total, 0);
-      $("ov-note").textContent = total + " samples across " + S.observed.length +
-        " weeks. A widening band means displacement, not a rise in absolute cases.";
     }
 
     animatedBars($("ov-bars"), (S.internal || []).slice()
@@ -398,13 +424,15 @@
   /* ── MUTATIONS ── */
   function buildMutations() {
     const box = $("mut-content");
-    const r = LAST.escape;
+    // An upload wins; otherwise the reference panel from the last training
+    // run. Without the fallback this view is empty in the published build,
+    // where uploading is deliberately switched off — a dead tab.
+    const r = LAST.escape || (S && S.escape) || null;
     if (!r) {
-      box.innerHTML = '<div class="empty"><h2>No sequence set loaded</h2>' +
-        "<p>Upload protein or gene sequences of one pathogen protein. The system builds a " +
-        "position profile, ranks every observed substitution by evolutionary risk, and scores " +
-        "substitutions that have not appeared yet.</p>" +
-        '<button class="btn" onclick="location.hash=\'#analyze\'">Go to Analyze</button></div>';
+      box.innerHTML = '<div class="empty"><h2>No sequence set</h2>' +
+        '<button class="btn" type="button" data-goto="analyze">Go to Analyze</button></div>';
+      const b = box.querySelector("[data-goto]");
+      if (b) b.addEventListener("click", () => show("analyze"));
       return;
     }
 
@@ -429,14 +457,12 @@
       ].map(([l, v, t], i) =>
         '<div class="kpi ' + t + '" style="animation-delay:' + (i * 0.06) + 's">' +
         '<div class="k-l">' + l + '</div><div class="k-v">' + esc(v) + "</div>" +
-        '<div class="k-n">' + esc(r.payload.date_range ? r.payload.date_range.join(" → ") : "no dates in headers") +
+        '<div class="k-n">' + esc(r.payload.date_range ? r.payload.date_range.join(" → ") : "no dates") +
         "</div></div>").join("") + "</div>" +
 
       '<div class="panel"><div class="panel-head"><h2>Substitutions along the protein</h2>' +
-      '<span class="hint">Tick height is risk; thickness is how often it was seen</span></div>' +
-      '<svg class="chart" id="pos-map" viewBox="0 0 900 250"></svg>' +
-      '<p class="note">Clusters of ticks mark positions evolution keeps revisiting — repeated ' +
-      "independent substitutions at one site are a classic signature of positive selection.</p></div>" +
+      '<span class="hint">Height = risk · width = count</span></div>' +
+      '<svg class="chart" id="pos-map" viewBox="0 0 900 250"></svg></div>' +
 
       '<div class="two">' +
       panelTable("Observed substitutions, by risk", observed, 0) +
@@ -451,13 +477,13 @@
   /* ── RESISTANCE ── */
   function buildResistance() {
     const box = $("res-content");
-    if (!S || !S.available) { box.innerHTML = needData("Resistance metrics come from the held-out test set."); return; }
+    if (!S || !S.available) { box.innerHTML = needData(); return; }
 
     const live = LAST.resistance;
     const ext = (S.external || []).slice().sort((a, b) => b.sens[0] - a.sens[0]);
 
     box.innerHTML =
-      (live ? '<div class="panel"><div class="panel-head"><h2>Your last upload</h2>' +
+      (live ? '<div class="panel"><div class="panel-head"><h2>Last upload</h2>' +
         '<span class="hint">' + esc(live.summary) + "</span></div>" +
         '<div class="kpis" style="margin-bottom:0">' + live.highlights.map((h, i) =>
           '<div class="kpi ' + (h.tone || "") + '" style="animation-delay:' + (i * 0.06) + 's">' +
@@ -465,14 +491,11 @@
           '</div><div class="k-n">from uploaded file</div></div>').join("") + "</div></div>" : "") +
 
       '<div class="panel"><div class="panel-head"><h2>Sensitivity by drug — external validation</h2>' +
-      '<span class="hint">Trained without a single Kazakh isolate, tested on them</span></div>' +
+      '<span class="hint">Trained without Kazakh isolates, tested on them</span></div>' +
       '<div class="legend"><span><i style="background:' + css("--s1") + '"></i>GermoVision, 95% CI</span>' +
       '<span><i class="hollow"></i>WHO catalogue (current standard)</span>' +
       '<span><i style="background:' + css("--accent") + ';width:3px;height:14px;border-radius:0"></i>H1 target = 0.90</span></div>' +
-      '<svg class="chart" id="res-dots" viewBox="0 0 800 470"></svg>' +
-      '<p class="note">External validation is the only estimate that reflects real deployment: ' +
-      "the internal test is always more optimistic. The reference point is not random guessing " +
-      "but the standard in use today.</p></div>" +
+      '<svg class="chart" id="res-dots" viewBox="0 0 800 470"></svg></div>' +
 
       '<div class="two"><div class="panel"><div class="panel-head"><h2>MDR share by country</h2></div>' +
       '<div class="bars" id="res-countries"></div></div>' +
@@ -505,7 +528,7 @@
     const box = $("spread-content");
     const live = LAST.growth;
     if ((!S || !S.available) && !live) {
-      box.innerHTML = needData("Or upload lineage counts (region, week, lineage, count) in Analyze.");
+      box.innerHTML = needData();
       return;
     }
 
@@ -525,7 +548,7 @@
     box.innerHTML =
       (S && S.available && S.observed.length
         ? '<div class="panel"><div class="panel-head"><h2>Lineage share over time, national</h2>' +
-          '<span class="hint">Observed weekly frequencies</span></div>' +
+          "</div>" +
           '<div class="legend" id="sp-legend"></div>' +
           '<svg class="chart" id="sp-stack" viewBox="0 0 980 300"></svg></div>'
         : "") +
@@ -533,11 +556,7 @@
       '<div class="panel"><div class="panel-head"><h2>Growth advantage by region</h2>' +
       '<span class="hint">' + (target ? esc(target.lineage.replace(/_/g, " ")) : "—") +
       " · β ± 1.96 SE</span></div>" +
-      '<svg class="chart" id="sp-forest" viewBox="0 0 900 330"></svg>' +
-      '<p class="note">β is the log growth advantage per week relative to the most abundant ' +
-      "lineage. Red marks estimates whose interval excludes zero; grey marks the rest. " +
-      "The interval widens where fewer samples were sequenced — the model reports its " +
-      "uncertainty rather than hiding it.</p></div>" +
+      '<svg class="chart" id="sp-forest" viewBox="0 0 900 330"></svg></div>' +
 
       (live ? live.tables.map((t, j) => panelTable(t.title, t, j)).join("")
             : '<div class="panel"><div class="panel-head"><h2>Regional detail</h2></div>' +
@@ -560,21 +579,26 @@
     if (live) wireDownloads(box, live);
   }
 
-  /* ── MODELS ── */
-  function buildModels() {
-    const box = $("models-content");
+  /* ── LANDING ── */
+
+  /* The landing is the only place in the product that explains anything,
+     so the model descriptions live here rather than in the console. The
+     numbers beside them come from the last run: a claim about what a
+     model does is worth more next to what it actually scored. */
+  function buildLanding(st) {
     const q = {};
     if (S && S.available) (S.internal || []).forEach((d) => { q[d.drug] = d; });
     const rif = q.RIF;
+    const trained = S && S.available;
 
     const cards = [
       {
         code: "GV-RESIST", name: "Drug resistance from genome",
         body: "Two tiers. The WHO mutation catalogue decides first — it is the reference " +
           "standard, built on more than 52 000 isolates, and a clinician must see that the " +
-          "conclusion matches it. Gradient boosting handles what the catalogue is silent about: " +
-          "rare variants, combinations, recently introduced drugs.",
-        stats: S && S.available ? [
+          "conclusion matches it. Gradient boosting handles what the catalogue is silent " +
+          "about: rare variants, combinations, recently introduced drugs.",
+        stats: trained ? [
           ["Drugs", S.internal.length],
           ["Closed correctly", pct(S.kpi.closed, 0)],
           ["Calibration ECE", rif ? num(rif.ece) : "—"],
@@ -583,10 +607,14 @@
       {
         code: "GV-ESCAPE", name: "Evolutionary risk of substitutions",
         body: "Risk = tolerance × salience × novelty, the same decomposition EVEscape uses, " +
-          "built on a position-specific profile rather than a language model. It fits in seconds " +
-          "on the user's own data and needs no accelerator. The honest limit: a profile treats " +
-          "positions as independent and so cannot see epistasis.",
-        stats: [["Fitting", "on upload"], ["Weights required", "none"], ["Epistasis", "not modelled"]],
+          "built on a position-specific profile rather than a language model. It fits in " +
+          "seconds on your own data and needs no accelerator. The honest limit: a profile " +
+          "treats positions as independent and so cannot see epistasis.",
+        stats: trained && S.escape ? [
+          ["Reference panel", S.escape.highlights[0].value + " seq"],
+          ["Substitutions", S.escape.highlights[1].value],
+          ["Epistasis", "not modelled"],
+        ] : [["Fitting", "on upload"], ["Epistasis", "not modelled"]],
       },
       {
         code: "GV-GROWTH", name: "Lineage dynamics",
@@ -594,7 +622,7 @@
           "normalisation and uncertainty depends on how much was sequenced. Hierarchical " +
           "multinomial logistic regression handles both, and lets a region with few samples " +
           "borrow strength from the rest.",
-        stats: S && S.available ? [
+        stats: trained ? [
           ["Shrinkage τ", num(S.tau, 4)],
           ["Regions", Object.keys(S.forecasts || {}).length],
           ["Lineages", (S.lineages || []).length],
@@ -609,43 +637,31 @@
       },
     ];
 
-    box.innerHTML =
-      '<div class="mcards">' + cards.map((c, i) =>
-        '<div class="mcard" style="animation-delay:' + (i * 0.07) + 's">' +
-        '<div class="code">' + c.code + "</div><h3>" + esc(c.name) + "</h3><p>" + esc(c.body) + "</p>" +
-        "<dl>" + c.stats.map(([k, v]) => "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>").join("") +
-        "</dl></div>").join("") + "</div>" +
+    $("lp-models").innerHTML = cards.map((c) =>
+      '<div class="mcard"><div class="code">' + c.code + "</div><h3>" + esc(c.name) +
+      "</h3><p>" + esc(c.body) + "</p><dl>" +
+      c.stats.map(([k, v]) => "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>").join("") +
+      "</dl></div>").join("");
 
-      '<div class="two"><div class="panel"><div class="panel-head"><h2>Validation protocol</h2>' +
-      '<span class="hint">Checked automatically; a violation stops the run</span></div>' +
-      '<ol class="rules">' + [
-        "<b>Split by time, never at random.</b> Uses submission date, not collection date: a sample collected on 1 November but deposited on the 20th was not available to the system on the 5th.",
-        "<b>Relatedness clusters stay intact.</b> Isolates from one outbreak are near-identical and are not independent observations.",
-        "<b>External geographic validation.</b> Train on 22 countries, test on the 23rd.",
-        "<b>Augmentation only after the split, only on train.</b> A CI test fails if the order is reversed.",
-        "<b>Feature vocabulary built from train alone.</b> Collecting it over all data is a quiet leak.",
-        "<b>Calibration on a separate part</b> that overlaps neither training nor test.",
-        "<b>Baselines are mandatory.</b> The reference is the standard in use today, not random guessing.",
-      ].map((t) => "<li>" + t + "</li>").join("") + "</ol></div>" +
+    if (st && st.formats) {
+      $("lp-formats").innerHTML = st.formats.map((f) =>
+        '<div class="fmt"><div class="t">' + esc(f.title) + '</div><div class="e">' + esc(f.ext) +
+        '</div><div class="s">' + esc(f.shape) + '</div><div class="m">' + esc(f.model) +
+        " → " + esc(f.result) + "</div></div>").join("");
+    }
 
-      '<div class="panel"><div class="panel-head"><h2>Where the system must not be trusted alone</h2></div>' +
-      '<ol class="rules">' + [
-        "<b>It does not diagnose or prescribe.</b> It supplies information for a clinician's decision.",
-        "<b>It does not predict when a mutation will appear.</b> Mutation is a random event; its consequences and its fate are what can be predicted.",
-        "<b>Poorly characterised drugs stay weak.</b> Bedaquiline, delamanid and linezolid carry a lab-confirmation flag that reaches the clinical report.",
-        "<b>It degrades over time.</b> The pathogen evolves; without retraining the estimates go stale.",
-        "<b>Research use only.</b> Not a certified medical device.",
-      ].map((t) => "<li>" + t + "</li>").join("") + "</ol></div></div>" +
-
-      (S && S.available ? '<div class="panel"><div class="panel-head"><h2>Ablation — rifampicin</h2>' +
-        '<span class="hint">Each row adds one feature group to the row above</span></div>' +
-        '<div class="tblwrap"><table><thead><tr><th>Configuration</th><th class="num">Sens</th>' +
-        '<th class="num">Spec</th><th class="num">PR-AUC</th></tr></thead><tbody>' +
-        (S.ablations || []).map((a, i) =>
-          '<tr style="animation-delay:' + (i * 0.04) + 's"><td class="wrap">' + esc(a.config) +
-          '</td><td class="num">' + num(a.sensitivity) + '</td><td class="num">' + num(a.specificity) +
-          '</td><td class="num">' + num(a.pr_auc) + "</td></tr>").join("") +
-        "</tbody></table></div></div>" : "");
+    if (trained) {
+      const m = S.meta;
+      $("lp-meta").textContent =
+        m.n_isolates + " isolates · " + m.n_clusters + " clusters · " +
+        m.n_countries + " countries · run " + m.generated_at;
+      $("lp-run").textContent = m.synthetic
+        ? "Figures below come from a synthetic run — pipeline quality, not clinical quality"
+        : "Figures below come from the run of " + m.generated_at;
+    } else {
+      $("lp-meta").textContent = "no training run found";
+      $("lp-run").textContent = "No training run found — the console will be empty";
+    }
   }
 
   /* ═══════════════ shared table rendering ═══════════════ */
@@ -654,9 +670,13 @@
     if (!t) return "";
     const MAX = 200;
     const shown = t.rows.slice(0, MAX);
+    // The published build cannot hand the viewer a file — the artifact
+    // viewer grants no download permission — so the button is omitted
+    // there rather than rendered dead. Locally it works.
+    const dl = STATIC ? "" :
+      '<button class="btn ghost sm" data-tbl="' + idx + '">Download CSV</button>';
     return '<div class="panel"><div class="tbl-head"><h4>' + esc(title) + "</h4>" +
-      '<span class="cnt">' + t.rows.length + " rows" +
-      '<button class="btn ghost sm" data-tbl="' + idx + '">Download CSV</button></span></div>' +
+      '<span class="cnt">' + t.rows.length + " rows" + dl + "</span></div>" +
       (t.rows.length
         ? '<div class="tblwrap"><table><thead><tr>' +
           t.columns.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr></thead><tbody>" +
@@ -666,9 +686,8 @@
           "</tbody></table></div>"
         : '<p class="trunc">Empty.</p>') +
       (t.rows.length > shown.length
-        ? '<p class="trunc">Showing the first ' + MAX + " of " + t.rows.length +
-          " rows. The download contains all of them.</p>" : "") +
-      (t.note ? '<p class="note">' + esc(t.note) + "</p>" : "") + "</div>";
+        ? '<p class="trunc">First ' + MAX + " of " + t.rows.length +
+          " rows · download has all</p>" : "") + "</div>";
   }
 
   function wireDownloads(scope, result) {
@@ -803,12 +822,23 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  /* ═══════════════ surface navigation ═══════════════ */
+
+  ["enter-top", "enter-hero"].forEach((id) => {
+    const b = $(id);
+    if (b) b.addEventListener("click", () => enterConsole());
+  });
+  $("back-landing").addEventListener("click", enterLanding);
+  $("back-landing-narrow").addEventListener("click", (e) => {
+    e.preventDefault();
+    enterLanding();
+  });
+
   /* ═══════════════ boot ═══════════════ */
 
   /* Static build: the same system without a backend. Surveillance data is
      baked in at build time; the Analyze view explains that running models
      needs the local app, rather than offering an upload that cannot work. */
-  const STATIC = window.__GV_STATIC__ || null;
   const boot = STATIC
     ? Promise.resolve([STATIC.status, STATIC.surveillance])
     : Promise.all([
@@ -834,11 +864,6 @@
     }
 
     if (st) {
-      $("formats").innerHTML = st.formats.map((f) =>
-        '<div class="fmt"><div class="t">' + esc(f.title) + '</div><div class="e">' + esc(f.ext) +
-        '</div><div class="s">' + esc(f.shape) + '</div><div class="m">' + esc(f.model) +
-        " → " + esc(f.result) + "</div></div>").join("");
-
       const box = $("model-status");
       if (!st.models_loaded) {
         box.innerHTML = '<div class="alert warn"><b>Resistance models are not loaded</b>' +
@@ -864,7 +889,12 @@
       $("topbar-stat").textContent = "No training report";
     }
 
-    show((location.hash || "#overview").slice(1));
+    buildLanding(st);
+
+    // A deep link goes straight to the console; a bare load starts on the
+    // landing page, which is where the explanations are.
+    const want = (location.hash || "").slice(1);
+    if (TITLES[want]) enterConsole(want); else current = "overview";
   });
 
   /* Navigation does not depend on the hash. Clicking a rail link switches the
