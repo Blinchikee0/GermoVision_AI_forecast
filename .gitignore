@@ -11,4 +11,6 @@ data/raw/
 data/interim/
 *.ipynb_checkpoints
 reports_full.log
-models/
+# Только каталог обученных моделей в корне. Без ведущей косой черты
+# правило поймало бы и пакет germovision/models/.
+/models/
