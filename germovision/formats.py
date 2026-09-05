@@ -65,51 +65,51 @@ class InputKind:
 SUPPORTED: list[dict[str, str]] = [
     {
         "kind": InputKind.MUTATIONS,
-        "title": "Таблица мутаций",
+        "title": "Mutation table",
         "ext": ".csv, .tsv, .txt",
-        "shape": "столбцы id, gene, mutation",
+        "shape": "columns id, gene, mutation",
         "model": "GV-Resist",
-        "result": "прогноз лекарственной устойчивости по 13 препаратам",
+        "result": "drug resistance across 13 drugs",
     },
     {
         "kind": InputKind.VCF,
-        "title": "Вызванные варианты",
-        "ext": ".vcf, .vcf.gz (распакованный)",
-        "shape": "стандартный VCF, желательно с аннотацией snpEff (ANN=)",
+        "title": "Called variants",
+        "ext": ".vcf, .vcf.gz (unpacked)",
+        "shape": "standard VCF, ideally snpEff-annotated (ANN=)",
         "model": "GV-Resist",
-        "result": "прогноз лекарственной устойчивости по 13 препаратам",
+        "result": "drug resistance across 13 drugs",
     },
     {
         "kind": InputKind.TBPROFILER,
-        "title": "Отчёт TB-Profiler",
+        "title": "TB-Profiler report",
         "ext": ".json",
-        "shape": "поле dr_variants или variants",
+        "shape": "dr_variants or variants field",
         "model": "GV-Resist",
-        "result": "прогноз лекарственной устойчивости по 13 препаратам",
+        "result": "drug resistance across 13 drugs",
     },
     {
         "kind": InputKind.PROTEIN_FASTA,
-        "title": "Белковые последовательности",
+        "title": "Protein sequences",
         "ext": ".fasta, .fa, .faa",
-        "shape": "несколько последовательностей одного белка",
+        "shape": "several sequences of one protein",
         "model": "GV-Escape",
-        "result": "ранжирование мутаций по эволюционному риску",
+        "result": "substitutions ranked by evolutionary risk",
     },
     {
         "kind": InputKind.GENE_FASTA,
-        "title": "Нуклеотидные последовательности гена",
+        "title": "Gene sequences",
         "ext": ".fasta, .fa, .fna",
-        "shape": "кодирующая последовательность, длина кратна 3",
+        "shape": "coding sequence, length divisible by 3",
         "model": "GV-Escape",
-        "result": "трансляция и ранжирование мутаций по риску",
+        "result": "translation, then the same risk ranking",
     },
     {
         "kind": InputKind.LINEAGE_COUNTS,
-        "title": "Счётчики линий надзора",
+        "title": "Surveillance lineage counts",
         "ext": ".csv, .tsv",
-        "shape": "столбцы region, week, lineage, count",
+        "shape": "columns region, week, lineage, count",
         "model": "GV-Growth",
-        "result": "коэффициенты роста линий и прогноз долей",
+        "result": "growth advantage and share forecast",
     },
 ]
 
@@ -183,7 +183,7 @@ def parse_fasta(text: str) -> list[tuple[str, str]]:
 
     records = [(h, s.upper()) for h, s in records if s]
     if not records:
-        raise FormatError("в файле FASTA нет ни одной последовательности")
+        raise FormatError("the FASTA file contains no sequences")
     return records
 
 
@@ -196,11 +196,11 @@ def _alphabet_kind(sequences: list[str]) -> str:
     """
     sample = "".join(sequences[:20])[:20000]
     if not sample:
-        raise FormatError("последовательности пусты")
+        raise FormatError("sequences are empty")
 
     letters = [c for c in sample if c.isalpha()]
     if not letters:
-        raise FormatError("в последовательностях нет букв")
+        raise FormatError("sequences contain no letters")
 
     nucleotide_share = sum(1 for c in letters if c in "ACGTUN") / len(letters)
     return "nucleotide" if nucleotide_share > 0.9 else "protein"
@@ -217,9 +217,9 @@ def _parse_fasta_input(text: str) -> ParsedInput:
     )
     if bad:
         notes.append(
-            "необычные символы в последовательностях: "
+            "Unusual characters in the sequences: "
             + ", ".join(sorted(bad)[:8])
-            + " — строки с ними будут обработаны как есть"
+            + " — those rows are processed as they are."
         )
 
     lengths = [len(s) for s in seqs]
@@ -230,7 +230,7 @@ def _parse_fasta_input(text: str) -> ParsedInput:
             kind=InputKind.PROTEIN_FASTA,
             payload=records,
             n_records=len(records),
-            summary=f"{len(records)} белковых последовательностей, длина {span} а. о.",
+            summary=f"{len(records)} protein sequences, length {span} aa",
             notes=notes,
         )
 
@@ -239,20 +239,20 @@ def _parse_fasta_input(text: str) -> ParsedInput:
             kind=InputKind.GENOME_FASTA,
             payload=records,
             n_records=len(records),
-            summary=f"{len(records)} нуклеотидных последовательностей, длина {span} п. н.",
+            summary=f"{len(records)} nucleotide sequences, length {span} bp",
             notes=notes,
         )
 
     if max(lengths) % 3 != 0:
         notes.append(
-            f"длина {max(lengths)} не кратна трём — при трансляции последние "
-            "нуклеотиды будут отброшены"
+            f"Length {max(lengths)} is not divisible by three — the trailing "
+            "nucleotides are dropped during translation."
         )
     return ParsedInput(
         kind=InputKind.GENE_FASTA,
         payload=records,
         n_records=len(records),
-        summary=f"{len(records)} нуклеотидных последовательностей гена, длина {span} п. н.",
+        summary=f"{len(records)} gene sequences, length {span} bp",
         notes=notes,
     )
 
@@ -346,15 +346,15 @@ def _parse_vcf(text: str) -> ParsedInput:
 
     if not by_sample:
         raise FormatError(
-            f"в VCF не нашлось вариантов с аннотацией гена (обработано строк: {n_lines}). "
-            "Нужна аннотация snpEff — поле ANN= в столбце INFO. "
-            "Аннотировать можно так: snpEff -v <база> input.vcf > annotated.vcf"
+            f"No gene-annotated variants found in this VCF ({n_lines} rows read). "
+            "snpEff annotation is required — the ANN= field in the INFO column. "
+            "Annotate with: snpEff -v <database> input.vcf > annotated.vcf"
         )
 
     if n_used < n_lines:
         notes.append(
-            f"{n_lines - n_used} из {n_lines} вариантов пропущено: нет аннотации "
-            "гена или не пройден фильтр"
+            f"{n_lines - n_used} of {n_lines} variants skipped: no gene annotation "
+            "or the FILTER column rejected them."
         )
 
     rows = [
@@ -365,7 +365,7 @@ def _parse_vcf(text: str) -> ParsedInput:
         kind=InputKind.VCF,
         payload=rows,
         n_records=len(rows),
-        summary=f"{len(rows)} образцов, {total} аннотированных вариантов",
+        summary=f"{len(rows)} samples, {total} annotated variants",
         notes=notes,
     )
 
@@ -391,8 +391,8 @@ def _parse_tbprofiler(data: Any) -> ParsedInput:
     )
     if not looks_like_report:
         raise FormatError(
-            "в JSON нет отчётов TB-Profiler: ожидается объект или список объектов "
-            "с полем dr_variants либо variants"
+            "No TB-Profiler report in this JSON: an object or list of objects with a "
+            "dr_variants or variants field is expected."
         )
 
     for i, rep in enumerate(reports):
@@ -423,12 +423,12 @@ def _parse_tbprofiler(data: Any) -> ParsedInput:
         sid = str(rep.get("id") or rep.get("sample_name") or f"sample_{i + 1}")
         rows.append({"id": sid, "mutations": sorted(muts)})
         if not muts:
-            notes.append(f"у образца {sid} не найдено вариантов")
+            notes.append(f"No variants found for sample {sid}.")
 
     if not rows:
         raise FormatError(
-            "в JSON нет отчётов TB-Profiler: ожидается объект или список объектов "
-            "с полем dr_variants либо variants"
+            "No TB-Profiler report in this JSON: an object or list of objects with a "
+            "dr_variants or variants field is expected."
         )
 
     total = sum(len(r["mutations"]) for r in rows)
@@ -436,7 +436,7 @@ def _parse_tbprofiler(data: Any) -> ParsedInput:
         kind=InputKind.TBPROFILER,
         payload=rows,
         n_records=len(rows),
-        summary=f"{len(rows)} образцов TB-Profiler, {total} вариантов",
+        summary=f"{len(rows)} TB-Profiler samples, {total} variants",
         notes=notes,
     )
 
@@ -478,15 +478,15 @@ def _parse_mutations_table(rows: list[dict], cols: dict[str, str]) -> ParsedInpu
             skipped += 1
 
     if not order:
-        raise FormatError("в таблице мутаций нет ни одной строки с идентификатором")
+        raise FormatError("the mutation table has no rows with an identifier")
 
-    notes = [f"{skipped} строк пропущено: пустой id, ген или мутация"] if skipped else []
+    notes = [f"{skipped} rows skipped: empty id, gene or mutation."] if skipped else []
     total = sum(len(v) for v in by_id.values())
     return ParsedInput(
         kind=InputKind.MUTATIONS,
         payload=[{"id": sid, "mutations": sorted(by_id[sid])} for sid in order],
         n_records=len(order),
-        summary=f"{len(order)} изолятов, {total} вариантов",
+        summary=f"{len(order)} isolates, {total} variants",
         notes=notes,
     )
 
@@ -506,7 +506,7 @@ def _parse_lineage_counts(rows: list[dict], cols: dict[str, str]) -> ParsedInput
             skipped += 1
             continue
         records.append({
-            "region": str(row.get(cols.get("region", ""), "") or "все регионы").strip(),
+            "region": str(row.get(cols.get("region", ""), "") or "all regions").strip(),
             "week": week,
             "lineage": lineage,
             "count": count,
@@ -514,14 +514,14 @@ def _parse_lineage_counts(rows: list[dict], cols: dict[str, str]) -> ParsedInput
 
     if not records:
         raise FormatError(
-            "не удалось прочитать ни одной строки счётчиков: нужны числовые "
-            "столбцы week и count и непустой lineage"
+            "No count rows could be read: numeric week and count columns and a "
+            "non-empty lineage are required."
         )
 
     notes = []
     if skipped:
         notes.append(
-            f"{skipped} строк пропущено: нечисловые week/count или пустая линия"
+            f"{skipped} rows skipped: non-numeric week/count or empty lineage."
         )
     regions = {r["region"] for r in records}
     lineages = {r["lineage"] for r in records}
@@ -530,8 +530,8 @@ def _parse_lineage_counts(rows: list[dict], cols: dict[str, str]) -> ParsedInput
         payload=records,
         n_records=len(records),
         summary=(
-            f"{len(records)} наблюдений, {len(regions)} регионов, "
-            f"{len(lineages)} линий, {int(sum(r['count'] for r in records))} образцов"
+            f"{len(records)} observations, {len(regions)} regions, "
+            f"{len(lineages)} lineages, {int(sum(r['count'] for r in records))} samples"
         ),
         notes=notes,
     )
@@ -562,9 +562,9 @@ def detect_and_parse(filename: str, content: bytes | str) -> ParsedInput:
         # таблицы, где выдаёт невнятную ошибку про столбцы.
         if NUL in content[:8192]:
             raise FormatError(
-                "файл двоичный, а не текстовый. Распакуйте архив (.gz, .zip) "
-                "или экспортируйте данные в CSV. Форматы .bam, .xlsx, .h5 "
-                "система не читает — сначала обработайте их своим пайплайном"
+                "This file is binary, not text. Unpack the archive (.gz, .zip) or "
+                "export the data as CSV. Formats such as .bam, .xlsx and .h5 are not "
+                "read here — process them with your own pipeline first."
             )
         try:
             text = content.decode("utf-8")
@@ -573,14 +573,14 @@ def detect_and_parse(filename: str, content: bytes | str) -> ParsedInput:
                 text = content.decode("cp1251")
             except UnicodeDecodeError as exc:
                 raise FormatError(
-                    "файл не является текстовым. Архивы и двоичные форматы "
-                    "(.gz, .bam, .xlsx) нужно распаковать или экспортировать в CSV"
+                    "This file is not text. Archives and binary formats (.gz, .bam, "
+                    ".xlsx) must be unpacked or exported to CSV."
                 ) from exc
     else:
         text = content
 
     if not text.strip():
-        raise FormatError("файл пуст")
+        raise FormatError("the file is empty")
 
     name = (filename or "").lower()
     stripped = text.lstrip()
@@ -596,16 +596,16 @@ def detect_and_parse(filename: str, content: bytes | str) -> ParsedInput:
         try:
             data = json.loads(text)
         except json.JSONDecodeError as exc:
-            raise FormatError(f"файл похож на JSON, но не разбирается: {exc}") from exc
+            raise FormatError(f"This looks like JSON but does not parse: {exc}") from exc
         return _parse_tbprofiler(data)
 
     # 3. Таблицы — по составу столбцов, а не по расширению.
     rows, cols = _sniff_table(text)
     if not cols:
         raise FormatError(
-            "формат не распознан. Поддерживаются: таблица мутаций (id, gene, "
-            "mutation), счётчики линий (region, week, lineage, count), VCF, "
-            "FASTA, отчёт TB-Profiler в JSON"
+            "Format not recognised. Supported: mutation table (id, gene, mutation), "
+            "lineage counts (region, week, lineage, count), VCF, FASTA, and a "
+            "TB-Profiler report in JSON."
         )
 
     if {"id", "gene", "mutation"} <= cols.keys():
@@ -613,12 +613,12 @@ def detect_and_parse(filename: str, content: bytes | str) -> ParsedInput:
     if {"week", "lineage", "count"} <= cols.keys():
         return _parse_lineage_counts(rows, cols)
 
-    found = ", ".join(sorted(cols)) or "нет заголовка"
+    found = ", ".join(sorted(cols)) or "no header row"
     hint = ""
     if name.endswith((".xlsx", ".xls")):
-        hint = " Файлы Excel нужно сохранить как CSV."
+        hint = " Excel files must be saved as CSV first."
     raise FormatError(
-        f"столбцы таблицы не опознаны (найдены: {found}). Ожидается либо "
-        "id, gene, mutation — для прогноза устойчивости, либо "
-        "region, week, lineage, count — для динамики линий." + hint
+        f"Table columns not recognised (found: {found}). Expected either "
+        "id, gene, mutation — for resistance prediction — or "
+        "region, week, lineage, count — for lineage dynamics." + hint
     )

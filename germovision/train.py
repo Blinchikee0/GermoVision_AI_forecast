@@ -37,7 +37,7 @@ from .core.metrics.calibration import evaluate_calibration
 from .core.splitting import LeakageGuard, holdout_group, temporal_cluster_split
 from .core.types import LeakageError, Split
 from .data import (
-    DRUG_NAMES_RU,
+    DRUG_NAMES,
     DRUGS,
     IsolateDataset,
     MutationCatalogue,
@@ -119,7 +119,7 @@ def train_drug(
     r = ev.ranking
     return {
         "drug": drug,
-        "drug_name": DRUG_NAMES_RU.get(drug, drug),
+        "drug_name": DRUG_NAMES.get(drug, drug),
         "n_train": model.n_train_,
         "n_test": r.n,
         "n_positive": r.n_positive,
@@ -190,13 +190,13 @@ def external_validation(
         return {
             "drug": drug,
             "country": country,
-            "skipped": f"мало данных: n={ev.ranking.n}, устойчивых {ev.ranking.n_positive}",
+            "skipped": f"too little data: n={ev.ranking.n}, resistant {ev.ranking.n_positive}",
         }
 
     target = H1_TARGETS.get(drug)
     return {
         "drug": drug,
-        "drug_name": DRUG_NAMES_RU.get(drug, drug),
+        "drug_name": DRUG_NAMES.get(drug, drug),
         "country": country,
         "n_test": ev.ranking.n,
         "n_positive": ev.ranking.n_positive,
@@ -222,22 +222,22 @@ def run_ablations(
     возможно, всё качество даёт один каталог, а остальное — украшение.
     """
     configs = [
-        ("только каталог ВОЗ (база)", None),
+        ("WHO catalogue only (baseline)", None),
         (
-            "мутации, без признаков каталога",
+            "mutations, no catalogue features",
             dict(
                 use_catalogue_features=False, use_burden=False,
                 use_discovery=False, use_catalogue_tier=False,
             ),
         ),
         (
-            "+ признаки каталога",
+            "+ catalogue features",
             dict(use_discovery=False, use_burden=False, use_catalogue_tier=False),
         ),
-        ("+ нагрузка по генам", dict(use_discovery=False, use_catalogue_tier=False)),
-        ("+ варианты вне целевых генов", dict(use_catalogue_tier=False)),
-        ("полная модель (+ уровень правил)", {}),
-        ("… и с контекстом линии (вредит)", dict(use_context=True)),
+        ("+ per-gene burden", dict(use_discovery=False, use_catalogue_tier=False)),
+        ("+ variants outside target genes", dict(use_catalogue_tier=False)),
+        ("full model (+ rule tier)", {}),
+        ("... plus lineage context (hurts)", dict(use_context=True)),
     ]
 
     rows: list[dict] = []
@@ -381,7 +381,7 @@ def build_example_reports(
             truth = ds.phenotypes[drug][i]
             rows.append({
                 "drug": drug,
-                "drug_name": DRUG_NAMES_RU.get(drug, drug),
+                "drug_name": DRUG_NAMES.get(drug, drug),
                 "decision": pr.decision,
                 "probability": round(float(pr.probability), 3),
                 "source": pr.source,
@@ -404,19 +404,23 @@ def build_example_reports(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Обучение моделей GermoVision")
-    parser.add_argument("--source", default="synthetic", help="'synthetic' либо каталог с CSV")
-    parser.add_argument("--out", default="reports", help="каталог для отчётов")
+    parser = argparse.ArgumentParser(description="Train GermoVision models")
+    parser.add_argument(
+        "--source", default="synthetic", help="'synthetic' or a directory of CSV files"
+    )
+    parser.add_argument("--out", default="reports", help="output directory for reports")
     parser.add_argument("--n-isolates", type=int, default=6000)
     parser.add_argument("--seed", type=int, default=20260904)
     parser.add_argument("--external-country", default="KZ")
-    parser.add_argument("--catalogue-tsv", default=None, help="полный каталог ВОЗ в TSV")
-    parser.add_argument("--quick", action="store_true", help="меньше данных и бутстрэпа")
+    parser.add_argument("--catalogue-tsv", default=None, help="full WHO catalogue as TSV")
+    parser.add_argument(
+        "--quick", action="store_true", help="less data and fewer bootstrap samples"
+    )
     parser.add_argument("--no-growth", action="store_true")
     parser.add_argument(
         "--save-models",
         default=None,
-        help="каталог для сохранения обученных моделей (см. germovision.predict)",
+        help="directory to save trained models (see germovision.predict)",
     )
     args = parser.parse_args(argv)
 
@@ -434,38 +438,38 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # --- 1. Данные -------------------------------------------------------
-    _header("1. ДАННЫЕ")
+    _header("1. DATA")
     ds = load_dataset(args.source, n_isolates, args.seed)
     _log(ds.summary())
     if ds.meta.get("synthetic"):
         _log()
         _log("  ⚠ " + ds.meta["warning"])
-    _log(f"\nКаталог мутаций: {len(catalogue)} записей")
+    _log(f"\nMutation catalogue: {len(catalogue)} entries")
 
     # --- 2. Разделение ---------------------------------------------------
-    _header("2. РАЗДЕЛЕНИЕ ВЫБОРКИ")
+    _header("2. SPLIT")
     split = build_split(ds)
     _log(f"{split}")
     for k, v in split.meta.items():
         _log(f"  {k}: {v}")
 
     # --- 3. Защита -------------------------------------------------------
-    _header("3. ПРОВЕРКА НА УТЕЧКИ")
+    _header("3. LEAKAGE GUARD")
     try:
         _log(verify_split(ds, split))
     except LeakageError as exc:
-        _log(f"ОСТАНОВ: {exc}")
+        _log(f"HALTED: {exc}")
         return 1
 
     # --- 4–5. Обучение и оценка ------------------------------------------
-    _header("4. ОБУЧЕНИЕ И ОЦЕНКА НА ВНУТРЕННЕМ ТЕСТЕ")
-    _log("Закрыто — доля изолятов, по которым выдан верный ответ за 1–2 дня.")
-    _log("Пропущено — доля устойчивых, которым выдано уверенное «чувствителен».")
-    _log("Обе величины считаются от полного числа изолятов, а не от отвеченных.")
+    _header("4. TRAINING AND INTERNAL TEST")
+    _log("Closed  — share of isolates given a correct answer within 1-2 days.")
+    _log("Missed  — share of resistant isolates confidently called susceptible.")
+    _log("Both are computed over all isolates, not only the answered ones.")
     _log("")
     _log(
-        f"{'Препарат':<16}{'Чувств. (модель)':<22}{'Каталог':>9}"
-        f"{'Закрыто':>10}{'Пропущ.':>10}{'Ответов':>9}"
+        f"{'Drug':<16}{'Sensitivity (model)':<22}{'Catalogue':>10}"
+        f"{'Closed':>9}{'Missed':>9}{'Answered':>10}"
     )
     _log("-" * 76)
 
@@ -475,7 +479,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
         res = train_drug(ds, split, drug, n_boot, catalogue)
         if res is None or "skipped" in res:
-            _log(f"{drug:<16}пропущен: {res.get('skipped', '')[:50] if res else ''}")
+            _log(f"{drug:<16}skipped: {res.get('skipped', '')[:50] if res else ''}")
             continue
         per_drug.append(res)
         m = res["decision"]["sensitivity"]
@@ -487,11 +491,11 @@ def main(argv: list[str] | None = None) -> int:
             f"{res['correctly_closed']:>10.1%}"
             f"{res['missed_resistance']:>10.1%}"
             f"{res['answer_rate']:>9.1%}"
-            f"{'  нужен фенотип' if res['requires_confirmation'] else ''}"
+            f"{'  lab needed' if res['requires_confirmation'] else ''}"
         )
 
     # --- 6. Внешняя валидация --------------------------------------------
-    _header(f"5. ВНЕШНЯЯ ВАЛИДАЦИЯ: обучение без «{args.external_country}», проверка на ней")
+    _header(f"5. EXTERNAL VALIDATION: trained without {args.external_country}, tested on it")
     external: list[dict] = []
     for drug in DRUGS:
         if drug not in ds.phenotypes:
@@ -502,39 +506,39 @@ def main(argv: list[str] | None = None) -> int:
         external.append(res)
         mark = ""
         if res["h1_met"] is True:
-            mark = "  ✓ H1 достигнута"
+            mark = "  [+] H1 met"
         elif res["h1_met"] is False:
-            mark = "  ✗ H1 НЕ достигнута"
+            mark = "  [-] H1 NOT met"
         _log(
             f"{res['drug_name']:<16}"
-            f"чувств. {res['sensitivity'][0]:.3f}  "
-            f"специф. {res['specificity'][0]:.3f}  "
-            f"(n={res['n_test']}, устойчивых {res['n_positive']}){mark}"
+            f"sens {res['sensitivity'][0]:.3f}  "
+            f"spec {res['specificity'][0]:.3f}  "
+            f"(n={res['n_test']}, resistant {res['n_positive']}){mark}"
         )
 
     # --- 7. Абляции ------------------------------------------------------
-    _header("6. АБЛЯЦИИ: что именно даёт прирост (препарат RIF)")
+    _header("6. ABLATIONS: what actually helps (rifampicin)")
     ablations = run_ablations(ds, split, "RIF", n_boot, catalogue)
-    _log(f"{'Конфигурация':<38}{'Чувств.':>9}{'Специф.':>9}{'PR-AUC':>9}{'Отказы':>9}")
+    _log(f"{'Configuration':<40}{'Sens':>8}{'Spec':>8}{'PR-AUC':>9}{'Abstain':>9}")
     _log("-" * 76)
     for row in ablations:
         if "skipped" in row:
-            _log(f"{row['config']:<38}пропущено")
+            _log(f"{row['config']:<40}skipped")
             continue
         _log(
-            f"{row['config']:<38}{row['sensitivity']:>9.3f}"
-            f"{row['specificity']:>9.3f}{row['pr_auc']:>9.3f}"
-            f"{row['abstention_rate']:>8.1%}"
+            f"{row['config']:<40}{row['sensitivity']:>8.3f}"
+            f"{row['specificity']:>8.3f}{row['pr_auc']:>9.3f}"
+            f"{row['abstention_rate']:>9.1%}"
         )
 
     # --- 7-бис. Компромисс покрытия --------------------------------------
-    _header("7. КОМПРОМИСС «ДОЛЯ ОТВЕТОВ — ТОЧНОСТЬ» (рифампицин)")
-    _log("Отказ переводит образец на фенотипический тест: скорость в обмен на")
-    _log("достоверность. Где провести границу — решение организации.")
+    _header("7. ANSWER RATE VS ACCURACY (rifampicin)")
+    _log("Abstaining sends the sample for a phenotypic test: speed traded for")
+    _log("certainty. Where to draw the line is the organisation's call.")
     _log()
     rif = next((r for r in per_drug if r["drug"] == "RIF"), None)
     if rif:
-        _log(f"{'alpha':>7}{'Ответов':>12}{'Точность':>12}{'Чувств.':>12}{'Специф.':>12}")
+        _log(f"{'alpha':>7}{'Answered':>12}{'Accuracy':>12}{'Sens':>12}{'Spec':>12}")
         _log("-" * 76)
         for row in rif["coverage_tradeoff"]:
             if row.get("answer_rate", 0) == 0:
@@ -549,25 +553,25 @@ def main(argv: list[str] | None = None) -> int:
     # --- 8. Модель роста -------------------------------------------------
     growth = None
     if not args.no_growth:
-        _header("7. GV-GROWTH: восстановление коэффициентов роста линий")
+        _header("8. GV-GROWTH: recovering lineage growth coefficients")
         growth = fit_growth()
-        _log(f"{'Линия':<24}{'Истина β':>12}{'Оценка β':>12}{'Разброс':>12}")
+        _log(f"{'Lineage':<24}{'True beta':>12}{'Estimate':>12}{'Spread':>12}")
         _log("-" * 76)
         for row in growth["recovery"]:
             _log(
                 f"{row['lineage']:<24}{row['true_beta']:>12.4f}"
                 f"{row['mean_estimated_beta']:>12.4f}{row['sd_across_regions']:>12.4f}"
             )
-        _log(f"\nОценённое стягивание τ = {growth['tau']:.4f}")
+        _log(f"\nEstimated shrinkage tau = {growth['tau']:.4f}")
 
     # --- 9. Примеры заключений -------------------------------------------
-    _header("8. ПРИМЕРЫ ЗАКЛЮЧЕНИЙ ПО ИЗОЛЯТАМ")
+    _header("9. EXAMPLE ISOLATE REPORTS")
     examples, trained = build_example_reports(ds, split, catalogue)
     for ex in examples:
         _log(
-            f"{ex['isolate_id']}  линия {ex['lineage']}  ({ex['country']}): "
-            f"устойчив к {ex['n_resistant']} препаратам, "
-            f"нет заключения по {ex['n_no_call']}"
+            f"{ex['isolate_id']}  lineage {ex['lineage']}  ({ex['country']}): "
+            f"resistant to {ex['n_resistant']} drugs, "
+            f"no call on {ex['n_no_call']}"
         )
 
     # --- 9-бис. Сохранение моделей ---------------------------------------
@@ -596,9 +600,9 @@ def main(argv: list[str] | None = None) -> int:
             },
         )
         saved = save_bundle(bundle, args.save_models)
-        _log(f"\nМодели сохранены: {saved}")
-        _log("Применение:  python -m germovision.predict --models "
-             f"{saved} --mutations образцы.csv")
+        _log(f"\nModels saved to: {saved}")
+        _log("Use them:  python -m germovision.predict --models "
+             f"{saved} --mutations samples.csv")
 
     # --- 10. Отчёт -------------------------------------------------------
     out = Path(args.out)
@@ -639,10 +643,10 @@ def main(argv: list[str] | None = None) -> int:
     report_path = out / "report.md"
     report_path.write_text(_markdown_report(payload), encoding="utf-8")
 
-    _header("ГОТОВО")
-    _log(f"Метрики:  {metrics_path}")
-    _log(f"Отчёт:    {report_path}")
-    _log(f"Время:    {payload['elapsed_sec']} с")
+    _header("DONE")
+    _log(f"Metrics:  {metrics_path}")
+    _log(f"Report:   {report_path}")
+    _log(f"Elapsed:  {payload['elapsed_sec']}s")
     return 0
 
 
@@ -687,53 +691,54 @@ def _json_default(obj):
 
 def _fmt(triple) -> str:
     if not triple or triple[0] is None or (isinstance(triple[0], float) and np.isnan(triple[0])):
-        return "н/д"
+        return "n/a"
     return f"{triple[0]:.3f} [{triple[1]:.3f}–{triple[2]:.3f}]"
 
 
 def _markdown_report(p: dict) -> str:
     lines = [
-        "# Отчёт об обучении GermoVision",
+        "# GermoVision training report",
         "",
-        f"Сформирован: {p['generated_at']} · источник: `{p['source']}` · "
-        f"время прогона: {p['elapsed_sec']} с",
+        f"Generated {p['generated_at']} · source `{p['source']}` · "
+        f"run time {p['elapsed_sec']}s",
         "",
     ]
     if p["synthetic"]:
         lines += [
-            "> **Внимание.** " + p["warning"],
+            "> **Note.** " + p["warning"],
             "",
         ]
 
     d = p["dataset"]
     lines += [
-        "## Данные",
+        "## Data",
         "",
-        f"- Изолятов: **{d['n_isolates']}**, кластеров родства: {d['n_clusters']}",
-        f"- Стран: {d['n_countries']}, линий: {d['n_lineages']}, вариантов: {d['n_variants']}",
-        f"- Период: {d['date_min']} — {d['date_max']}",
-        f"- Разделение: {p['split']['strategy']}, {p['split']['sizes']}",
+        f"- Isolates: **{d['n_isolates']}**, relatedness clusters: {d['n_clusters']}",
+        f"- Countries: {d['n_countries']}, lineages: {d['n_lineages']}, "
+        f"variants: {d['n_variants']}",
+        f"- Period: {d['date_min']} — {d['date_max']}",
+        f"- Split: {p['split']['strategy']}, {p['split']['sizes']}",
         "",
-        "## Внутренний тест",
+        "## Internal test",
         "",
-        "Закрыто — доля изолятов, по которым выдан верный ответ за 1–2 дня вместо",
-        "~60. Пропущено — доля устойчивых, получивших уверенное «чувствителен»:",
-        "единственный по-настоящему опасный исход. Обе величины считаются от",
-        "полного числа изолятов, а не от числа отвеченных.",
+        "Closed — share of isolates given a correct answer in 1-2 days instead of",
+        "~60. Missed — share of resistant isolates confidently called susceptible:",
+        "the only genuinely dangerous outcome. Both are computed over all isolates,",
+        "not only the answered ones.",
         "",
-        "Столбец «Фенотип» отмечает препараты, по которым лимит пропущенной",
-        "устойчивости не достигнут: геномного прогноза недостаточно, требуется",
-        "лабораторное подтверждение.",
+        "The Lab column marks drugs where the missed-resistance limit is not met:",
+        "genomic prediction alone is insufficient and laboratory confirmation is",
+        "required.",
         "",
-        "| Препарат | N | Устойч. | Закрыто | Пропущено | Фенотип | Чувствительность | "
-        "Специфичность | PR-AUC | Каталог | Ответов |",
+        "| Drug | N | Resistant | Closed | Missed | Lab | Sensitivity | "
+        "Specificity | PR-AUC | Catalogue | Answered |",
         "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in p["per_drug"]:
         lines.append(
             f"| {r['drug_name']} | {r['n_test']} | {r['n_positive']} | "
             f"**{r['correctly_closed']:.1%}** | {r['missed_resistance']:.1%} | "
-            f"{'нужен' if r['requires_confirmation'] else '—'} | "
+            f"{'required' if r['requires_confirmation'] else '—'} | "
             f"{_fmt(r['decision']['sensitivity'])} | {_fmt(r['decision']['specificity'])} | "
             f"{_fmt(r['ranking']['pr_auc'])} | {_fmt(r['baseline_catalogue']['sensitivity'])} | "
             f"{r['answer_rate']:.1%} |"
@@ -743,18 +748,18 @@ def _markdown_report(p: dict) -> str:
         country = p["external_validation"][0]["country"]
         lines += [
             "",
-            f"## Внешняя валидация (обучение без «{country}»)",
+            f"## External validation (trained without {country})",
             "",
-            "Единственная оценка, отражающая реальный сценарий развёртывания.",
+            "The only estimate that reflects a real deployment.",
             "",
-            "| Препарат | N | Чувствительность | Специфичность | Цель H1 | Итог |",
+            "| Drug | N | Sensitivity | Specificity | H1 target | Verdict |",
             "|---|---|---|---|---|---|",
         ]
         for r in p["external_validation"]:
             target = (
                 f"≥{r['h1_target'][0]:.2f} / ≥{r['h1_target'][1]:.2f}" if r["h1_target"] else "—"
             )
-            verdict = {True: "✓ достигнута", False: "✗ не достигнута", None: "—"}[r["h1_met"]]
+            verdict = {True: "met", False: "not met", None: "—"}[r["h1_met"]]
             lines.append(
                 f"| {r['drug_name']} | {r['n_test']} | {_fmt(r['sensitivity'])} | "
                 f"{_fmt(r['specificity'])} | {target} | {verdict} |"
@@ -762,12 +767,12 @@ def _markdown_report(p: dict) -> str:
 
     lines += [
         "",
-        "## Абляции (рифампицин)",
+        "## Ablations (rifampicin)",
         "",
-        "Чувствительность и специфичность считаются по фактически выдаваемым",
-        "решениям, PR-AUC — по калиброванной вероятности.",
+        "Sensitivity and specificity are computed on the decisions actually issued;",
+        "PR-AUC on the calibrated probability.",
         "",
-        "| Конфигурация | Чувств. | Специф. | PR-AUC | Отказов |",
+        "| Configuration | Sens | Spec | PR-AUC | Abstained |",
         "|---|---|---|---|---|",
     ]
     for row in p["ablations"]:
@@ -783,13 +788,13 @@ def _markdown_report(p: dict) -> str:
     if rif and rif.get("coverage_tradeoff"):
         lines += [
             "",
-            "## Компромисс «доля ответов — точность» (рифампицин)",
+            "## Answer rate versus accuracy (rifampicin)",
             "",
-            "Отказ от ответа переводит образец на фенотипическое тестирование:",
-            "система меняет скорость на достоверность. Выбор точки на этой кривой —",
-            "решение организации, а не разработчика.",
+            "Abstaining sends the sample for phenotypic testing: the system trades",
+            "speed for certainty. Which point on this curve to pick is the",
+            "organisation's decision, not the developer's.",
             "",
-            "| alpha | Ответов | Точность | Чувств. | Специф. |",
+            "| alpha | Answered | Accuracy | Sens | Spec |",
             "|---|---|---|---|---|",
         ]
         for row in rif["coverage_tradeoff"]:
@@ -804,11 +809,11 @@ def _markdown_report(p: dict) -> str:
     if p.get("growth"):
         lines += [
             "",
-            "## GV-Growth: восстановление коэффициентов роста",
+            "## GV-Growth: recovering growth coefficients",
             "",
-            f"Оценённое стягивание τ = {p['growth']['tau']:.4f}",
+            f"Estimated shrinkage tau = {p['growth']['tau']:.4f}",
             "",
-            "| Линия | Истинное β | Оценка β | Разброс по регионам |",
+            "| Lineage | True beta | Estimated beta | Spread across regions |",
             "|---|---|---|---|",
         ]
         for row in p["growth"]["recovery"]:

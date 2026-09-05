@@ -1,338 +1,171 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GermoVision — анализ мутаций патогена</title>
+<title>GermoVision Mutation Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
-<style>
-:root {
-  color-scheme: light;
-  --ground:#f5f7f9; --surface:#fff; --sunk:#eef1f5;
-  --ink:#101620; --soft:#5b6474; --faint:#8c94a3;
-  --rule:#dde2ea; --rule2:#c3cad6;
-  --accent:#0c6b6b; --accent-soft:#e2f0ef;
-  --good:#16855f; --good-bg:#e4f4ed;
-  --warn:#a8730a; --warn-bg:#fbf0d9;
-  --crit:#c23a39; --crit-bg:#fbe6e6;
-  --font-display:"Source Serif 4",Georgia,serif;
-  --font-body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
-  --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
-  --radius:3px;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.55 var(--font-body);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1180px;margin:0 auto;padding:0 26px 80px}
-
-header{background:var(--surface);border-bottom:1px solid var(--rule)}
-header .wrap{padding:30px 26px 24px}
-.eyebrow{font:11.5px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
-h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,4vw,38px);line-height:1.12;margin:0 0 10px;letter-spacing:-.015em}
-.lede{color:var(--soft);max-width:64ch;margin:0}
-.privacy{margin-top:16px;padding:10px 14px;background:var(--good-bg);border:1px solid var(--rule);border-radius:var(--radius);font-size:13px;color:var(--ink)}
-.privacy b{color:var(--good)}
-
-/* ---------- зона перетаскивания ---------- */
-#drop{
-  margin:28px 0 0;background:var(--surface);border:2px dashed var(--rule2);
-  border-radius:6px;padding:44px 26px;text-align:center;transition:.15s;cursor:pointer;
-}
-#drop:hover{border-color:var(--accent);background:var(--accent-soft)}
-#drop.over{border-color:var(--accent);background:var(--accent-soft);transform:scale(1.005)}
-#drop.busy{opacity:.6;pointer-events:none}
-#drop h2{font-family:var(--font-display);font-size:22px;margin:0 0 8px;font-weight:600}
-#drop p{color:var(--soft);margin:0 0 18px;font-size:14px}
-.btn{
-  display:inline-block;font:500 14px var(--font-body);padding:9px 18px;border-radius:var(--radius);
-  background:var(--accent);color:#fff;border:1px solid var(--accent);cursor:pointer;
-}
-.btn:hover{filter:brightness(1.1)}
-.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.btn.ghost{background:var(--sunk);color:var(--ink);border-color:var(--rule2)}
-.btn.small{font-size:12.5px;padding:6px 12px}
-#file{display:none}
-
-/* ---------- форматы ---------- */
-.formats{margin-top:26px}
-.formats h3{font-size:14px;font-weight:600;margin:0 0 12px}
-.fmt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
-.fmt{background:var(--surface);padding:14px 16px}
-.fmt .t{font-weight:600;font-size:13.5px;margin-bottom:3px}
-.fmt .e{font:11.5px var(--font-mono);color:var(--accent);margin-bottom:6px}
-.fmt .s{font-size:12.5px;color:var(--soft);margin-bottom:8px;line-height:1.45}
-.fmt .m{font:11px var(--font-mono);color:var(--faint);border-top:1px solid var(--rule);padding-top:7px}
-
-/* ---------- статус моделей ---------- */
-.alert{margin:20px 0 0;padding:12px 16px;border:1px solid var(--rule);border-radius:var(--radius);font-size:13.5px}
-.alert.warn{background:var(--warn-bg)}
-.alert.crit{background:var(--crit-bg)}
-.alert b{display:block;margin-bottom:4px}
-.alert code{font:12px var(--font-mono);background:var(--surface);padding:2px 6px;border-radius:2px;border:1px solid var(--rule)}
-
-/* ---------- результаты ---------- */
-#results{margin-top:34px;display:flex;flex-direction:column;gap:22px}
-.card{background:var(--surface);border:1px solid var(--rule)}
-.card-head{padding:18px 22px;border-bottom:1px solid var(--rule);display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
-.card-head .who{flex:1;min-width:240px}
-.card-head .fn{font:12px var(--font-mono);color:var(--faint);margin-bottom:4px;word-break:break-all}
-.card-head h3{font-family:var(--font-display);font-size:20px;margin:0 0 4px;font-weight:600}
-.card-head .sum{font-size:13px;color:var(--soft)}
-.tag{font:11px var(--font-mono);padding:4px 9px;border-radius:2px;background:var(--accent-soft);color:var(--accent);white-space:nowrap;letter-spacing:.04em}
-.card-body{padding:20px 22px}
-.card.bad .card-head{background:var(--crit-bg)}
-
-.hl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:20px}
-.hl div{background:var(--surface);padding:13px 15px}
-.hl .l{font-size:11.5px;color:var(--soft);margin-bottom:5px;min-height:2.3em;line-height:1.3}
-.hl .v{font-family:var(--font-display);font-size:23px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
-.hl .v.crit{color:var(--crit)} .hl .v.warn{color:var(--warn)} .hl .v.good{color:var(--good)}
-
-.tbl-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0 8px}
-.tbl-head h4{font-size:14px;font-weight:600;margin:0}
-.tbl-head .cnt{font:11.5px var(--font-mono);color:var(--faint)}
-.tblwrap{overflow-x:auto;border:1px solid var(--rule);max-height:420px;overflow-y:auto}
-table{width:100%;border-collapse:collapse;font-size:12.5px}
-th,td{text-align:left;padding:7px 12px;border-bottom:1px solid var(--rule);white-space:nowrap}
-th{position:sticky;top:0;background:var(--sunk);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:600;z-index:1}
-td:last-child{white-space:normal;min-width:280px}
-tbody tr:hover{background:var(--sunk)}
-.tnote{font-size:12px;color:var(--soft);margin:9px 0 0;line-height:1.5}
-.trunc{font-size:12px;color:var(--faint);margin:8px 0 0;font-style:italic}
-
-.notes{margin-top:22px;border-top:1px solid var(--rule);padding-top:14px}
-.notes li{font-size:12.5px;color:var(--soft);margin-bottom:6px}
-.err{font-size:13.5px;white-space:pre-wrap;line-height:1.6}
-
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-#spinner{display:none;margin-top:22px;font-size:13.5px;color:var(--soft);text-align:center}
-#spinner.on{display:block}
-.dots::after{content:"";animation:d 1.2s steps(4,end) infinite}
-@keyframes d{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-footer{margin-top:50px;border-top:1px solid var(--rule);padding-top:20px;font-size:12.5px;color:var(--soft)}
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="/app.css">
 </head>
 <body>
 
-<header>
-  <div class="wrap">
-    <p class="eyebrow">GermoVision · анализ мутаций патогена</p>
-    <h1>Перетащите файл — получите анализ</h1>
-    <p class="lede">
-      Формат определяется по содержимому и направляется своей модели: варианты — на
-      прогноз лекарственной устойчивости, последовательности белка — на ранжирование
-      мутаций по эволюционному риску, счётчики линий — на прогноз динамики.
-      Результат скачивается таблицами для дальнейшего анализа.
-    </p>
-    <div class="privacy">
-      <b>Данные не покидают этот компьютер.</b> Приложение работает локально:
-      файлы разбираются и анализируются здесь же, никуда не отправляются и не сохраняются.
+<div class="shell">
+
+  <!-- ══════════════ NAVIGATION RAIL ══════════════ -->
+  <nav class="rail" aria-label="Sections">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <span class="mark-dot"></span><span class="mark-dot"></span>
+        <span class="mark-dot"></span><span class="mark-dot"></span>
+      </div>
+      <div class="brand-text">
+        <b>GERMOVISION</b>
+        <span>Mutation Intelligence</span>
+      </div>
     </div>
-  </div>
-</header>
 
-<div class="wrap">
-  <div id="drop" tabindex="0" role="button" aria-label="Загрузить файлы для анализа">
-    <h2>Перетащите файлы сюда</h2>
-    <p>Можно несколько сразу — каждый будет разобран и проанализирован отдельно</p>
-    <button class="btn" type="button" id="pick">Выбрать файлы</button>
-    <input type="file" id="file" multiple accept=".csv,.tsv,.txt,.vcf,.json,.fasta,.fa,.faa,.fna">
-  </div>
+    <ul class="nav" id="nav">
+      <li><a href="#overview"   data-view="overview"><i>◉</i><span>Overview</span></a></li>
+      <li><a href="#analyze"    data-view="analyze"><i>▲</i><span>Analyze</span></a></li>
+      <li><a href="#mutations"  data-view="mutations"><i>◈</i><span>Mutations</span></a></li>
+      <li><a href="#resistance" data-view="resistance"><i>▦</i><span>Resistance</span></a></li>
+      <li><a href="#spread"     data-view="spread"><i>◐</i><span>Spread</span></a></li>
+      <li><a href="#models"     data-view="models"><i>⬢</i><span>Models</span></a></li>
+      <li class="nav-indicator" id="nav-indicator" aria-hidden="true"></li>
+    </ul>
 
-  <div id="model-status"></div>
-  <div id="spinner"><span class="dots">Анализ</span></div>
-  <div id="results"></div>
+    <div class="rail-foot">
+      <div class="pill-status" id="rail-status"><span class="dot"></span><span>Local</span></div>
+      <p>All processing happens on this machine. Nothing is uploaded.</p>
+    </div>
+  </nav>
 
-  <section class="formats">
-    <h3>Что можно загрузить</h3>
-    <div class="fmt-grid" id="formats"></div>
-  </section>
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb">Overview</div>
+      <div class="topbar-right">
+        <div class="stat" id="topbar-stat"></div>
+        <span class="badge" id="data-badge" hidden>SYNTHETIC DATA</span>
+      </div>
+    </header>
 
-  <footer>
-    Результат носит вспомогательный характер и не заменяет решение врача.
-    Система не является сертифицированным медицинским изделием.
-    Для больших наборов используйте командный режим:
-    <code style="font-family:var(--font-mono)">python -m germovision.predict</code>
-  </footer>
+    <div class="views" id="views">
+
+      <!-- ────────── OVERVIEW ────────── -->
+      <section class="view" data-view="overview">
+        <div class="view-head">
+          <h1>Situation Overview</h1>
+          <p>Where the pathogen population stands right now, and what changed.</p>
+        </div>
+
+        <div class="kpis" id="kpis"></div>
+
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Active signals</h2>
+              <span class="hint" id="signal-count"></span>
+            </div>
+            <div class="signals" id="signals"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>Lineage share, national</h2></div>
+            <div class="legend" id="ov-legend"></div>
+            <svg class="chart" id="ov-stack" viewBox="0 0 560 260" role="img"
+                 aria-label="Lineage share over time"></svg>
+            <p class="note" id="ov-note"></p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Detection capability by drug</h2>
+            <span class="hint">Share of isolates correctly closed without a phenotypic test</span>
+          </div>
+          <div class="bars" id="ov-bars"></div>
+        </div>
+      </section>
+
+      <!-- ────────── ANALYZE ────────── -->
+      <section class="view" data-view="analyze">
+        <div class="view-head">
+          <h1>Analyze Data</h1>
+          <p>Drop a file. The format is detected from its contents and routed to the model that fits it.</p>
+        </div>
+
+        <div id="drop" tabindex="0" role="button" aria-label="Upload files for analysis">
+          <div class="drop-inner">
+            <div class="drop-icon" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <h2>Drop files here</h2>
+            <p>Several at once is fine — each is parsed and analyzed independently</p>
+            <button class="btn" type="button" id="pick">Choose files</button>
+            <input type="file" id="file" multiple
+                   accept=".csv,.tsv,.txt,.vcf,.json,.fasta,.fa,.faa,.fna">
+          </div>
+        </div>
+
+        <div id="model-status"></div>
+        <div id="spinner" hidden><span class="bar"></span><b>Analyzing</b></div>
+        <div id="results"></div>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Accepted inputs</h2></div>
+          <div class="fmt-grid" id="formats"></div>
+        </div>
+      </section>
+
+      <!-- ────────── MUTATIONS ────────── -->
+      <section class="view" data-view="mutations">
+        <div class="view-head">
+          <h1>Mutation Landscape</h1>
+          <p>Which substitutions matter — the ones already circulating, and the ones that would matter if they appeared.</p>
+        </div>
+        <div id="mut-content"></div>
+      </section>
+
+      <!-- ────────── RESISTANCE ────────── -->
+      <section class="view" data-view="resistance">
+        <div class="view-head">
+          <h1>Drug Resistance</h1>
+          <p>What the genome predicts about treatment, and how far that prediction can be trusted.</p>
+        </div>
+        <div id="res-content"></div>
+      </section>
+
+      <!-- ────────── SPREAD ────────── -->
+      <section class="view" data-view="spread">
+        <div class="view-head">
+          <h1>Spread &amp; Growth</h1>
+          <p>Which lineages are displacing others, where, and how fast.</p>
+        </div>
+        <div id="spread-content"></div>
+      </section>
+
+      <!-- ────────── MODELS ────────── -->
+      <section class="view" data-view="models">
+        <div class="view-head">
+          <h1>Models &amp; Validation</h1>
+          <p>What each model does, how it was tested, and where it must not be trusted alone.</p>
+        </div>
+        <div id="models-content"></div>
+      </section>
+
+    </div>
+
+    <footer class="foot">
+      <span>Research use only. Not a certified medical device. Does not diagnose or prescribe.</span>
+      <span class="mono" id="foot-meta"></span>
+    </footer>
+  </main>
 </div>
 
-<script>
-(function () {
-  "use strict";
-  const $ = (id) => document.getElementById(id);
-  const drop = $("drop"), input = $("file"), results = $("results"), spinner = $("spinner");
-  const MAX_ROWS = 300;
-  let store = [];
-
-  const esc = (v) => String(v == null ? "" : v)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-  /* ---------------- статус ---------------- */
-  fetch("/api/status").then((r) => r.json()).then((s) => {
-    $("formats").innerHTML = s.formats.map((f) =>
-      '<div class="fmt"><div class="t">' + esc(f.title) + '</div>' +
-      '<div class="e">' + esc(f.ext) + '</div>' +
-      '<div class="s">' + esc(f.shape) + '</div>' +
-      '<div class="m">' + esc(f.model) + " → " + esc(f.result) + "</div></div>"
-    ).join("");
-
-    const box = $("model-status");
-    if (!s.models_loaded) {
-      box.innerHTML =
-        '<div class="alert warn"><b>Модели лекарственной устойчивости не загружены</b>' +
-        "Файлы с вариантами (мутации, VCF, TB-Profiler) обработать не удастся. " +
-        "Обучите и сохраните модели:<br><br><code>python -m germovision.train --save-models models</code>" +
-        "<br><br>Анализ последовательностей и динамики линий работает без них: " +
-        "эти модели подгоняются на присланных данных.</div>";
-    } else if (s.models_synthetic) {
-      box.innerHTML =
-        '<div class="alert warn"><b>Модели обучены на синтетических данных</b>' +
-        "Результат демонстрирует работу пайплайна, а не клиническое качество. " +
-        "Для реальных выводов обучите модели на наборе CRyPTIC.</div>";
-    }
-  }).catch(() => {
-    $("model-status").innerHTML =
-      '<div class="alert crit"><b>Нет связи с сервером</b>Проверьте, запущено ли приложение.</div>';
-  });
-
-  /* ---------------- приём файлов ---------------- */
-  ["dragenter", "dragover"].forEach((e) =>
-    drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add("over"); }));
-  ["dragleave", "drop"].forEach((e) =>
-    drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove("over"); }));
-  drop.addEventListener("drop", (ev) => send(ev.dataTransfer.files));
-
-  $("pick").addEventListener("click", (e) => { e.stopPropagation(); input.click(); });
-  drop.addEventListener("click", () => input.click());
-  drop.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); }
-  });
-  input.addEventListener("change", () => { send(input.files); input.value = ""; });
-
-  async function send(files) {
-    if (!files || !files.length) return;
-    const fd = new FormData();
-    for (const f of files) fd.append("files", f, f.name);
-
-    spinner.classList.add("on");
-    drop.classList.add("busy");
-    results.innerHTML = "";
-    try {
-      const resp = await fetch("/api/analyze", { method: "POST", body: fd });
-      if (!resp.ok) throw new Error("сервер ответил " + resp.status);
-      const data = await resp.json();
-      store = data.results;
-      render(data.results);
-    } catch (err) {
-      results.innerHTML =
-        '<div class="card bad"><div class="card-head"><div class="who">' +
-        '<h3>Не удалось выполнить анализ</h3><div class="sum">' + esc(err.message) +
-        "</div></div></div></div>";
-    } finally {
-      spinner.classList.remove("on");
-      drop.classList.remove("busy");
-    }
-  }
-
-  /* ---------------- отображение ---------------- */
-  function render(items) {
-    results.innerHTML = items.map((r, i) => r.ok ? card(r, i) : bad(r)).join("");
-
-    results.querySelectorAll("[data-csv]").forEach((b) => {
-      b.addEventListener("click", () => {
-        const [i, j] = b.dataset.csv.split(":").map(Number);
-        const t = store[i].tables[j];
-        download(toCsv(t), csvName(store[i].file, t.name), "text/csv;charset=utf-8");
-      });
-    });
-    results.querySelectorAll("[data-json]").forEach((b) => {
-      b.addEventListener("click", () => {
-        const i = Number(b.dataset.json);
-        download(JSON.stringify(store[i], null, 2),
-          baseName(store[i].file) + "_germovision.json", "application/json");
-      });
-    });
-    results.querySelectorAll("[data-all]").forEach((b) => {
-      b.addEventListener("click", () => {
-        const i = Number(b.dataset.all);
-        const r = store[i];
-        const parts = r.tables.map((t) => "# " + t.title + "\n" + toCsv(t)).join("\n\n");
-        download(parts, baseName(r.file) + "_все_таблицы.csv", "text/csv;charset=utf-8");
-      });
-    });
-  }
-
-  function card(r, i) {
-    const hl = (r.highlights || []).map((h) =>
-      '<div><div class="l">' + esc(h.label) + '</div><div class="v ' +
-      esc(h.tone || "") + '">' + esc(h.value) + "</div></div>").join("");
-
-    const tables = (r.tables || []).map((t, j) => {
-      const shown = t.rows.slice(0, MAX_ROWS);
-      const head = "<tr>" + t.columns.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>";
-      const body = shown.map((row) =>
-        "<tr>" + row.map((v) => "<td>" + esc(v) + "</td>").join("") + "</tr>").join("");
-      const more = t.rows.length > shown.length
-        ? '<p class="trunc">Показаны первые ' + MAX_ROWS + " строк из " +
-          t.rows.length + ". В скачанном файле — все.</p>" : "";
-      return '<div class="tbl-head"><h4>' + esc(t.title) + "</h4>" +
-        '<span class="cnt">' + t.rows.length + " строк · " +
-        '<button class="btn ghost small" data-csv="' + i + ":" + j + '">Скачать CSV</button>' +
-        "</span></div>" +
-        (t.rows.length
-          ? '<div class="tblwrap"><table><thead>' + head + "</thead><tbody>" + body + "</tbody></table></div>"
-          : '<p class="trunc">Таблица пуста.</p>') +
-        more + (t.note ? '<p class="tnote">' + esc(t.note) + "</p>" : "");
-    }).join("");
-
-    const notes = (r.notes || []).length
-      ? '<div class="notes"><ul>' + r.notes.map((n) => "<li>" + esc(n) + "</li>").join("") + "</ul></div>"
-      : "";
-
-    return '<div class="card"><div class="card-head"><div class="who">' +
-      '<div class="fn">' + esc(r.file) + "</div><h3>" + esc(r.title) + "</h3>" +
-      '<div class="sum">' + esc(r.summary) + "</div></div>" +
-      '<span class="tag">' + esc(r.model) + "</span>" +
-      '<div class="actions">' +
-      '<button class="btn small" data-all="' + i + '">Скачать все таблицы</button>' +
-      '<button class="btn ghost small" data-json="' + i + '">JSON</button>' +
-      "</div></div>" +
-      '<div class="card-body">' + (hl ? '<div class="hl">' + hl + "</div>" : "") +
-      tables + notes + "</div></div>";
-  }
-
-  function bad(r) {
-    return '<div class="card bad"><div class="card-head"><div class="who">' +
-      '<div class="fn">' + esc(r.file) + "</div>" +
-      "<h3>Файл не обработан</h3></div></div>" +
-      '<div class="card-body"><div class="err">' + esc(r.error) + "</div></div></div>";
-  }
-
-  /* ---------------- выгрузка ---------------- */
-  function toCsv(t) {
-    const cell = (v) => {
-      const s = String(v == null ? "" : v);
-      return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-    };
-    return [t.columns.map(cell).join(","), ...t.rows.map((r) => r.map(cell).join(","))].join("\n");
-  }
-
-  const baseName = (f) => String(f).replace(/\.[^.]+$/, "").replace(/[^\wА-Яа-яЁё-]+/g, "_");
-  const csvName = (f, t) => baseName(f) + "_" + t + ".csv";
-
-  function download(text, name, mime) {
-    // BOM: без него Excel открывает CSV в кодировке системы и портит кириллицу.
-    const bom = mime.indexOf("csv") >= 0 ? "﻿" : "";
-    const url = URL.createObjectURL(new Blob([bom + text], { type: mime }));
-    const a = document.createElement("a");
-    a.href = url; a.download = name;
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-})();
-</script>
+<div id="tip" role="status" aria-live="polite"></div>
+<script src="/app.js"></script>
 </body>
 </html>

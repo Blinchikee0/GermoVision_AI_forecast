@@ -18,7 +18,7 @@ from typing import Any
 
 import numpy as np
 
-from .data.catalogue import DRUG_NAMES_RU
+from .data.catalogue import DRUG_NAMES
 from .data.schema import IsolateDataset
 from .formats import InputKind, ParsedInput
 from .models.escape import GVEscape
@@ -91,10 +91,10 @@ class AnalysisResult:
 
 _RESISTANCE_KINDS = {InputKind.MUTATIONS, InputKind.VCF, InputKind.TBPROFILER}
 
-_DECISION_RU = {
-    Decision.RESISTANT: "устойчив",
-    Decision.SUSCEPTIBLE: "чувствителен",
-    Decision.NO_CALL: "нет заключения",
+_DECISION_LABEL = {
+    Decision.RESISTANT: "resistant",
+    Decision.SUSCEPTIBLE: "susceptible",
+    Decision.NO_CALL: "no call",
 }
 
 
@@ -117,12 +117,12 @@ def _dataset_from_rows(rows: list[dict]) -> IsolateDataset:
 def _analyze_resistance(parsed: ParsedInput, bundle) -> AnalysisResult:
     if bundle is None or not getattr(bundle, "models", None):
         raise AnalysisError(
-            "модели устойчивости не загружены. Обучите и сохраните их командой:\n"
+            "Resistance models are not loaded. Train and save them with:\n"
             "    python -m germovision.train --save-models models"
         )
 
     ds = _dataset_from_rows(parsed.payload)
-    order = list(DRUG_NAMES_RU)
+    order = list(DRUG_NAMES)
     drugs = sorted(bundle.models, key=lambda d: order.index(d) if d in order else 99)
 
     rows: list[list[Any]] = []
@@ -139,79 +139,77 @@ def _analyze_resistance(parsed: ParsedInput, bundle) -> AnalysisResult:
             rows.append([
                 sid,
                 drug,
-                DRUG_NAMES_RU.get(drug, drug),
-                _DECISION_RU[pr.decision],
+                DRUG_NAMES.get(drug, drug),
+                _DECISION_LABEL[pr.decision],
                 "" if pr.source == "catalogue" else round(float(pr.probability), 3),
-                "каталог ВОЗ" if pr.source == "catalogue" else "модель",
-                "да" if pr.needs_confirmation else "нет",
+                "WHO catalogue" if pr.source == "catalogue" else "model",
+                "yes" if pr.needs_confirmation else "no",
                 pr.explain(),
             ])
 
     detail = Table(
         name="resistance",
-        title="Прогноз лекарственной устойчивости",
+        title="Drug resistance prediction",
         columns=[
-            "Изолят", "Код", "Препарат", "Заключение", "Вероятность",
-            "Источник", "Нужен фенотип", "Обоснование",
+            "Isolate", "Code", "Drug", "Call", "Probability",
+            "Source", "Lab confirmation", "Basis",
         ],
         rows=rows,
         note=(
-            "Вероятность не показывается там, где решение принято по каталогу "
-            "мутаций ВОЗ: это референсный стандарт, и он имеет приоритет над "
-            "оценкой модели."
+            "Probability is omitted where the WHO mutation catalogue made the call: "
+            "it is the reference standard and takes precedence over the model."
         ),
     )
 
     summary_rows = []
     for sid, decisions in per_isolate.items():
-        res = [DRUG_NAMES_RU.get(d, d) for d, v in decisions.items() if v == Decision.RESISTANT]
-        nc = [DRUG_NAMES_RU.get(d, d) for d, v in decisions.items() if v == Decision.NO_CALL]
+        res = [DRUG_NAMES.get(d, d) for d, v in decisions.items() if v == Decision.RESISTANT]
+        nc = [DRUG_NAMES.get(d, d) for d, v in decisions.items() if v == Decision.NO_CALL]
         resistant_set = {d for d, v in decisions.items() if v == Decision.RESISTANT}
-        mdr = "да" if {"RIF", "INH"} <= resistant_set else "нет"
+        mdr = "yes" if {"RIF", "INH"} <= resistant_set else "no"
         summary_rows.append([
             sid, len(res), mdr, "; ".join(res) or "—", "; ".join(nc) or "—",
         ])
 
     summary_table = Table(
         name="isolates",
-        title="Сводка по изолятам",
-        columns=["Изолят", "Устойчив к (число)", "МЛУ", "Устойчив к", "Без заключения"],
+        title="Isolate summary",
+        columns=["Isolate", "Resistant to (count)", "MDR", "Resistant to", "No call"],
         rows=summary_rows,
         note=(
-            "МЛУ — множественная лекарственная устойчивость: одновременно "
-            "к рифампицину и изониазиду."
+            "MDR — multidrug resistance: resistant to both rifampicin and isoniazid."
         ),
     )
 
-    n_mdr = sum(1 for r in summary_rows if r[2] == "да")
+    n_mdr = sum(1 for r in summary_rows if r[2] == "yes")
     highlights = [
-        {"label": "Изолятов", "value": str(len(per_isolate))},
-        {"label": "Препаратов проверено", "value": str(len(drugs))},
-        {"label": "Прогнозов устойчивости", "value": str(n_resistant)},
-        {"label": "Из них МЛУ", "value": f"{n_mdr} изол.", "tone": "crit" if n_mdr else "good"},
+        {"label": "Isolates", "value": str(len(per_isolate))},
+        {"label": "Drugs checked", "value": str(len(drugs))},
+        {"label": "Resistance calls", "value": str(n_resistant)},
+        {"label": "MDR isolates", "value": str(n_mdr), "tone": "crit" if n_mdr else "good"},
     ]
 
     notes = list(parsed.notes)
     if bundle.manifest.get("synthetic"):
         notes.append(
-            "Модели обучены на синтетических данных: результат демонстрирует "
-            "работу пайплайна, а не клиническое качество."
+            "Models were trained on synthetic data: this shows the pipeline works, "
+            "not clinical quality."
         )
     needs = [
-        DRUG_NAMES_RU.get(d, d)
+        DRUG_NAMES.get(d, d)
         for d, q in (bundle.manifest.get("quality") or {}).items()
         if q.get("requires_confirmation")
     ]
     if needs:
         notes.append(
-            "Требуют лабораторного подтверждения: " + ", ".join(sorted(needs))
+            "Lab confirmation required for: " + ", ".join(sorted(needs))
         )
 
     return AnalysisResult(
         kind=parsed.kind,
         model="GV-Resist",
-        title="Лекарственная устойчивость",
-        summary=f"{parsed.summary}. Проверено {len(drugs)} препаратов.",
+        title="Drug resistance",
+        summary=f"{parsed.summary}. {len(drugs)} drugs checked.",
         tables=[summary_table, detail],
         highlights=highlights,
         notes=notes,
@@ -235,11 +233,11 @@ def _analyze_escape(parsed: ParsedInput, top_candidates: int = 100) -> AnalysisR
 
     observed = Table(
         name="observed_mutations",
-        title="Наблюдённые замены, по убыванию риска",
+        title="Observed substitutions, by descending risk",
         columns=[
-            "Мутация", "Позиция", "Исходный", "Замена", "Риск",
-            "Допустимость", "Заметность", "Новизна", "Консервативность",
-            "Наблюдений", "Частота", "Рост в неделю",
+            "Mutation", "Position", "Wild type", "Mutant", "Risk",
+            "Tolerance", "Salience", "Novelty", "Conservation",
+            "Count", "Frequency", "Growth per week",
         ],
         rows=[
             [
@@ -251,18 +249,18 @@ def _analyze_escape(parsed: ParsedInput, top_candidates: int = 100) -> AnalysisR
             for r in report.observed
         ],
         note=(
-            "Риск — среднее геометрическое трёх множителей: допустимости замены "
-            "по профилю, физико-химической заметности и новизны. Рост в неделю "
-            "показан там, где в заголовках нашлись даты."
+            "Risk is the geometric mean of three factors: how far the profile "
+            "tolerates the substitution, its physicochemical salience, and its "
+            "novelty. Growth per week appears where the headers carried dates."
         ),
     )
 
     candidates = Table(
         name="candidate_mutations",
-        title="Кандидаты: замены, ещё не встречавшиеся в данных",
+        title="Candidates: substitutions not yet seen in the data",
         columns=[
-            "Мутация", "Позиция", "Исходный", "Замена", "Риск",
-            "Допустимость", "Заметность", "Консервативность",
+            "Mutation", "Position", "Wild type", "Mutant", "Risk",
+            "Tolerance", "Salience", "Conservation",
         ],
         rows=[
             [
@@ -272,18 +270,18 @@ def _analyze_escape(parsed: ParsedInput, top_candidates: int = 100) -> AnalysisR
             for r in report.candidates
         ],
         note=(
-            "Именно этот список и есть механизм раннего предупреждения: замену "
-            "можно оценить до того, как она встретится. Оценка получена профильной "
-            "моделью и не учитывает эпистаз — зависимость эффекта от других замен."
+            "This list is the early-warning mechanism: a substitution can be scored "
+            "before it is ever seen. The estimate comes from a profile model and does "
+            "not account for epistasis — how other substitutions change the effect."
         ),
     )
 
     hotspots = Table(
         name="hotspots",
-        title="Горячие точки: позиции с наибольшим разнообразием замен",
+        title="Hotspots: positions with the most substitution diversity",
         columns=[
-            "Позиция", "Исходный", "Разных замен", "Всего наблюдений",
-            "Макс. риск", "Консервативность", "Замены",
+            "Position", "Wild type", "Distinct substitutions", "Total count",
+            "Max risk", "Conservation", "Substitutions",
         ],
         rows=[
             [
@@ -293,26 +291,26 @@ def _analyze_escape(parsed: ParsedInput, top_candidates: int = 100) -> AnalysisR
             for h in report.hotspots
         ],
         note=(
-            "Повторные независимые замены в одной позиции — классический признак "
-            "положительного отбора: эволюция «пробует» эту позицию снова и снова."
+            "Repeated independent substitutions at one position are a classic "
+            "signature of positive selection: evolution keeps revisiting that site."
         ),
     )
 
     top = report.observed[0] if report.observed else None
     rising = [r for r in report.observed if r.trend and r.trend > 0.05]
     highlights = [
-        {"label": "Последовательностей", "value": str(report.n_used)},
-        {"label": "Наблюдённых замен", "value": str(len(report.observed))},
-        {"label": "Горячих точек", "value": str(len(report.hotspots))},
+        {"label": "Sequences used", "value": str(report.n_used)},
+        {"label": "Observed substitutions", "value": str(len(report.observed))},
+        {"label": "Hotspots", "value": str(len(report.hotspots))},
         {
-            "label": "Максимальный риск",
+            "label": "Highest risk",
             "value": f"{top.label} · {top.risk:.2f}" if top else "—",
             "tone": "warn" if top and top.risk > 0.5 else "",
         },
     ]
     if rising:
         highlights.append({
-            "label": "Растущих замен",
+            "label": "Rising substitutions",
             "value": str(len(rising)),
             "tone": "crit",
         })
@@ -320,7 +318,7 @@ def _analyze_escape(parsed: ParsedInput, top_candidates: int = 100) -> AnalysisR
     return AnalysisResult(
         kind=parsed.kind,
         model="GV-Escape",
-        title="Эволюционный риск мутаций",
+        title="Evolutionary risk of substitutions",
         summary=report.summary().replace("\n", " · "),
         tables=[observed, candidates, hotspots],
         highlights=highlights,
@@ -346,13 +344,13 @@ def _analyze_growth(parsed: ParsedInput) -> AnalysisResult:
 
     if len(lineages) < 2:
         raise AnalysisError(
-            f"в данных лишь одна линия ({lineages[0]}). Модель описывает, как линии "
-            "вытесняют друг друга, поэтому нужно минимум две"
+            f"the data contain only one lineage ({lineages[0]}). The model describes "
+            "how lineages displace one another, so at least two are required"
         )
     if len(weeks) < 4:
         raise AnalysisError(
-            f"в данных {len(weeks)} моментов времени. Для оценки скорости роста "
-            "нужно минимум четыре"
+            f"the data contain {len(weeks)} time points. Estimating a growth rate "
+            "needs at least four"
         )
 
     index = {(r["region"], r["week"]): i for i, r in enumerate(
@@ -380,29 +378,28 @@ def _analyze_growth(parsed: ParsedInput) -> AnalysisResult:
     try:
         model = GVGrowth(n_bootstrap=120).fit(counts, times, region_labels, lineages)
     except ValueError as exc:
-        raise AnalysisError(f"не удалось подогнать модель роста: {exc}") from exc
+        raise AnalysisError(f"could not fit the growth model: {exc}") from exc
 
     growth_rows = [
         [
             g["region"], g["lineage"], round(g["beta"], 5),
             "" if not np.isfinite(g["se"]) else round(g["se"], 5),
             round(g["weekly_pct"], 2), g["n_samples"],
-            "да" if g["significant"] else "нет",
+            "yes" if g["significant"] else "no",
         ]
         for g in sorted(model.growth_table(), key=lambda g: -g["beta"])
     ]
     growth = Table(
         name="growth",
-        title="Преимущество роста линий по регионам",
+        title="Lineage growth advantage by region",
         columns=[
-            "Регион", "Линия", "β", "SE", "Рост в неделю, %", "Образцов", "Значимо",
+            "Region", "Lineage", "beta", "SE", "Growth per week, %", "Samples", "Significant",
         ],
         rows=growth_rows,
         note=(
-            f"β — логарифмическое преимущество роста за неделю относительно "
-            f"референсной линии «{lineages[0]}» (самой многочисленной), у которой "
-            "β = 0 по построению. «Значимо» означает, что доверительный интервал "
-            "не пересекает ноль."
+            f"Beta is the log growth advantage per week relative to the reference "
+            f"lineage \"{lineages[0]}\" (the most abundant one), whose beta is 0 by "
+            "construction. \"Significant\" means the confidence interval excludes zero."
         ),
     )
 
@@ -421,22 +418,22 @@ def _analyze_growth(parsed: ParsedInput) -> AnalysisResult:
                 ])
     forecast = Table(
         name="forecast",
-        title="Прогноз долей линий",
-        columns=["Регион", "Линия", "Недель вперёд", "Доля", "Нижняя граница", "Верхняя граница"],
+        title="Lineage share forecast",
+        columns=["Region", "Lineage", "Weeks ahead", "Share", "Lower bound", "Upper bound"],
         rows=fc_rows,
-        note="Интервал 95 %. Он тем шире, чем меньше образцов просеквенировано в регионе.",
+        note="95% interval. It widens where fewer samples were sequenced in the region.",
     )
 
     rising = [g for g in model.growth_table() if g["significant"] and g["beta"] > 0]
     top = max(rising, key=lambda g: g["beta"]) if rising else None
     highlights = [
-        {"label": "Регионов", "value": str(len(model.fits_))},
-        {"label": "Линий", "value": str(len(lineages))},
-        {"label": "Образцов", "value": str(int(counts.sum()))},
+        {"label": "Regions", "value": str(len(model.fits_))},
+        {"label": "Lineages", "value": str(len(lineages))},
+        {"label": "Samples", "value": str(int(counts.sum()))},
         {
-            "label": "Растёт значимо",
+            "label": "Significant growth",
             "value": (
-                f"{top['lineage']} · +{top['weekly_pct']:.1f} %/нед" if top else "не выявлено"
+                f"{top['lineage']} · +{top['weekly_pct']:.1f}%/wk" if top else "none detected"
             ),
             "tone": "warn" if top else "good",
         },
@@ -445,8 +442,8 @@ def _analyze_growth(parsed: ParsedInput) -> AnalysisResult:
     return AnalysisResult(
         kind=parsed.kind,
         model="GV-Growth",
-        title="Динамика линий в популяции",
-        summary=f"{parsed.summary}. Стягивание τ = {model.tau_:.4f}.",
+        title="Lineage dynamics",
+        summary=f"{parsed.summary}. Shrinkage tau = {model.tau_:.4f}.",
         tables=[growth, forecast],
         highlights=highlights,
         notes=list(parsed.notes),
@@ -479,15 +476,15 @@ def analyze(parsed: ParsedInput, bundle=None, **kwargs) -> AnalysisResult:
         return _analyze_growth(parsed)
     if parsed.kind == InputKind.GENOME_FASTA:
         raise AnalysisError(
-            "Это геном целиком. Вызов вариантов по нему требует выравнивания на "
-            "референс и контроля качества — то есть биоинформатического "
-            "пайплайна, а не веб-формы: результат, полученный наспех, выглядел "
-            "бы готовым, не будучи надёжным.\n\n"
-            "Обработайте геном одним из стандартных средств и загрузите его вывод:\n"
-            "  • TB-Profiler — даст JSON, который система принимает напрямую;\n"
-            "  • snpEff поверх bcftools — даст аннотированный VCF;\n"
-            "  • любой пайплайн — подойдёт таблица id, gene, mutation.\n\n"
-            "Отдельные гены (короче 15 000 п. н.) принимаются и анализируются "
-            "на риск мутаций без пайплайна."
+            "This is a whole genome. Calling variants from it requires alignment to "
+            "a reference and quality control — a bioinformatics pipeline, not a web "
+            "form. A result produced in haste would look finished without being "
+            "reliable.\n\n"
+            "Process the genome with a standard tool and upload its output:\n"
+            "  - TB-Profiler produces JSON this system reads directly;\n"
+            "  - snpEff on top of bcftools produces an annotated VCF;\n"
+            "  - any pipeline: a table of id, gene, mutation will do.\n\n"
+            "Individual genes (under 15 000 bp) are accepted and scored for mutation "
+            "risk without a pipeline."
         )
-    raise AnalysisError(f"неизвестный вид данных: {parsed.kind}")
+    raise AnalysisError(f"unknown input kind: {parsed.kind}")

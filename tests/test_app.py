@@ -71,8 +71,8 @@ def _upload(name: str, data: bytes | str):
 def test_index_serves_interface(client):
     r = client.get("/")
     assert r.status_code == 200
-    assert "Перетащите" in r.text
-    assert "/api/analyze" in r.text
+    assert "Drop files" in r.text
+    assert "/app.js" in r.text
 
 
 def test_status_lists_formats_and_models(client):
@@ -88,7 +88,7 @@ def test_app_starts_without_models(tmp_path):
     c = TestClient(create_app(tmp_path / "нет"))
     s = c.get("/api/status").json()
     assert s["models_loaded"] is False
-    assert "save-models" in s["models_error"] or "нет сохранённых" in s["models_error"]
+    assert "save-models" in s["models_error"] or "No saved models" in s["models_error"]
 
     r = c.post("/api/analyze", files=[_upload("counts.csv", COUNTS)])
     assert r.json()["results"][0]["ok"] is True  # GV-Growth не зависит от моделей
@@ -149,13 +149,13 @@ def test_multiple_files_processed_independently(client):
 def test_empty_file_reported_clearly(client):
     r = client.post("/api/analyze", files=[_upload("пусто.csv", b"")])
     res = r.json()["results"][0]
-    assert res["ok"] is False and "пуст" in res["error"]
+    assert res["ok"] is False and "empty" in res["error"]
 
 
 def test_binary_file_reported_clearly(client):
     r = client.post("/api/analyze", files=[_upload("a.bam", b"BAM" + bytes([0]) * 20)])
     res = r.json()["results"][0]
-    assert res["ok"] is False and "двоичный" in res["error"]
+    assert res["ok"] is False and "binary" in res["error"]
 
 
 def test_oversized_file_suggests_cli(client):

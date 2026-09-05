@@ -158,12 +158,12 @@ def test_fit_rejects_single_class(dataset, split):
     y = dataset.phenotypes["RIF"]
     only_neg = np.array([i for i in split.train if y[i] == 0.0][:200])
     bad = Split(train=only_neg, test=split.test, strategy="degenerate")
-    with pytest.raises(ValueError, match="только один класс"):
+    with pytest.raises(ValueError, match="only one class"):
         GVResist("RIF").fit(dataset, bad)
 
 
 def test_predict_requires_fit(dataset):
-    with pytest.raises(RuntimeError, match="не обучена"):
+    with pytest.raises(RuntimeError, match="not fitted"):
         GVResist("RIF").predict(dataset)
 
 
@@ -274,10 +274,10 @@ def test_growth_table_flags_significance(growth):
 
 def test_forecast_rejects_unknown_region(growth):
     model, _, _ = growth
-    with pytest.raises(KeyError, match="отсутствует"):
+    with pytest.raises(KeyError, match="not fitted"):
         model.forecast("Атлантида", [4])
 
 
 def test_growth_rejects_single_lineage():
-    with pytest.raises(ValueError, match="минимум две линии"):
+    with pytest.raises(ValueError, match="at least two lineages"):
         GVGrowth().fit(np.ones((5, 1)), np.arange(5), np.array(["A"] * 5), ["only"])

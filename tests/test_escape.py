@@ -93,12 +93,12 @@ def test_conservation_is_bounded():
 
 def test_fit_rejects_tiny_sample():
     _, records = make_records(n=3)
-    with pytest.raises(ValueError, match="минимум"):
+    with pytest.raises(ValueError, match="at least"):
         GVEscape().fit(records)
 
 
 def test_analyze_requires_fit():
-    with pytest.raises(RuntimeError, match="не обучена"):
+    with pytest.raises(RuntimeError, match="not fitted"):
         GVEscape().analyze()
 
 
@@ -149,7 +149,7 @@ def test_no_trend_without_dates():
     _, records = make_records(with_dates=False)
     report = GVEscape().fit(records).analyze()
     assert all(r.trend is None for r in report.observed)
-    assert any("нет дат" in n for n in report.notes)
+    assert any("no dates" in n for n in report.notes)
 
 
 def test_random_mutations_rarely_get_trend():
@@ -174,7 +174,7 @@ def test_handles_unequal_lengths():
     trimmed = [(h, s[:-3] if i % 5 == 0 else s) for i, (h, s) in enumerate(records)]
     m = GVEscape().fit(trimmed)
     assert m.n_used_ >= 55
-    assert any("выравниванием" in n for n in m.notes_)
+    assert any("aligned" in n for n in m.notes_)
 
 
 def test_nucleotide_input_is_translated():
@@ -209,7 +209,7 @@ def test_tables_export_to_csv():
     result = analyze(detect_and_parse("p.fasta", _fasta_text(records)), top_candidates=5)
     csv_text = result.tables[0].to_csv()
     lines = csv_text.strip().split("\n")
-    assert lines[0].startswith("Мутация,")
+    assert lines[0].startswith("Mutation,")
     assert len(lines) == len(result.tables[0].rows) + 1
 
 
@@ -236,7 +236,7 @@ def test_resistance_without_models_explains_how_to_train():
 
 def test_growth_needs_two_lineages():
     rows = ["region,week,lineage,count"] + [f"KZ,{w},L2,{10 + w}" for w in range(6)]
-    with pytest.raises(AnalysisError, match="одна линия"):
+    with pytest.raises(AnalysisError, match="only one lineage"):
         analyze(detect_and_parse("c.csv", "\n".join(rows)))
 
 
@@ -244,7 +244,7 @@ def test_growth_needs_enough_timepoints():
     rows = ["region,week,lineage,count"]
     for w in range(2):
         rows += [f"KZ,{w},L2,{10}", f"KZ,{w},L4,{20}"]
-    with pytest.raises(AnalysisError, match="моментов времени"):
+    with pytest.raises(AnalysisError, match="time points"):
         analyze(detect_and_parse("c.csv", "\n".join(rows)))
 
 

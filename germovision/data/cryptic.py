@@ -40,8 +40,8 @@ _SUSCEPTIBLE_TOKENS = {"s", "sus", "susceptible", "0", "0.0", "false"}
 def _read_csv(path: Path, required: set[str]) -> tuple[list[dict], dict[str, str]]:
     if not path.exists():
         raise FileNotFoundError(
-            f"не найден файл {path}. Ожидается структура каталога, описанная "
-            "в germovision/data/cryptic.py"
+            f"file not found: {path}. Expected the directory layout documented "
+            "in germovision/data/cryptic.py"
         )
     with path.open(encoding="utf-8", newline="") as fh:
         sample = fh.read(8192)
@@ -55,8 +55,8 @@ def _read_csv(path: Path, required: set[str]) -> tuple[list[dict], dict[str, str
         missing = required - cols.keys()
         if missing:
             raise ValueError(
-                f"в {path.name} нет обязательных столбцов: {sorted(missing)}. "
-                f"Найдены: {sorted(cols)}"
+                f"{path.name} is missing required columns: {sorted(missing)}. "
+                f"Found: {sorted(cols)}"
             )
         return list(reader), cols
 
@@ -169,7 +169,7 @@ def load_cryptic(
             submission.append(coll + np.timedelta64(default_submission_lag_days, "D"))
 
     if not ids:
-        raise ValueError(f"в {root / 'samples.csv'} не найдено ни одного изолята")
+        raise ValueError(f"no isolates found in {root / 'samples.csv'}")
 
     pos = {sid: i for i, sid in enumerate(ids)}
 
@@ -203,8 +203,8 @@ def load_cryptic(
     phenotypes = {d: a for d, a in phenotypes.items() if not np.isnan(a).all()}
     if not phenotypes:
         raise ValueError(
-            "ни одного распознанного фенотипа. Ожидаются значения R/S или 1/0 "
-            f"и коды препаратов из списка {list(DRUGS)}"
+            "No recognised phenotype. Values R/S or 1/0 are expected, with drug "
+            f"codes from {list(DRUGS)}"
         )
 
     clusters = assign_clusters_by_genotype(mutations, threshold=cluster_threshold)
@@ -228,9 +228,9 @@ def load_cryptic(
             "notes": (
                 ""
                 if has_submission
-                else "submission_date отсутствует в источнике и оценён как "
-                f"collection_date + {default_submission_lag_days} дн.; "
-                "измерение упреждения приблизительное"
+                else "submission_date is absent from the source and estimated as "
+                f"collection_date + {default_submission_lag_days} days; "
+                "lead-time measurement is therefore approximate"
             ),
         },
     )

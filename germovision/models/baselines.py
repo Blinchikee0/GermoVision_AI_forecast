@@ -16,7 +16,7 @@ from __future__ import annotations
 import numpy as np
 
 from ..core.metrics.classification import ClassificationReport, evaluate_binary
-from ..data.catalogue import DRUG_NAMES_RU, MutationCatalogue
+from ..data.catalogue import DRUG_NAMES, MutationCatalogue
 from ..data.schema import IsolateDataset
 
 __all__ = ["CatalogueBaseline", "PrevalenceBaseline"]
@@ -51,11 +51,11 @@ class CatalogueBaseline:
         y_all = ds.phenotypes[self.drug]
         eval_idx = np.array([i for i in idx if not np.isnan(y_all[i])], dtype=int)
         if eval_idx.size == 0:
-            raise ValueError(f"{self.drug}: нет измеренных фенотипов в выборке")
+            raise ValueError(f"{self.drug}: no measured phenotypes in this subset")
         return evaluate_binary(
             y_all[eval_idx].astype(int),
             self.predict_proba(ds, eval_idx),
-            label=f"{DRUG_NAMES_RU.get(self.drug, self.drug)} (каталог ВОЗ)",
+            label=f"{DRUG_NAMES.get(self.drug, self.drug)} (WHO catalogue)",
             threshold=0.5,
             n_boot=n_boot,
         )
@@ -78,7 +78,7 @@ class PrevalenceBaseline:
         y = ds.phenotypes[self.drug][split.train]
         y = y[~np.isnan(y)]
         if y.size == 0:
-            raise ValueError(f"{self.drug}: в обучении нет измеренных фенотипов")
+            raise ValueError(f"{self.drug}: no measured phenotypes in the training part")
         self.rate_ = float(y.mean())
         return self
 

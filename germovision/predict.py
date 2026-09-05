@@ -31,7 +31,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .data.catalogue import DRUG_NAMES_RU
+from .data.catalogue import DRUG_NAMES
 from .data.schema import IsolateDataset
 from .models.resist import Decision
 from .persistence import load_bundle
@@ -54,7 +54,7 @@ def load_isolates(
     """
     mpath = Path(mutations_path)
     if not mpath.exists():
-        raise FileNotFoundError(f"не найден файл {mpath}")
+        raise FileNotFoundError(f"file not found: {mpath}")
 
     by_id: dict[str, set[str]] = defaultdict(set)
     order: list[str] = []
@@ -64,8 +64,8 @@ def load_isolates(
         missing = {"id", "gene", "mutation"} - cols.keys()
         if missing:
             raise ValueError(
-                f"в {mpath.name} нет столбцов {sorted(missing)}; "
-                f"найдены {sorted(cols)}"
+                f"{mpath.name} is missing columns {sorted(missing)}; "
+                f"found {sorted(cols)}"
             )
         for row in reader:
             sid = str(row[cols["id"]]).strip()
@@ -79,18 +79,18 @@ def load_isolates(
                 by_id[sid].add(f"{gene}_{mut}")
 
     if not order:
-        raise ValueError(f"в {mpath.name} не найдено ни одного изолята")
+        raise ValueError(f"no isolates found in {mpath.name}")
 
     meta: dict[str, dict[str, str]] = {}
     if samples_path:
         spath = Path(samples_path)
         if not spath.exists():
-            raise FileNotFoundError(f"не найден файл {spath}")
+            raise FileNotFoundError(f"file not found: {spath}")
         with spath.open(encoding="utf-8", newline="") as fh:
             reader = csv.DictReader(fh)
             cols = {c.strip().lower(): c for c in (reader.fieldnames or [])}
             if "id" not in cols:
-                raise ValueError(f"в {spath.name} нет столбца id")
+                raise ValueError(f"{spath.name} has no id column")
             for row in reader:
                 meta[str(row[cols["id"]]).strip()] = {
                     "lineage": str(row.get(cols.get("lineage", ""), "")).strip() or "unknown",
@@ -121,11 +121,11 @@ def predict_isolates(bundle, ds: IsolateDataset) -> list[dict]:
 
     for i, isolate_id in enumerate(ds.isolate_ids):
         drugs = []
-        for drug in sorted(per_drug, key=lambda d: list(DRUG_NAMES_RU).index(d)):
+        for drug in sorted(per_drug, key=lambda d: list(DRUG_NAMES).index(d)):
             pr = per_drug[drug][i]
             drugs.append({
                 "drug": drug,
-                "drug_name": DRUG_NAMES_RU.get(drug, drug),
+                "drug_name": DRUG_NAMES.get(drug, drug),
                 "decision": pr.decision,
                 "probability": round(float(pr.probability), 3),
                 "source": pr.source,
@@ -147,27 +147,27 @@ def format_report(reports: list[dict], bundle) -> str:
     out: list[str] = [
         bundle.describe(),
         "",
-        "«стандарт» в столбце вероятности означает, что решение принято по "
-        "каталогу\nмутаций ВОЗ, а не моделью: это референсный стандарт, и он "
-        "имеет приоритет.",
+        '"standard" in the probability column means the call came from the WHO'
+        "\nmutation catalogue rather than the model: it is the reference standard "
+        "and takes precedence.",
         "",
     ]
 
     for rep in reports:
         out.append("=" * 78)
-        out.append(f"Изолят {rep['isolate_id']}   линия: {rep['lineage']}")
+        out.append(f"Isolate {rep['isolate_id']}   lineage: {rep['lineage']}")
         muts = ", ".join(m.replace("_", " ") for m in rep["mutations"])
-        out.append(f"Найдено вариантов: {len(rep['mutations'])}" + (f" — {muts}" if muts else ""))
+        out.append(f"Variants found: {len(rep['mutations'])}" + (f" — {muts}" if muts else ""))
         out.append("=" * 78)
-        out.append(f"{'Препарат':<16}{'Заключение':<16}{'Вероятн.':>9}  Обоснование")
+        out.append(f"{'Drug':<16}{'Call':<16}{'Prob.':>9}  Basis")
         out.append("-" * 78)
 
         resistant = []
         for d in rep["drugs"]:
             label = {
-                Decision.RESISTANT: "УСТОЙЧИВ",
-                Decision.SUSCEPTIBLE: "чувствителен",
-                Decision.NO_CALL: "нет заключения",
+                Decision.RESISTANT: "RESISTANT",
+                Decision.SUSCEPTIBLE: "susceptible",
+                Decision.NO_CALL: "no call",
             }[d["decision"]]
             if d["decision"] == Decision.RESISTANT:
                 resistant.append(d["drug_name"])
@@ -176,26 +176,25 @@ def format_report(reports: list[dict], bundle) -> str:
             # показывается: «УСТОЙЧИВ при вероятности 0,04» выглядит как
             # противоречие, хотя противоречия нет — это две независимые
             # оценки. Вероятность остаётся в JSON для анализа.
-            prob = "  стандарт" if d["source"] == "catalogue" else f"{d['probability']:>9.2f}"
+            prob = "  standard" if d["source"] == "catalogue" else f"{d['probability']:>9.2f}"
             out.append(f"{d['drug_name']:<16}{label:<16}{prob:>9}  {d['explanation']}")
 
         out.append("-" * 78)
         if resistant:
-            out.append("Прогноз устойчивости: " + ", ".join(resistant))
+            out.append("Predicted resistance: " + ", ".join(resistant))
         else:
-            out.append("Прогноз устойчивости не выявлен.")
+            out.append("No resistance predicted.")
         needs = [d["drug_name"] for d in rep["drugs"] if d["needs_confirmation"]]
         if len(needs) == len(rep["drugs"]):
             out.append(
-                "Фенотипическое подтверждение требуется по всем препаратам: на "
-                "удержанной\nвыборке доля пропущенной устойчивости выше "
-                "клинического лимита."
+                "Lab confirmation is required for every drug: on the held-out set "
+                "the\nshare of missed resistance is above the clinical limit."
             )
         elif needs:
-            out.append("Требуют фенотипического подтверждения: " + ", ".join(needs))
+            out.append("Lab confirmation required for: " + ", ".join(needs))
         out.append(
-            "\nЗаключение носит вспомогательный характер и не заменяет решение "
-            "врача.\nСистема не является сертифицированным медицинским изделием."
+            "\nThis report is advisory and does not replace a clinician's decision."
+            "\nThe system is not a certified medical device."
         )
         out.append("")
     return "\n".join(out)
@@ -203,12 +202,12 @@ def format_report(reports: list[dict], bundle) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Заключение о лекарственной устойчивости по геному изолята"
+        description="Drug-resistance report from an isolate genome"
     )
-    parser.add_argument("--models", default="models", help="каталог с обученными моделями")
+    parser.add_argument("--models", default="models", help="directory with trained models")
     parser.add_argument("--mutations", required=True, help="CSV: id, gene, mutation")
-    parser.add_argument("--samples", default=None, help="CSV с линией и страной")
-    parser.add_argument("--json", default=None, help="сохранить заключения в JSON")
+    parser.add_argument("--samples", default=None, help="CSV with lineage and country")
+    parser.add_argument("--json", default=None, help="write reports to JSON")
     args = parser.parse_args(argv)
 
     if hasattr(sys.stdout, "reconfigure"):
@@ -230,7 +229,7 @@ def main(argv: list[str] | None = None) -> int:
             ),
             encoding="utf-8",
         )
-        print(f"JSON сохранён: {args.json}")
+        print(f"JSON written: {args.json}")
     return 0
 
 

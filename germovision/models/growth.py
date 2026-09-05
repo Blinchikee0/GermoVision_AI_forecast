@@ -188,13 +188,13 @@ class GVGrowth:
         regions = np.asarray(regions)
 
         if counts.ndim != 2:
-            raise ValueError("counts должен быть двумерным (наблюдения × линии)")
+            raise ValueError("counts must be two-dimensional (observations x lineages)")
         if counts.shape[1] < 2:
-            raise ValueError("нужно минимум две линии")
+            raise ValueError("at least two lineages are required")
         if not (counts.shape[0] == times.size == regions.size):
-            raise ValueError("длины counts, times и regions должны совпадать")
+            raise ValueError("counts, times and regions must have matching lengths")
         if len(lineages) != counts.shape[1]:
-            raise ValueError("число названий линий не совпадает с числом столбцов")
+            raise ValueError("the number of lineage names does not match the column count")
 
         self.lineages_ = list(lineages)
         self.regions_ = sorted(set(regions.tolist()))
@@ -251,7 +251,7 @@ class GVGrowth:
             )
 
         if not self.fits_:
-            raise ValueError("ни один регион не содержит достаточно данных")
+            raise ValueError("no region has enough data")
         return self
 
     def _bootstrap_se(self, counts, times, a, b, tau, rng) -> np.ndarray:
@@ -305,7 +305,7 @@ class GVGrowth:
             KeyError: регион не подгонялся.
         """
         if region not in self.fits_:
-            raise KeyError(f"регион '{region}' отсутствует; есть: {sorted(self.fits_)}")
+            raise KeyError(f"region '{region}' was not fitted; available: {sorted(self.fits_)}")
 
         fit = self.fits_[region]
         base = fit.t0 if last_time is None else last_time

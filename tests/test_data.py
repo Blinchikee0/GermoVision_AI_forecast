@@ -100,7 +100,7 @@ def test_generator_is_reproducible():
 def test_generator_marks_data_as_synthetic(ds):
     """Пометка проходит через весь пайплайн до отчёта."""
     assert ds.meta["synthetic"] is True
-    assert "СИНТЕТИЧЕСКИЕ" in ds.meta["warning"]
+    assert "SYNTHETIC" in ds.meta["warning"]
 
 
 def test_generator_has_transmission_clusters(ds):
@@ -159,7 +159,7 @@ def test_new_drug_resistance_is_time_shifted(ds):
 
 
 def test_config_rejects_impossible_fractions():
-    with pytest.raises(ValueError, match="должно быть < 1"):
+    with pytest.raises(ValueError, match="must be < 1"):
         SyntheticConfig(unexplained_fraction=0.7, novel_fraction=0.5)
 
 
@@ -219,7 +219,7 @@ def test_feature_groups_allow_ablation(ds):
 
 
 def test_transform_requires_fit(ds):
-    with pytest.raises(RuntimeError, match="не обучен"):
+    with pytest.raises(RuntimeError, match="not fitted"):
         FeatureBuilder("RIF").transform(ds)
 
 
@@ -276,7 +276,7 @@ def test_load_cryptic_rejects_unrecognized_phenotypes(tmp_path):
     (tmp_path / "phenotypes.csv").write_text(
         "id,drug,phenotype\nS1,XYZ,мутно\n", encoding="utf-8"
     )
-    with pytest.raises(ValueError, match="ни одного распознанного фенотипа"):
+    with pytest.raises(ValueError, match="No recognised phenotype"):
         load_cryptic(tmp_path)
 
 

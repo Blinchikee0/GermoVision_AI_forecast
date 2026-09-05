@@ -48,17 +48,17 @@ class ModelBundle:
         """Краткое описание для журнала и для интерфейса."""
         m = self.manifest
         lines = [
-            f"GermoVision, модели обучены {m.get('trained_at', 'дата неизвестна')}",
-            f"источник данных: {m.get('source', 'не указан')}"
-            + ("  ⚠ СИНТЕТИЧЕСКИЕ" if m.get("synthetic") else ""),
-            f"препаратов: {len(self.models)}  ({', '.join(self.drugs)})",
-            f"обучающая выборка: {m.get('n_train', '?')} изолятов, "
-            f"разделение: {m.get('split_strategy', '?')}",
+            f"GermoVision models trained {m.get('trained_at', 'date unknown')}",
+            f"Data source: {m.get('source', 'unspecified')}"
+            + ("  [!] SYNTHETIC" if m.get("synthetic") else ""),
+            f"Drugs: {len(self.models)}  ({', '.join(self.drugs)})",
+            f"Training set: {m.get('n_train', '?')} isolates, "
+            f"split: {m.get('split_strategy', '?')}",
         ]
         needs = [d for d, q in m.get("quality", {}).items() if q.get("requires_confirmation")]
         if needs:
             lines.append(
-                "требуют фенотипического подтверждения: " + ", ".join(sorted(needs))
+                "Lab confirmation required for: " + ", ".join(sorted(needs))
             )
         return "\n".join(lines)
 
@@ -112,19 +112,18 @@ def load_bundle(path: str | Path) -> ModelBundle:
 
     if not manifest_path.exists() or not models_path.exists():
         raise FileNotFoundError(
-            f"в {root} нет сохранённых моделей. Сначала выполните: "
-            "python -m germovision.train --save-models "
-            + str(root)
+            f"No saved models in {root}. Run first: "
+            "python -m germovision.train --save-models " + str(root)
         )
 
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     fmt = manifest.get("format")
     if fmt != BUNDLE_FORMAT:
         raise ValueError(
-            f"формат моделей {fmt}, ожидается {BUNDLE_FORMAT}. "
-            "Модели обучены другой версией кода — переобучите их, а не "
-            "загружайте: состав признаков мог измениться, и предсказания "
-            "были бы неверными без единого сообщения об ошибке"
+            f"Model format is {fmt}, expected {BUNDLE_FORMAT}. These models were "
+            "trained by a different version of the code — retrain rather than load "
+            "them: the feature set may have changed, and predictions would be wrong "
+            "without a single error message"
         )
 
     return ModelBundle(models=joblib.load(models_path), manifest=manifest)

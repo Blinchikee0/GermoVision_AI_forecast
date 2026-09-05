@@ -64,17 +64,17 @@ class IsolateDataset:
         }
         bad = {k: v for k, v in lengths.items() if v != n}
         if bad:
-            raise ValueError(f"длины полей не совпадают с числом изолятов ({n}): {bad}")
+            raise ValueError(f"field lengths do not match the isolate count ({n}): {bad}")
 
         for drug, arr in self.phenotypes.items():
             if len(arr) != n:
-                raise ValueError(f"фенотип '{drug}' имеет длину {len(arr)}, ожидалось {n}")
+                raise ValueError(f"phenotype '{drug}' has length {len(arr)}, expected {n}")
 
         late = np.asarray(self.submission_dates) < np.asarray(self.collection_dates)
         if late.any():
             raise ValueError(
-                f"{int(late.sum())} записей депонированы раньше даты взятия образца — "
-                "проверьте источник, это делает измерение упреждения некорректным"
+                f"{int(late.sum())} records were deposited before the collection date — "
+                "check the source; this invalidates any lead-time measurement"
             )
 
     def __len__(self) -> int:
@@ -92,7 +92,7 @@ class IsolateDataset:
     def labelled_mask(self, drug: str) -> np.ndarray:
         """Маска изолятов, у которых измерен фенотип к препарату."""
         if drug not in self.phenotypes:
-            raise KeyError(f"нет фенотипа для препарата '{drug}'")
+            raise KeyError(f"no phenotype for drug '{drug}'")
         return ~np.isnan(self.phenotypes[drug])
 
     def resistance_rate(self, drug: str) -> float:
@@ -118,14 +118,14 @@ class IsolateDataset:
     def summary(self) -> str:
         """Сводка для Data Card и логов обучения."""
         lines = [
-            f"Изолятов:   {len(self)}",
-            f"Стран:      {len(np.unique(self.countries))}",
-            f"Линий:      {len(np.unique(self.lineages))}",
-            f"Кластеров:  {len(np.unique(self.clusters))}",
-            f"Вариантов:  {len(self.all_mutation_keys())}",
-            f"Период:     {self.submission_dates.min()} — {self.submission_dates.max()}",
+            f"Isolates:   {len(self)}",
+            f"Countries:  {len(np.unique(self.countries))}",
+            f"Lineages:   {len(np.unique(self.lineages))}",
+            f"Clusters:   {len(np.unique(self.clusters))}",
+            f"Variants:   {len(self.all_mutation_keys())}",
+            f"Period:     {self.submission_dates.min()} — {self.submission_dates.max()}",
             "",
-            "| Препарат | Протестировано | Устойчивых | Доля |",
+            "| Drug | Tested | Resistant | Share |",
             "|---|---|---|---|",
         ]
         for drug in self.drugs:

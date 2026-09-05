@@ -36,7 +36,7 @@ class FeatureMatrix:
     def __post_init__(self) -> None:
         if self.x.shape[1] != len(self.names):
             raise ValueError(
-                f"столбцов {self.x.shape[1]}, имён {len(self.names)}"
+                f"{self.x.shape[1]} columns but {len(self.names)} names"
             )
         if not self.groups:
             self.groups = ["other"] * len(self.names)
@@ -189,7 +189,7 @@ class FeatureBuilder:
             RuntimeError: если `fit` не вызывался.
         """
         if not self._fitted:
-            raise RuntimeError("FeatureBuilder не обучен: сначала вызовите fit()")
+            raise RuntimeError("FeatureBuilder is not fitted: call fit() first")
 
         rows = np.arange(len(ds)) if idx is None else np.asarray(idx, dtype=int)
         vocab_index = {m: j for j, m in enumerate(self.vocabulary_)}

@@ -95,18 +95,18 @@ class ResistancePrediction:
     def explain(self) -> str:
         """Обоснование для врача. Заключение без обоснования не выдаётся."""
         if self.decision == Decision.NO_CALL:
-            return f"нет заключения — {self.reason}"
+            return f"no call — {self.reason}"
         # Пометка о необходимости подтверждения выводится один раз в
         # сводке заключения, а не в каждой строке: продублированная
         # тринадцать раз, она перестаёт читаться и теряет смысл.
         note = ""
         if self.source == "catalogue" and self.evidence:
             top = self.evidence[0]
-            return f"{top.key} — каталог ВОЗ, группа {top.group}: {top.note}{note}"
+            return f"{top.key} — WHO catalogue, group {top.group}: {top.note}{note}"
         if self.contributions:
             parts = [f"{name} ({delta:+.2f})" for name, delta in self.contributions[:3]]
-            return "модель, вклад признаков: " + ", ".join(parts) + note
-        return "модель: известных маркеров не обнаружено" + note
+            return "model, feature contributions: " + ", ".join(parts) + note
+        return "model: no known marker found" + note
 
 
 @dataclass
@@ -157,11 +157,11 @@ class DrugEvaluation:
 
     def summary_line(self) -> str:
         """Одна строка, отвечающая на вопрос «что это даёт»."""
-        flag = " ⚠ нужен фенотип" if self.requires_confirmation else ""
+        flag = " ⚠ lab confirmation required" if self.requires_confirmation else ""
         return (
-            f"{self.drug}: верно закрыто без фенотипа {self.correctly_closed:.1%}, "
-            f"пропущено устойчивости {self.missed_resistance:.1%}, "
-            f"ответов {self.answer_rate:.1%}{flag}"
+            f"{self.drug}: correctly closed {self.correctly_closed:.1%}, "
+            f"resistance missed {self.missed_resistance:.1%}, "
+            f"answered {self.answer_rate:.1%}{flag}"
         )
 
     def meets_h1(self, min_sens: float = 0.90, min_spec: float = 0.95) -> bool:
@@ -240,7 +240,7 @@ class GVResist:
             random_state: сид.
         """
         if not 0.0 < alpha < 0.5:
-            raise ValueError("alpha должен лежать в (0, 0.5)")
+            raise ValueError("alpha must lie in (0, 0.5)")
         self.drug = drug
         self.catalogue = catalogue or MutationCatalogue()
         self.alpha = alpha
@@ -293,13 +293,13 @@ class GVResist:
         train_idx = self._labelled(ds, split.train)
         if train_idx.size < 20:
             raise ValueError(
-                f"{self.drug}: в обучении лишь {train_idx.size} изолятов с измеренным фенотипом"
+                f"{self.drug}: only {train_idx.size} training isolates have a measured phenotype"
             )
 
         y_train = ds.phenotypes[self.drug][train_idx].astype(int)
         if len(np.unique(y_train)) < 2:
             raise ValueError(
-                f"{self.drug}: в обучающей части только один класс — обучение невозможно"
+                f"{self.drug}: the training part contains only one class — cannot fit"
             )
 
         self.features.fit(ds, train_idx)
@@ -453,7 +453,7 @@ class GVResist:
     def predict_proba(self, ds: IsolateDataset, idx: np.ndarray | None = None) -> np.ndarray:
         """Калиброванная вероятность устойчивости."""
         if self.model_ is None:
-            raise RuntimeError("модель не обучена: сначала вызовите fit()")
+            raise RuntimeError("model is not fitted: call fit() first")
         rows = np.arange(len(ds)) if idx is None else np.asarray(idx, dtype=int)
         p = self._raw_proba(ds, rows)
         if self.calibrator_ is not None:
@@ -516,7 +516,7 @@ class GVResist:
                вышедший за пределы обучающего распределения.
         """
         if self.model_ is None:
-            raise RuntimeError("модель не обучена: сначала вызовите fit()")
+            raise RuntimeError("model is not fitted: call fit() first")
 
         rows = np.arange(len(ds)) if idx is None else np.asarray(idx, dtype=int)
         probs = self.predict_proba(ds, rows)
@@ -559,8 +559,8 @@ class GVResist:
             decision, reason = self._conformal_decision(p)
             if decision == Decision.NO_CALL and is_ood:
                 reason = (
-                    f"{ood_frac:.0%} вариантов изолята не встречались при обучении — "
-                    "требуется фенотипическое подтверждение"
+                    f"{ood_frac:.0%} of this isolate's variants were unseen in training — "
+                    "phenotypic confirmation required"
                 )
             elif is_ood and decision == Decision.SUSCEPTIBLE:
                 # Заявлять чувствительность по изоляту с незнакомым
@@ -568,8 +568,8 @@ class GVResist:
                 # вызванная неизвестным механизмом.
                 decision = Decision.NO_CALL
                 reason = (
-                    f"{ood_frac:.0%} вариантов изолята не встречались при обучении; "
-                    "вывод о чувствительности недостоверен"
+                    f"{ood_frac:.0%} of this isolate's variants were unseen in training; "
+                    "a susceptible call would not be reliable"
                 )
 
             out.append(
@@ -602,7 +602,7 @@ class GVResist:
         if self.conformal_q_ is None:
             return (
                 Decision.RESISTANT if p >= self.threshold_ else Decision.SUSCEPTIBLE,
-                "калибровочная выборка отсутствует, отказ от ответа отключён",
+                "no calibration set available; abstention is disabled",
             )
 
         q = self.conformal_q_
@@ -611,13 +611,13 @@ class GVResist:
 
         if plausible_resistant and plausible_susceptible:
             return Decision.NO_CALL, (
-                f"обе гипотезы совместимы с данными при уровне {1 - self.alpha:.0%} "
-                f"(вероятность {p:.2f})"
+                f"both hypotheses are compatible with the data at the {1 - self.alpha:.0%} "
+                f"level (probability {p:.2f})"
             )
         if not plausible_resistant and not plausible_susceptible:
             return Decision.NO_CALL, (
-                f"изолят нетипичен: ни одна гипотеза не согласуется с обучающими "
-                f"данными (вероятность {p:.2f})"
+                f"atypical isolate: neither hypothesis agrees with the training data "
+                f"(probability {p:.2f})"
             )
 
         # Ровно одна гипотеза правдоподобна. Метку назначает порог: он
@@ -652,7 +652,7 @@ class GVResist:
         """
         eval_idx = self._labelled(ds, idx)
         if eval_idx.size == 0:
-            raise ValueError(f"{self.drug}: в выборке нет измеренных фенотипов")
+            raise ValueError(f"{self.drug}: no measured phenotypes in this subset")
 
         y = ds.phenotypes[self.drug][eval_idx].astype(int)
         saved = (self.alpha, self.conformal_q_, self.threshold_)
@@ -698,7 +698,7 @@ class GVResist:
         """
         eval_idx = self._labelled(ds, idx)
         if eval_idx.size == 0:
-            raise ValueError(f"{self.drug}: в тестовой части нет измеренных фенотипов")
+            raise ValueError(f"{self.drug}: no measured phenotypes in the test part")
 
         y = ds.phenotypes[self.drug][eval_idx].astype(int)
         preds = self.predict(ds, eval_idx, explain=False)
@@ -706,7 +706,7 @@ class GVResist:
         abstained = np.array([q.decision == Decision.NO_CALL for q in preds])
 
         if abstained.all():
-            raise ValueError(f"{self.drug}: система отказалась от ответа по всем изолятам")
+            raise ValueError(f"{self.drug}: the system abstained on every isolate")
 
         ranking = evaluate_binary(
             y,

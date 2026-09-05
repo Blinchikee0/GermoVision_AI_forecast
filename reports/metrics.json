@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05 14:33:41",
-  "elapsed_sec": 36.6,
+  "generated_at": "2026-09-05 16:07:50",
+  "elapsed_sec": 52.9,
   "source": "synthetic",
   "synthetic": true,
-  "warning": "СИНТЕТИЧЕСКИЕ ДАННЫЕ. Метрики характеризуют корректность пайплайна, а не качество модели. Для проверки гипотезы H1 требуется набор CRyPTIC.",
+  "warning": "SYNTHETIC DATA. These metrics show that the pipeline is correct, not that the model is clinically good. Hypothesis H1 requires the CRyPTIC dataset.",
   "dataset": {
     "n_isolates": 6000,
     "n_clusters": 1693,
@@ -155,13 +155,13 @@
       "test_first_date": "2022-07-30",
       "actual_test_size": 0.2005,
       "date_semantics": "submission_date",
-      "note": "границы смещены относительно календарных дат, поскольку неделимой единицей является кластер родства"
+      "note": "boundaries are shifted away from round calendar dates because the indivisible unit is a relatedness cluster, not an isolate"
     }
   },
   "per_drug": [
     {
       "drug": "RIF",
-      "drug_name": "Рифампицин",
+      "drug_name": "Rifampicin",
       "n_train": 3831,
       "n_test": 1161,
       "n_positive": 319,
@@ -285,7 +285,7 @@
     },
     {
       "drug": "RFB",
-      "drug_name": "Рифабутин",
+      "drug_name": "Rifabutin",
       "n_train": 3438,
       "n_test": 988,
       "n_positive": 217,
@@ -409,7 +409,7 @@
     },
     {
       "drug": "INH",
-      "drug_name": "Изониазид",
+      "drug_name": "Isoniazid",
       "n_train": 3816,
       "n_test": 1133,
       "n_positive": 349,
@@ -533,7 +533,7 @@
     },
     {
       "drug": "EMB",
-      "drug_name": "Этамбутол",
+      "drug_name": "Ethambutol",
       "n_train": 3716,
       "n_test": 1096,
       "n_positive": 197,
@@ -657,7 +657,7 @@
     },
     {
       "drug": "LEV",
-      "drug_name": "Левофлоксацин",
+      "drug_name": "Levofloxacin",
       "n_train": 3536,
       "n_test": 1108,
       "n_positive": 157,
@@ -781,7 +781,7 @@
     },
     {
       "drug": "MXF",
-      "drug_name": "Моксифлоксацин",
+      "drug_name": "Moxifloxacin",
       "n_train": 3493,
       "n_test": 1040,
       "n_positive": 132,
@@ -905,7 +905,7 @@
     },
     {
       "drug": "BDQ",
-      "drug_name": "Бедаквилин",
+      "drug_name": "Bedaquiline",
       "n_train": 2727,
       "n_test": 860,
       "n_positive": 56,
@@ -1029,7 +1029,7 @@
     },
     {
       "drug": "LZD",
-      "drug_name": "Линезолид",
+      "drug_name": "Linezolid",
       "n_train": 3065,
       "n_test": 920,
       "n_positive": 55,
@@ -1153,7 +1153,7 @@
     },
     {
       "drug": "CFZ",
-      "drug_name": "Клофазимин",
+      "drug_name": "Clofazimine",
       "n_train": 2791,
       "n_test": 857,
       "n_positive": 46,
@@ -1277,7 +1277,7 @@
     },
     {
       "drug": "DLM",
-      "drug_name": "Деламанид",
+      "drug_name": "Delamanid",
       "n_train": 2368,
       "n_test": 670,
       "n_positive": 39,
@@ -1401,7 +1401,7 @@
     },
     {
       "drug": "AMI",
-      "drug_name": "Амикацин",
+      "drug_name": "Amikacin",
       "n_train": 3313,
       "n_test": 1005,
       "n_positive": 83,
@@ -1525,7 +1525,7 @@
     },
     {
       "drug": "KAN",
-      "drug_name": "Канамицин",
+      "drug_name": "Kanamycin",
       "n_train": 3241,
       "n_test": 955,
       "n_positive": 111,
@@ -1649,7 +1649,7 @@
     },
     {
       "drug": "ETH",
-      "drug_name": "Этионамид",
+      "drug_name": "Ethionamide",
       "n_train": 3314,
       "n_test": 1009,
       "n_positive": 171,
@@ -1775,7 +1775,7 @@
   "external_validation": [
     {
       "drug": "RIF",
-      "drug_name": "Рифампицин",
+      "drug_name": "Rifampicin",
       "country": "KZ",
       "n_test": 466,
       "n_positive": 217,
@@ -1807,7 +1807,7 @@
     },
     {
       "drug": "RFB",
-      "drug_name": "Рифабутин",
+      "drug_name": "Rifabutin",
       "country": "KZ",
       "n_test": 406,
       "n_positive": 151,
@@ -1836,7 +1836,7 @@
     },
     {
       "drug": "INH",
-      "drug_name": "Изониазид",
+      "drug_name": "Isoniazid",
       "country": "KZ",
       "n_test": 487,
       "n_positive": 246,
@@ -1868,7 +1868,7 @@
     },
     {
       "drug": "EMB",
-      "drug_name": "Этамбутол",
+      "drug_name": "Ethambutol",
       "country": "KZ",
       "n_test": 441,
       "n_positive": 123,
@@ -1897,7 +1897,7 @@
     },
     {
       "drug": "LEV",
-      "drug_name": "Левофлоксацин",
+      "drug_name": "Levofloxacin",
       "country": "KZ",
       "n_test": 440,
       "n_positive": 111,
@@ -1926,7 +1926,7 @@
     },
     {
       "drug": "MXF",
-      "drug_name": "Моксифлоксацин",
+      "drug_name": "Moxifloxacin",
       "country": "KZ",
       "n_test": 419,
       "n_positive": 97,
@@ -1955,7 +1955,7 @@
     },
     {
       "drug": "BDQ",
-      "drug_name": "Бедаквилин",
+      "drug_name": "Bedaquiline",
       "country": "KZ",
       "n_test": 342,
       "n_positive": 23,
@@ -1984,7 +1984,7 @@
     },
     {
       "drug": "LZD",
-      "drug_name": "Линезолид",
+      "drug_name": "Linezolid",
       "country": "KZ",
       "n_test": 384,
       "n_positive": 27,
@@ -2013,7 +2013,7 @@
     },
     {
       "drug": "CFZ",
-      "drug_name": "Клофазимин",
+      "drug_name": "Clofazimine",
       "country": "KZ",
       "n_test": 350,
       "n_positive": 22,
@@ -2042,7 +2042,7 @@
     },
     {
       "drug": "DLM",
-      "drug_name": "Деламанид",
+      "drug_name": "Delamanid",
       "country": "KZ",
       "n_test": 316,
       "n_positive": 19,
@@ -2071,7 +2071,7 @@
     },
     {
       "drug": "AMI",
-      "drug_name": "Амикацин",
+      "drug_name": "Amikacin",
       "country": "KZ",
       "n_test": 429,
       "n_positive": 65,
@@ -2100,7 +2100,7 @@
     },
     {
       "drug": "KAN",
-      "drug_name": "Канамицин",
+      "drug_name": "Kanamycin",
       "country": "KZ",
       "n_test": 418,
       "n_positive": 80,
@@ -2129,7 +2129,7 @@
     },
     {
       "drug": "ETH",
-      "drug_name": "Этионамид",
+      "drug_name": "Ethionamide",
       "country": "KZ",
       "n_test": 432,
       "n_positive": 139,
@@ -2159,49 +2159,49 @@
   ],
   "ablations": [
     {
-      "config": "только каталог ВОЗ (база)",
+      "config": "WHO catalogue only (baseline)",
       "sensitivity": 0.6787878787878788,
       "specificity": 0.8511137162954279,
       "pr_auc": 0.5227892715072202,
       "abstention_rate": 0.0
     },
     {
-      "config": "мутации, без признаков каталога",
+      "config": "mutations, no catalogue features",
       "sensitivity": 0.8804347826086957,
       "specificity": 0.686777920410783,
       "pr_auc": 0.768265881977928,
       "abstention_rate": 0.10819949281487742
     },
     {
-      "config": "+ признаки каталога",
+      "config": "+ catalogue features",
       "sensitivity": 0.8653061224489796,
       "specificity": 0.7328767123287672,
       "pr_auc": 0.7805903069783392,
       "abstention_rate": 0.17582417582417584
     },
     {
-      "config": "+ нагрузка по генам",
+      "config": "+ per-gene burden",
       "sensitivity": 0.8653061224489796,
       "specificity": 0.7328767123287672,
       "pr_auc": 0.7773974869056004,
       "abstention_rate": 0.17582417582417584
     },
     {
-      "config": "+ варианты вне целевых генов",
+      "config": "+ variants outside target genes",
       "sensitivity": 0.6338028169014085,
       "specificity": 0.9528061224489796,
       "pr_auc": 0.7674150341206878,
       "abstention_rate": 0.09721048182586645
     },
     {
-      "config": "полная модель (+ уровень правил)",
+      "config": "full model (+ rule tier)",
       "sensitivity": 0.774294670846395,
       "specificity": 0.8420427553444181,
       "pr_auc": 0.7503114281273497,
       "abstention_rate": 0.018596787827557058
     },
     {
-      "config": "… и с контекстом линии (вредит)",
+      "config": "... plus lineage context (hurts)",
       "sensitivity": 0.7767295597484277,
       "specificity": 0.8418549346016647,
       "pr_auc": 0.7577597443506809,
@@ -2244,8 +2244,9 @@
     ],
     "growth_table": [
       {
-        "region": "Актобе",
+        "region": "Aktobe",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2253,8 +2254,9 @@
         "significant": false
       },
       {
-        "region": "Актобе",
+        "region": "Aktobe",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": 0.03005241446669778,
         "se": 0.012857960069453288,
         "weekly_pct": 3.0508546093866737,
@@ -2262,8 +2264,9 @@
         "significant": true
       },
       {
-        "region": "Актобе",
+        "region": "Aktobe",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.04495202807616399,
         "se": 0.016325653532641777,
         "weekly_pct": 4.597768114348663,
@@ -2271,8 +2274,9 @@
         "significant": true
       },
       {
-        "region": "Актобе",
+        "region": "Aktobe",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.05621822048144269,
         "se": 0.01380652534526471,
         "weekly_pct": -5.4667177603326955,
@@ -2280,8 +2284,9 @@
         "significant": true
       },
       {
-        "region": "Алматы",
+        "region": "Almaty",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2289,8 +2294,9 @@
         "significant": false
       },
       {
-        "region": "Алматы",
+        "region": "Almaty",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": 0.012529475820599182,
         "se": 0.01135733983103033,
         "weekly_pct": 1.260829856129514,
@@ -2298,8 +2304,9 @@
         "significant": false
       },
       {
-        "region": "Алматы",
+        "region": "Almaty",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.09458330133113585,
         "se": 0.00965824931242217,
         "weekly_pct": 9.920072420286925,
@@ -2307,8 +2314,9 @@
         "significant": true
       },
       {
-        "region": "Алматы",
+        "region": "Almaty",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.0677850971136041,
         "se": 0.01350647427598467,
         "weekly_pct": -6.553872957523084,
@@ -2316,8 +2324,9 @@
         "significant": true
       },
       {
-        "region": "Астана",
+        "region": "Astana",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2325,8 +2334,9 @@
         "significant": false
       },
       {
-        "region": "Астана",
+        "region": "Astana",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": -0.014211284988067566,
         "se": 0.014306115812364793,
         "weekly_pct": -1.411078133620028,
@@ -2334,8 +2344,9 @@
         "significant": false
       },
       {
-        "region": "Астана",
+        "region": "Astana",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.12067922789622333,
         "se": 0.010628436824606647,
         "weekly_pct": 12.826293903840602,
@@ -2343,8 +2354,9 @@
         "significant": true
       },
       {
-        "region": "Астана",
+        "region": "Astana",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.0405766508943405,
         "se": 0.017026895666722757,
         "weekly_pct": -3.9764441223881426,
@@ -2352,8 +2364,9 @@
         "significant": true
       },
       {
-        "region": "Атырау",
+        "region": "Atyrau",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2361,8 +2374,9 @@
         "significant": false
       },
       {
-        "region": "Атырау",
+        "region": "Atyrau",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": 0.0024990096062669936,
         "se": 0.01246933624467865,
         "weekly_pct": 0.2502134733471852,
@@ -2370,8 +2384,9 @@
         "significant": false
       },
       {
-        "region": "Атырау",
+        "region": "Atyrau",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.09675650656097701,
         "se": 0.013117297920536456,
         "weekly_pct": 10.159211051079351,
@@ -2379,8 +2394,9 @@
         "significant": true
       },
       {
-        "region": "Атырау",
+        "region": "Atyrau",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.07894178363659313,
         "se": 0.01235314862884147,
         "weekly_pct": -7.590627974498622,
@@ -2388,8 +2404,9 @@
         "significant": true
       },
       {
-        "region": "Караганда",
+        "region": "Karaganda",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2397,8 +2414,9 @@
         "significant": false
       },
       {
-        "region": "Караганда",
+        "region": "Karaganda",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": -0.0011101427108643057,
         "se": 0.013242622705693182,
         "weekly_pct": -0.110952673040822,
@@ -2406,8 +2424,9 @@
         "significant": false
       },
       {
-        "region": "Караганда",
+        "region": "Karaganda",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.10766725509807426,
         "se": 0.01177540350256129,
         "weekly_pct": 11.36771133450692,
@@ -2415,8 +2434,9 @@
         "significant": true
       },
       {
-        "region": "Караганда",
+        "region": "Karaganda",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.061788528441563025,
         "se": 0.016228643977385448,
         "weekly_pct": -5.991833369272688,
@@ -2424,8 +2444,9 @@
         "significant": true
       },
       {
-        "region": "Костанай",
+        "region": "Kostanay",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2433,8 +2454,9 @@
         "significant": false
       },
       {
-        "region": "Костанай",
+        "region": "Kostanay",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": 0.003064441550064203,
         "se": 0.013965542388150167,
         "weekly_pct": 0.30691417510084484,
@@ -2442,8 +2464,9 @@
         "significant": false
       },
       {
-        "region": "Костанай",
+        "region": "Kostanay",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.06767864323490114,
         "se": 0.013850329125903227,
         "weekly_pct": 7.00213946082517,
@@ -2451,8 +2474,9 @@
         "significant": true
       },
       {
-        "region": "Костанай",
+        "region": "Kostanay",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.03342330713402945,
         "se": 0.016189309482388108,
         "weekly_pct": -3.2870919711821447,
@@ -2460,8 +2484,9 @@
         "significant": true
       },
       {
-        "region": "Павлодар",
+        "region": "Pavlodar",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2469,8 +2494,9 @@
         "significant": false
       },
       {
-        "region": "Павлодар",
+        "region": "Pavlodar",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": 0.027848302719893515,
         "se": 0.014047368577734008,
         "weekly_pct": 2.8239691425380817,
@@ -2478,8 +2504,9 @@
         "significant": true
       },
       {
-        "region": "Павлодар",
+        "region": "Pavlodar",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.057413921663801736,
         "se": 0.013064615293604892,
         "weekly_pct": 5.909410167280199,
@@ -2487,8 +2514,9 @@
         "significant": true
       },
       {
-        "region": "Павлодар",
+        "region": "Pavlodar",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.0418525483538645,
         "se": 0.014139783159903533,
         "weekly_pct": -4.0988822075560485,
@@ -2496,8 +2524,9 @@
         "significant": true
       },
       {
-        "region": "Шымкент",
+        "region": "Shymkent",
         "lineage": "L4_Euro_American",
+        "is_reference": true,
         "beta": 0.0,
         "se": 0.0,
         "weekly_pct": 0.0,
@@ -2505,8 +2534,9 @@
         "significant": false
       },
       {
-        "region": "Шымкент",
+        "region": "Shymkent",
         "lineage": "L2_Beijing",
+        "is_reference": false,
         "beta": -0.0024405013360937157,
         "se": 0.010121267966596298,
         "weekly_pct": -0.24375257338539463,
@@ -2514,8 +2544,9 @@
         "significant": false
       },
       {
-        "region": "Шымкент",
+        "region": "Shymkent",
         "lineage": "L2_Beijing_MDR",
+        "is_reference": false,
         "beta": 0.12099178371627312,
         "se": 0.009370305440411108,
         "weekly_pct": 12.861563930293784,
@@ -2523,8 +2554,9 @@
         "significant": true
       },
       {
-        "region": "Шымкент",
+        "region": "Shymkent",
         "lineage": "L3_CAS",
+        "is_reference": false,
         "beta": -0.074880260946177,
         "se": 0.015206917252666353,
         "weekly_pct": -7.214541989320446,
@@ -2533,7 +2565,7 @@
       }
     ],
     "forecasts": {
-      "Актобе": {
+      "Aktobe": {
         "horizons": [
           0,
           2,
@@ -2620,7 +2652,7 @@
         ],
         "n_samples": 377
       },
-      "Алматы": {
+      "Almaty": {
         "horizons": [
           0,
           2,
@@ -2707,7 +2739,7 @@
         ],
         "n_samples": 1186
       },
-      "Астана": {
+      "Astana": {
         "horizons": [
           0,
           2,
@@ -2794,7 +2826,7 @@
         ],
         "n_samples": 1061
       },
-      "Атырау": {
+      "Atyrau": {
         "horizons": [
           0,
           2,
@@ -2881,7 +2913,7 @@
         ],
         "n_samples": 212
       },
-      "Караганда": {
+      "Karaganda": {
         "horizons": [
           0,
           2,
@@ -2968,7 +3000,7 @@
         ],
         "n_samples": 453
       },
-      "Костанай": {
+      "Kostanay": {
         "horizons": [
           0,
           2,
@@ -3055,7 +3087,7 @@
         ],
         "n_samples": 277
       },
-      "Павлодар": {
+      "Pavlodar": {
         "horizons": [
           0,
           2,
@@ -3142,7 +3174,7 @@
         ],
         "n_samples": 218
       },
-      "Шымкент": {
+      "Shymkent": {
         "horizons": [
           0,
           2,
@@ -3554,131 +3586,131 @@
       "drugs": [
         {
           "drug": "RIF",
-          "drug_name": "Рифампицин",
+          "drug_name": "Rifampicin",
           "decision": "resistant",
           "probability": 0.07,
           "source": "catalogue",
-          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: RRDR rpoB — устойчивость к рифампицину ⚠ требуется фенотипическое подтверждение",
+          "explanation": "rpoB_S450L — WHO catalogue, group 1: rpoB RRDR — rifampicin resistance",
           "ood": false,
           "phenotype": 1
         },
         {
           "drug": "RFB",
-          "drug_name": "Рифабутин",
+          "drug_name": "Rifabutin",
           "decision": "resistant",
           "probability": 0.539,
           "source": "catalogue",
-          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: перекрёстная устойчивость с рифампицином ⚠ требуется фенотипическое подтверждение",
+          "explanation": "rpoB_S450L — WHO catalogue, group 1: cross-resistance with rifampicin",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "INH",
-          "drug_name": "Изониазид",
+          "drug_name": "Isoniazid",
           "decision": "resistant",
           "probability": 0.932,
           "source": "catalogue",
-          "explanation": "katG_S315N — каталог ВОЗ, группа 1: katG S315N ⚠ требуется фенотипическое подтверждение",
+          "explanation": "inhA_S94A — WHO catalogue, group 1: inhA target",
           "ood": false,
           "phenotype": 1
         },
         {
           "drug": "EMB",
-          "drug_name": "Этамбутол",
+          "drug_name": "Ethambutol",
           "decision": "susceptible",
           "probability": 0.068,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.62), rpoB_S450L (+0.28), eis_g-10a (+0.22) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.62), rpoB_S450L (+0.28), eis_g-10a (+0.22)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "LEV",
-          "drug_name": "Левофлоксацин",
+          "drug_name": "Levofloxacin",
           "decision": "resistant",
           "probability": 0.286,
           "source": "catalogue",
-          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам ⚠ требуется фенотипическое подтверждение",
+          "explanation": "gyrA_D94H — WHO catalogue, group 1: gyrA QRDR — fluoroquinolone resistance",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "MXF",
-          "drug_name": "Моксифлоксацин",
+          "drug_name": "Moxifloxacin",
           "decision": "resistant",
           "probability": 0.656,
           "source": "catalogue",
-          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам ⚠ требуется фенотипическое подтверждение",
+          "explanation": "gyrA_D94H — WHO catalogue, group 1: gyrA QRDR — fluoroquinolone resistance",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "BDQ",
-          "drug_name": "Бедаквилин",
+          "drug_name": "Bedaquiline",
           "decision": "susceptible",
           "probability": 0.053,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.23), inhA_S94A (+0.11), gyrA_S95T (-0.04) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.23), inhA_S94A (+0.11), gyrA_S95T (-0.04)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "LZD",
-          "drug_name": "Линезолид",
+          "drug_name": "Linezolid",
           "decision": "susceptible",
           "probability": 0.045,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.32), rrs_a1484g (+0.19), eis_g-10a (-0.09) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.32), rrs_a1484g (+0.19), eis_g-10a (-0.09)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "CFZ",
-          "drug_name": "Клофазимин",
+          "drug_name": "Clofazimine",
           "decision": "susceptible",
           "probability": 0.0,
           "source": "model",
-          "explanation": "модель, вклад признаков: gyrA_D94H (-0.14), eis_g-10a (-0.01) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: gyrA_D94H (-0.14), eis_g-10a (-0.01)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "DLM",
-          "drug_name": "Деламанид",
+          "drug_name": "Delamanid",
           "decision": "susceptible",
           "probability": 0.0,
           "source": "model",
-          "explanation": "модель, вклад признаков: inhA_S94A (-0.14) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: inhA_S94A (-0.14)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "AMI",
-          "drug_name": "Амикацин",
+          "drug_name": "Amikacin",
           "decision": "resistant",
           "probability": 0.654,
           "source": "catalogue",
-          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК ⚠ требуется фенотипическое подтверждение",
+          "explanation": "rrs_a1484g — WHO catalogue, group 1: 16S rRNA",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "KAN",
-          "drug_name": "Канамицин",
+          "drug_name": "Kanamycin",
           "decision": "resistant",
           "probability": 0.949,
           "source": "catalogue",
-          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК ⚠ требуется фенотипическое подтверждение",
+          "explanation": "rrs_a1484g — WHO catalogue, group 1: 16S rRNA",
           "ood": false,
           "phenotype": 1
         },
         {
           "drug": "ETH",
-          "drug_name": "Этионамид",
+          "drug_name": "Ethionamide",
           "decision": "resistant",
           "probability": 0.556,
           "source": "catalogue",
-          "explanation": "inhA_S94A — каталог ВОЗ, группа 1: общая мишень с изониазидом ⚠ требуется фенотипическое подтверждение",
+          "explanation": "inhA_S94A — WHO catalogue, group 1: shared target with isoniazid",
           "ood": false,
           "phenotype": 1
         }
@@ -3703,131 +3735,131 @@
       "drugs": [
         {
           "drug": "RIF",
-          "drug_name": "Рифампицин",
+          "drug_name": "Rifampicin",
           "decision": "no_call",
           "probability": 0.444,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.44)",
+          "explanation": "no call — both hypotheses are compatible with the data at the 90% level (probability 0.44)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "RFB",
-          "drug_name": "Рифабутин",
+          "drug_name": "Rifabutin",
           "decision": "no_call",
           "probability": 0.5,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.50)",
+          "explanation": "no call — both hypotheses are compatible with the data at the 90% level (probability 0.50)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "INH",
-          "drug_name": "Изониазид",
+          "drug_name": "Isoniazid",
           "decision": "resistant",
           "probability": 0.932,
           "source": "catalogue",
-          "explanation": "katG_S315T — каталог ВОЗ, группа 1: katG S315T — высокий уровень устойчивости ⚠ требуется фенотипическое подтверждение",
+          "explanation": "inhA_S94A — WHO catalogue, group 1: inhA target",
           "ood": false,
           "phenotype": 1
         },
         {
           "drug": "EMB",
-          "drug_name": "Этамбутол",
+          "drug_name": "Ethambutol",
           "decision": "susceptible",
           "probability": 0.067,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.73), rpoB_S488A (+0.19), whiB7_c-73t (+0.14) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.73), rpoB_S488A (+0.19), whiB7_c-73t (+0.14)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "LEV",
-          "drug_name": "Левофлоксацин",
+          "drug_name": "Levofloxacin",
           "decision": "susceptible",
           "probability": 0.036,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.48), rpoB_I491F (-0.08), rpoB_S488A (-0.05) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.48), rpoB_I491F (-0.08), rpoB_S488A (-0.05)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "MXF",
-          "drug_name": "Моксифлоксацин",
+          "drug_name": "Moxifloxacin",
           "decision": "susceptible",
           "probability": 0.055,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.69), katG_S315T (-0.05), rrs_c1402t (+0.03) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.69), katG_S315T (-0.05), rrs_c1402t (+0.03)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "BDQ",
-          "drug_name": "Бедаквилин",
+          "drug_name": "Bedaquiline",
           "decision": "susceptible",
           "probability": 0.065,
           "source": "model",
-          "explanation": "модель, вклад признаков: inhA_S94A (+0.24), cat_min_group (-0.15), rrs_c1402t (+0.00) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: inhA_S94A (+0.24), cat_min_group (-0.15), rrs_c1402t (+0.00)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "LZD",
-          "drug_name": "Линезолид",
+          "drug_name": "Linezolid",
           "decision": "susceptible",
           "probability": 0.035,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.60), rpoB_I491F (-0.04), inhA_S94A (+0.03) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.60), rpoB_I491F (-0.04), inhA_S94A (+0.03)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "CFZ",
-          "drug_name": "Клофазимин",
+          "drug_name": "Clofazimine",
           "decision": "susceptible",
           "probability": 0.047,
           "source": "model",
-          "explanation": "модель, вклад признаков: rrs_c1402t (-0.05), inhA_S94A (-0.04), rpoB_S488A (-0.03) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: rrs_c1402t (-0.05), inhA_S94A (-0.04), rpoB_S488A (-0.03)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "DLM",
-          "drug_name": "Деламанид",
+          "drug_name": "Delamanid",
           "decision": "susceptible",
           "probability": 0.0,
           "source": "model",
-          "explanation": "модель, вклад признаков: inhA_S94A (-0.37) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: inhA_S94A (-0.37)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "AMI",
-          "drug_name": "Амикацин",
+          "drug_name": "Amikacin",
           "decision": "no_call",
           "probability": 0.5,
           "source": "model",
-          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.50)",
+          "explanation": "no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.50)",
           "ood": false,
           "phenotype": 1
         },
         {
           "drug": "KAN",
-          "drug_name": "Канамицин",
+          "drug_name": "Kanamycin",
           "decision": "no_call",
           "probability": 0.535,
           "source": "model",
-          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.54)",
+          "explanation": "no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.54)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "ETH",
-          "drug_name": "Этионамид",
+          "drug_name": "Ethionamide",
           "decision": "resistant",
           "probability": 0.857,
           "source": "catalogue",
-          "explanation": "inhA_S94A — каталог ВОЗ, группа 1: общая мишень с изониазидом ⚠ требуется фенотипическое подтверждение",
+          "explanation": "inhA_S94A — WHO catalogue, group 1: shared target with isoniazid",
           "ood": false,
           "phenotype": 1
         }
@@ -3850,131 +3882,131 @@
       "drugs": [
         {
           "drug": "RIF",
-          "drug_name": "Рифампицин",
+          "drug_name": "Rifampicin",
           "decision": "no_call",
           "probability": 0.444,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.44)",
+          "explanation": "no call — both hypotheses are compatible with the data at the 90% level (probability 0.44)",
           "ood": false,
           "phenotype": 1
         },
         {
           "drug": "RFB",
-          "drug_name": "Рифабутин",
+          "drug_name": "Rifabutin",
           "decision": "no_call",
           "probability": 0.539,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.54)",
+          "explanation": "no call — both hypotheses are compatible with the data at the 90% level (probability 0.54)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "INH",
-          "drug_name": "Изониазид",
+          "drug_name": "Isoniazid",
           "decision": "susceptible",
           "probability": 0.019,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.88), embA_c-16g (-0.26), rpoB_S488A (+0.05) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.88), embA_c-16g (-0.26), rpoB_S488A (+0.05)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "EMB",
-          "drug_name": "Этамбутол",
+          "drug_name": "Ethambutol",
           "decision": "no_call",
           "probability": 0.167,
           "source": "model",
-          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.17)",
+          "explanation": "no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.17)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "LEV",
-          "drug_name": "Левофлоксацин",
+          "drug_name": "Levofloxacin",
           "decision": "susceptible",
           "probability": 0.036,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.64), ethR_LoF (-0.27), rpoB_S488A (-0.01) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.64), ethR_LoF (-0.27), rpoB_S488A (-0.01)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "MXF",
-          "drug_name": "Моксифлоксацин",
+          "drug_name": "Moxifloxacin",
           "decision": "susceptible",
           "probability": 0.055,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.65), ethR_LoF (-0.05), rpoB_S488A (-0.03) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.65), ethR_LoF (-0.05), rpoB_S488A (-0.03)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "BDQ",
-          "drug_name": "Бедаквилин",
+          "drug_name": "Bedaquiline",
           "decision": "susceptible",
           "probability": 0.045,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.51), embA_c-16g (-0.07), rpoB_I491F (-0.04) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.51), embA_c-16g (-0.07), rpoB_I491F (-0.04)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "LZD",
-          "drug_name": "Линезолид",
+          "drug_name": "Linezolid",
           "decision": "susceptible",
           "probability": 0.037,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.49), rpoB_I491F (-0.16), ethR_LoF (+0.15) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: cat_min_group (-0.49), rpoB_I491F (-0.16), ethR_LoF (+0.15)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "CFZ",
-          "drug_name": "Клофазимин",
+          "drug_name": "Clofazimine",
           "decision": "susceptible",
           "probability": 0.047,
           "source": "model",
-          "explanation": "модель, вклад признаков: rpoB_S488A (+0.35), ethR_LoF (-0.02) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: rpoB_S488A (+0.35), ethR_LoF (-0.02)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "DLM",
-          "drug_name": "Деламанид",
+          "drug_name": "Delamanid",
           "decision": "susceptible",
           "probability": 0.059,
           "source": "model",
-          "explanation": "модель, вклад признаков: embA_c-16g (-0.12), ethR_LoF (-0.03), rpoB_S488A (+0.02) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: embA_c-16g (-0.12), ethR_LoF (-0.03), rpoB_S488A (+0.02)",
           "ood": false,
           "phenotype": null
         },
         {
           "drug": "AMI",
-          "drug_name": "Амикацин",
+          "drug_name": "Amikacin",
           "decision": "susceptible",
           "probability": 0.038,
           "source": "model",
-          "explanation": "модель, вклад признаков: ethR_LoF (-0.20), rpoB_S488A (+0.01), rpoB_I491F (+0.01) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: ethR_LoF (-0.20), rpoB_S488A (+0.01), rpoB_I491F (+0.01)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "KAN",
-          "drug_name": "Канамицин",
+          "drug_name": "Kanamycin",
           "decision": "susceptible",
           "probability": 0.012,
           "source": "model",
-          "explanation": "модель, вклад признаков: embA_c-16g (-0.31), rpoB_S488A (+0.03), ethR_LoF (+0.01) ⚠ требуется фенотипическое подтверждение",
+          "explanation": "model, feature contributions: embA_c-16g (-0.31), rpoB_S488A (+0.03), ethR_LoF (+0.01)",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "ETH",
-          "drug_name": "Этионамид",
+          "drug_name": "Ethionamide",
           "decision": "no_call",
           "probability": 0.556,
           "source": "model",
-          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.56)",
+          "explanation": "no call — atypical isolate: neither hypothesis agrees with the training data (probability 0.56)",
           "ood": false,
           "phenotype": 0
         }

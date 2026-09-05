@@ -204,13 +204,13 @@ class EscapeReport:
 
     def summary(self) -> str:
         lines = [
-            f"Референс: {self.reference_id} ({self.reference_length} а. о.)",
-            f"Последовательностей: {self.n_sequences}, использовано {self.n_used}",
-            f"Наблюдённых замен: {len(self.observed)}",
-            f"Кандидатов (ещё не наблюдались): {len(self.candidates)}",
+            f"Reference: {self.reference_id} ({self.reference_length} aa)",
+            f"Sequences: {self.n_sequences}, used {self.n_used}",
+            f"Observed substitutions: {len(self.observed)}",
+            f"Candidates not yet observed: {len(self.candidates)}",
         ]
         if self.date_range:
-            lines.append(f"Период: {self.date_range[0]} — {self.date_range[1]}")
+            lines.append(f"Period: {self.date_range[0]} — {self.date_range[1]}")
         return "\n".join(lines)
 
 
@@ -233,7 +233,7 @@ class GVEscape:
             min_sequences: минимум последовательностей для осмысленного профиля.
         """
         if pseudocount <= 0:
-            raise ValueError("pseudocount должен быть положительным")
+            raise ValueError("pseudocount must be positive")
         self.pseudocount = pseudocount
         self.min_sequences = min_sequences
 
@@ -274,9 +274,9 @@ class GVEscape:
 
         if len(records) < self.min_sequences:
             raise ValueError(
-                f"нужно минимум {self.min_sequences} последовательностей, "
-                f"передано {len(records)}. Профиль по меньшему числу не несёт "
-                "информации о том, какие замены эволюция допускает"
+                f"at least {self.min_sequences} sequences are required, "
+                f"{len(records)} given. A profile built on fewer carries no "
+                "information about which substitutions evolution tolerates"
             )
 
         self.n_sequences_ = len(records)
@@ -285,7 +285,7 @@ class GVEscape:
 
         if reference is not None:
             self.reference_ = reference.upper()
-            self.reference_id_ = "передан пользователем"
+            self.reference_id_ = "user-supplied"
         else:
             idx = next(i for i, ln in enumerate(lengths) if ln == modal_len)
             self.reference_ = records[idx][1]
@@ -323,16 +323,15 @@ class GVEscape:
 
         if n_used < self.min_sequences:
             raise ValueError(
-                f"сопоставить с референсом удалось лишь {n_used} последовательностей. "
-                "Проверьте, что в файле один и тот же белок"
+                f"only {n_used} sequences could be mapped to the reference. "
+                "Check that the file contains a single protein"
             )
 
         self.n_used_ = n_used
         if n_aligned:
             self.notes_.append(
-                f"{n_aligned} последовательностей отличались длиной от референса "
-                "и были сопоставлены выравниванием; вставки и делеции в профиль "
-                "не включены"
+                f"{n_aligned} sequences differed in length from the reference and were "
+                "aligned; insertions and deletions are not included in the profile"
             )
 
         self.profile_ = counts / counts.sum(axis=1, keepdims=True)
@@ -362,11 +361,11 @@ class GVEscape:
         pairs: list[tuple[int, str]] = []
         matcher = SequenceMatcher(None, ref, seq, autojunk=False)
         for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-            if tag == "equal":
+            # Равные блоки и замены равной длины дают позиционное
+            # соответствие один к одному; всё остальное — вставки и
+            # делеции, которые профиль замен не описывает.
+            if tag == "equal" or (tag == "replace" and (i2 - i1) == (j2 - j1)):
                 pairs.extend((i1 + k, seq[j1 + k]) for k in range(i2 - i1))
-            elif tag == "replace" and (i2 - i1) == (j2 - j1):
-                pairs.extend((i1 + k, seq[j1 + k]) for k in range(i2 - i1))
-            # Вставки и делеции пропускаются: профиль описывает замены.
         return pairs if len(pairs) >= 0.5 * len(ref) else None
 
     # -- оценка риска -----------------------------------------------------
@@ -462,7 +461,7 @@ class GVEscape:
             RuntimeError: модель не обучена.
         """
         if self.profile_ is None:
-            raise RuntimeError("модель не обучена: сначала вызовите fit()")
+            raise RuntimeError("model is not fitted: call fit() first")
 
         observed = [
             self._risk(pos, self.reference_[pos], mut, count)
@@ -508,8 +507,8 @@ class GVEscape:
         notes = list(self.notes_)
         if not dates:
             notes.append(
-                "в заголовках нет дат — оценка скорости роста замен недоступна. "
-                "Даты распознаются в формате ГГГГ-ММ-ДД в любом месте заголовка"
+                "The headers carry no dates, so growth rates cannot be estimated. "
+                "Dates are recognised as YYYY-MM-DD anywhere in the header."
             )
 
         return EscapeReport(

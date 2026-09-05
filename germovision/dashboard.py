@@ -19,30 +19,29 @@ from pathlib import Path
 
 __all__ = ["build_payload", "render"]
 
-TEMPLATE_PATH = Path(__file__).resolve().parent.parent / "dashboard" / "template.html"
-PLACEHOLDER = "__GV_DATA__"
+TEMPLATE_PATH = Path(__file__).resolve().parent / "webui"
 
-#: Русские названия линий и препаратов для подписей на графиках.
+#: Читаемые названия линий и стран для подписей на графиках.
 LINEAGE_LABELS = {
     "L4_Euro_American": "L4 Euro-American",
     "L2_Beijing": "L2 Beijing",
-    "L2_Beijing_MDR": "L2 Beijing (МЛУ)",
+    "L2_Beijing_MDR": "L2 Beijing (MDR)",
     "L3_CAS": "L3 CAS",
     "L1_Indo_Oceanic": "L1 Indo-Oceanic",
     "L5_West_African": "L5 West African",
 }
 
 COUNTRY_LABELS = {
-    "KZ": "Казахстан",
-    "RU": "Россия",
-    "UZ": "Узбекистан",
-    "IN": "Индия",
-    "ZA": "ЮАР",
-    "CN": "Китай",
-    "BR": "Бразилия",
-    "GB": "Великобритания",
-    "DE": "Германия",
-    "PE": "Перу",
+    "KZ": "Kazakhstan",
+    "RU": "Russia",
+    "UZ": "Uzbekistan",
+    "IN": "India",
+    "ZA": "South Africa",
+    "CN": "China",
+    "BR": "Brazil",
+    "GB": "United Kingdom",
+    "DE": "Germany",
+    "PE": "Peru",
 }
 
 
@@ -177,32 +176,84 @@ def build_payload(metrics: dict) -> dict:
 
 
 def render(metrics_path: Path, template_path: Path, out_path: Path) -> Path:
-    """Собрать HTML-панель, подставив данные в шаблон."""
+    """Собрать статическую версию системы одним HTML-файлом.
+
+    Публикуемая панель — не отдельный макет, а та же система, что работает
+    локально: тот же интерфейс, те же экраны, те же графики. Отличие одно —
+    раздел анализа не предлагает загрузку файлов. Загрузка отправляла бы
+    данные пациентов на сервер, поэтому здесь её нет; вместо неё стоит
+    объяснение, как запустить анализ у себя.
+
+    Данные надзора вшиваются в файл на этапе сборки, стили и скрипт
+    встраиваются целиком: опубликованная страница не может обратиться ни к
+    какому бэкенду и должна быть самодостаточной.
+
+    Args:
+        metrics_path: reports/metrics.json от последнего прогона обучения.
+        template_path: каталог webui или путь к index.html внутри него.
+        out_path: куда записать собранный файл.
+
+    Raises:
+        FileNotFoundError: нет метрик или файлов интерфейса.
+        ValueError: интерфейс не содержит ожидаемых подключений.
+    """
     if not metrics_path.exists():
         raise FileNotFoundError(
             f"нет файла {metrics_path}. Сначала выполните: python -m germovision.train"
         )
-    if not template_path.exists():
-        raise FileNotFoundError(f"нет шаблона {template_path}")
+
+    webui = Path(template_path)
+    if webui.is_file():
+        webui = webui.parent
+    html_path, css_path, js_path = webui / "index.html", webui / "app.css", webui / "app.js"
+    for path in (html_path, css_path, js_path):
+        if not path.exists():
+            raise FileNotFoundError(f"нет файла интерфейса {path}")
 
     metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
     payload = build_payload(metrics)
 
-    template = template_path.read_text(encoding="utf-8")
-    if PLACEHOLDER not in template:
-        raise ValueError(f"в шаблоне нет метки {PLACEHOLDER}")
+    static = {
+        "status": {
+            "formats": _static_formats(),
+            "models_loaded": True,
+            "models_error": "",
+            "models_info": "",
+            "models_synthetic": bool(metrics.get("synthetic")),
+            "max_file_mb": 0,
+        },
+        "surveillance": {"available": True, **payload},
+    }
+    data = json.dumps(static, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
-    data = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    # </script> внутри данных разорвал бы тег — экранируем на всякий случай.
-    data = data.replace("</", "<\\/")
+    html = html_path.read_text(encoding="utf-8")
+    if '<link rel="stylesheet" href="/app.css">' not in html:
+        raise ValueError("в index.html нет подключения /app.css")
+
+    html = html.replace(
+        '<link rel="stylesheet" href="/app.css">',
+        "<style>\n" + css_path.read_text(encoding="utf-8") + "\n</style>",
+    )
+    html = html.replace(
+        '<script src="/app.js"></script>',
+        "<script>window.__GV_STATIC__ = " + data + ";</script>\n"
+        + "<script>\n" + js_path.read_text(encoding="utf-8") + "\n</script>",
+    )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(template.replace(PLACEHOLDER, data), encoding="utf-8")
+    out_path.write_text(html, encoding="utf-8")
     return out_path
 
 
+def _static_formats() -> list[dict]:
+    """Справочник форматов без импорта серверного модуля."""
+    from .formats import SUPPORTED
+
+    return [dict(row) for row in SUPPORTED]
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Сборка панели геномного надзора")
+    parser = argparse.ArgumentParser(description="Build the published static version of the system")
     parser.add_argument("--metrics", default="reports/metrics.json")
     parser.add_argument("--template", default=str(TEMPLATE_PATH))
     parser.add_argument("--out", default="dashboard/index.html")
@@ -213,7 +264,7 @@ def main(argv: list[str] | None = None) -> int:
 
     path = render(Path(args.metrics), Path(args.template), Path(args.out))
     size_kb = path.stat().st_size / 1024
-    print(f"Панель собрана: {path} ({size_kb:.0f} КБ)")
+    print(f"Static build written: {path} ({size_kb:.0f} KB)")
     return 0
 
 

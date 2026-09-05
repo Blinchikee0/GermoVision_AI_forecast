@@ -84,7 +84,7 @@ def test_evaluate_binary_still_consistent():
     rng = np.random.default_rng(5)
     y = np.array([0] * 200 + [1] * 40)
     p = np.clip(np.where(y == 1, rng.normal(0.75, 0.15, 240), rng.normal(0.25, 0.15, 240)), 0, 1)
-    rep = evaluate_binary(y, p, label="тест", threshold=0.5, n_boot=200)
+    rep = evaluate_binary(y, p, label="test", threshold=0.5, n_boot=200)
     assert rep.roc_auc.value == pytest.approx(roc_auc_score(y, p), abs=1e-10)
     assert rep.pr_auc.value == pytest.approx(average_precision_score(y, p), abs=1e-10)
 
@@ -133,12 +133,12 @@ def test_manifest_readable_without_loading_models(tmp_path, trained):
 def test_load_rejects_incompatible_format(tmp_path, trained):
     _, _, models = trained
     save_bundle(ModelBundle(models=models, manifest={"format": 999}), tmp_path / "m")
-    with pytest.raises(ValueError, match="переобучите"):
+    with pytest.raises(ValueError, match="retrain"):
         load_bundle(tmp_path / "m")
 
 
 def test_load_missing_directory(tmp_path):
-    with pytest.raises(FileNotFoundError, match="нет сохранённых моделей"):
+    with pytest.raises(FileNotFoundError, match="No saved models"):
         load_bundle(tmp_path / "нет")
 
 
@@ -153,7 +153,7 @@ def test_describe_flags_synthetic_and_confirmation(tmp_path, trained):
         },
     )
     text = bundle.describe()
-    assert "СИНТЕТИЧЕСКИЕ" in text
+    assert "SYNTHETIC" in text
     assert "RIF" in text
 
 
@@ -185,14 +185,14 @@ def test_load_isolates_parses_csv(tmp_path):
 def test_load_isolates_requires_columns(tmp_path):
     p = tmp_path / "bad.csv"
     p.write_text("id,ген,замена\nA1,rpoB,S450L\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="нет столбцов"):
+    with pytest.raises(ValueError, match="missing columns"):
         load_isolates(p)
 
 
 def test_load_isolates_rejects_empty(tmp_path):
     p = tmp_path / "empty.csv"
     p.write_text("id,gene,mutation\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="ни одного изолята"):
+    with pytest.raises(ValueError, match="no isolates found"):
         load_isolates(p)
 
 
@@ -219,7 +219,7 @@ def test_predict_produces_full_report(tmp_path, trained):
 
     text = format_report(reports, bundle)
     assert "A1" in text
-    assert "не заменяет решение врача" in text
+    assert "does not replace" in text
 
 
 def test_catalogue_marker_drives_decision_in_prediction(tmp_path, trained):
@@ -261,4 +261,4 @@ def test_evaluation_exposes_operational_metrics(trained):
     ev = models["RIF"].evaluate(ds, sp.test, n_boot=50)
     assert 0.0 <= ev.correctly_closed <= 1.0
     assert 0.0 <= ev.missed_resistance <= 1.0
-    assert "закрыто" in ev.summary_line()
+    assert "correctly closed" in ev.summary_line()

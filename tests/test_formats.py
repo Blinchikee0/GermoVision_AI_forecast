@@ -35,7 +35,7 @@ def test_parse_fasta_joins_wrapped_lines():
 
 
 def test_parse_fasta_rejects_empty():
-    with pytest.raises(FormatError, match="ни одной последовательности"):
+    with pytest.raises(FormatError, match="no sequences"):
         parse_fasta(">только заголовок\n")
 
 
@@ -61,7 +61,7 @@ def test_detects_genome_by_length():
 def test_warns_when_length_not_multiple_of_three():
     p = detect_and_parse("g.fa", ">x\n" + "ACGTACGTA" * 3 + "AC\n>y\n" + "ACGTACGTA" * 3 + "AC\n")
     assert p.kind == InputKind.GENE_FASTA
-    assert any("кратна трём" in n for n in p.notes)
+    assert any("divisible by three" in n for n in p.notes)
 
 
 # --------------------------------------------------------------------------
@@ -141,7 +141,7 @@ def test_rejects_unrelated_json():
 
 
 def test_rejects_broken_json():
-    with pytest.raises(FormatError, match="не разбирается"):
+    with pytest.raises(FormatError, match="does not parse"):
         detect_and_parse("x.json", "{ незакрытая скобка")
 
 
@@ -176,7 +176,7 @@ def test_lineage_counts_skip_nonnumeric_rows():
     text = "region,week,lineage,count\nKZ,1,L2,5\nKZ,неделя,L2,x\nKZ,2,L4,7\n"
     p = detect_and_parse("c.csv", text)
     assert p.n_records == 2
-    assert any("пропущено" in n for n in p.notes)
+    assert any("skipped" in n for n in p.notes)
 
 
 def test_unknown_columns_explain_expected_shape():
@@ -196,12 +196,12 @@ def test_excel_gets_specific_hint():
 
 def test_rejects_binary_content():
     """Двоичный файл отсекается до разбора, а не через невнятную ошибку столбцов."""
-    with pytest.raises(FormatError, match="двоичный"):
+    with pytest.raises(FormatError, match="binary"):
         detect_and_parse("a.bam", b"BAM\x01" + bytes([0]) * 8 + b"payload")
 
 
 def test_rejects_empty_file():
-    with pytest.raises(FormatError, match="пуст"):
+    with pytest.raises(FormatError, match="empty"):
         detect_and_parse("e.csv", "   \n  \n")
 
 

@@ -32,6 +32,7 @@ from pathlib import Path
 
 __all__ = [
     "DRUGS",
+    "DRUG_NAMES",
     "DRUG_NAMES_RU",
     "DRUG_GENES",
     "CatalogueEntry",
@@ -58,21 +59,27 @@ DRUGS: tuple[str, ...] = (
     "ETH",  # этионамид
 )
 
-DRUG_NAMES_RU: dict[str, str] = {
-    "RIF": "Рифампицин",
-    "RFB": "Рифабутин",
-    "INH": "Изониазид",
-    "EMB": "Этамбутол",
-    "LEV": "Левофлоксацин",
-    "MXF": "Моксифлоксацин",
-    "BDQ": "Бедаквилин",
-    "LZD": "Линезолид",
-    "CFZ": "Клофазимин",
-    "DLM": "Деламанид",
-    "AMI": "Амикацин",
-    "KAN": "Канамицин",
-    "ETH": "Этионамид",
+#: Названия препаратов даются по-английски: это международные
+#: непатентованные наименования, они одинаковы во всех системах надзора
+#: и в каталоге ВОЗ, и перевод только затруднил бы сверку.
+DRUG_NAMES: dict[str, str] = {
+    "RIF": "Rifampicin",
+    "RFB": "Rifabutin",
+    "INH": "Isoniazid",
+    "EMB": "Ethambutol",
+    "LEV": "Levofloxacin",
+    "MXF": "Moxifloxacin",
+    "BDQ": "Bedaquiline",
+    "LZD": "Linezolid",
+    "CFZ": "Clofazimine",
+    "DLM": "Delamanid",
+    "AMI": "Amikacin",
+    "KAN": "Kanamycin",
+    "ETH": "Ethionamide",
 }
+
+#: Прежнее имя оставлено для совместимости с уже написанным кодом.
+DRUG_NAMES_RU = DRUG_NAMES
 
 #: Гены, в которых для каждого препарата известны механизмы устойчивости.
 #: Используется для отбора признаков и для OOD-проверки: мутация в гене,
@@ -136,49 +143,49 @@ def _entries() -> list[CatalogueEntry]:
     ]
     for m in rif_high:
         e.append(
-            CatalogueEntry("rpoB", m, "RIF", 1, "RRDR rpoB — устойчивость к рифампицину")
+            CatalogueEntry("rpoB", m, "RIF", 1, "rpoB RRDR — rifampicin resistance")
         )
-    e.append(CatalogueEntry("rpoB", "L452P", "RIF", 1, "RRDR rpoB"))
+    e.append(CatalogueEntry("rpoB", "L452P", "RIF", 1, "rpoB RRDR"))
     e.append(
-        CatalogueEntry("rpoB", "L430P", "RIF", 2, "RRDR rpoB, пограничная устойчивость")
+        CatalogueEntry("rpoB", "L430P", "RIF", 2, "rpoB RRDR, borderline resistance")
     )
-    e.append(CatalogueEntry("rpoB", "D435V", "RIF", 1, "RRDR rpoB"))
+    e.append(CatalogueEntry("rpoB", "D435V", "RIF", 1, "rpoB RRDR"))
 
     # Рифабутин: перекрёстная устойчивость неполная. Часть замен rpoB даёт
     # устойчивость к рифампицину при сохранении чувствительности к
     # рифабутину — клинически важное различие, которое нельзя терять.
     for m in ["S450L", "S450W", "H445Y", "H445R", "Q432K"]:
         e.append(
-            CatalogueEntry("rpoB", m, "RFB", 1, "перекрёстная устойчивость с рифампицином")
+            CatalogueEntry("rpoB", m, "RFB", 1, "cross-resistance with rifampicin")
         )
     for m in ["D435V", "D435Y", "L452P", "L430P"]:
         e.append(
             CatalogueEntry(
                 "rpoB", m, "RFB", 4,
-                "устойчивость к RIF при сохранении чувствительности к RFB",
+                "RIF-resistant but rifabutin-susceptible",
             )
         )
 
     # --- Изониазид -------------------------------------------------------
-    e.append(CatalogueEntry("katG", "S315T", "INH", 1, "katG S315T — высокий уровень устойчивости"))
+    e.append(CatalogueEntry("katG", "S315T", "INH", 1, "katG S315T — high-level resistance"))
     e.append(CatalogueEntry("katG", "S315N", "INH", 1, "katG S315N"))
-    e.append(CatalogueEntry("katG", "LoF", "INH", 1, "потеря функции katG"))
+    e.append(CatalogueEntry("katG", "LoF", "INH", 1, "katG loss of function"))
     e.append(
-        CatalogueEntry("fabG1", "c-15t", "INH", 1, "промотор inhA — низкий уровень устойчивости")
+        CatalogueEntry("fabG1", "c-15t", "INH", 1, "inhA promoter — low-level resistance")
     )
-    e.append(CatalogueEntry("fabG1", "c-8t", "INH", 2, "промотор inhA"))
-    e.append(CatalogueEntry("inhA", "S94A", "INH", 1, "мишень inhA"))
-    e.append(CatalogueEntry("inhA", "I194T", "INH", 2, "мишень inhA"))
+    e.append(CatalogueEntry("fabG1", "c-8t", "INH", 2, "inhA promoter"))
+    e.append(CatalogueEntry("inhA", "S94A", "INH", 1, "inhA target"))
+    e.append(CatalogueEntry("inhA", "I194T", "INH", 2, "inhA target"))
 
     # --- Этамбутол -------------------------------------------------------
     embb = [("M306V", 1), ("M306I", 1), ("M306L", 2), ("G406A", 1), ("G406D", 1), ("Q497R", 1)]
     for m, g in embb:
-        e.append(CatalogueEntry("embB", m, "EMB", g, "embB — мишень этамбутола"))
+        e.append(CatalogueEntry("embB", m, "EMB", g, "embB — ethambutol target"))
 
     # --- Фторхинолоны: QRDR gyrA (кодоны 88–94) --------------------------
     for m in ["A90V", "D94G", "D94N", "D94Y", "D94H", "D94A", "S91P"]:
         for drug in ("LEV", "MXF"):
-            e.append(CatalogueEntry("gyrA", m, drug, 1, "QRDR gyrA — устойчивость к фторхинолонам"))
+            e.append(CatalogueEntry("gyrA", m, drug, 1, "gyrA QRDR — fluoroquinolone resistance"))
     for m in ["N538D", "E501D"]:
         for drug in ("LEV", "MXF"):
             e.append(CatalogueEntry("gyrB", m, drug, 2, "gyrB"))
@@ -186,48 +193,48 @@ def _entries() -> list[CatalogueEntry]:
     # --- Бедаквилин и клофазимин: общий механизм через Rv0678 ------------
     # Перекрёстная устойчивость реальна и клинически значима: потеря
     # функции Rv0678 снимает репрессию эффлюксной помпы MmpL5.
-    e.append(CatalogueEntry("Rv0678", "LoF", "BDQ", 2, "Rv0678 — эффлюкс MmpL5"))
-    e.append(CatalogueEntry("Rv0678", "LoF", "CFZ", 2, "перекрёстная устойчивость BDQ/CFZ"))
-    e.append(CatalogueEntry("atpE", "D28N", "BDQ", 1, "atpE — мишень бедаквилина"))
-    e.append(CatalogueEntry("atpE", "A63P", "BDQ", 1, "atpE — мишень бедаквилина"))
-    e.append(CatalogueEntry("pepQ", "LoF", "BDQ", 3, "pepQ — значимость не установлена"))
+    e.append(CatalogueEntry("Rv0678", "LoF", "BDQ", 2, "Rv0678 — MmpL5 efflux"))
+    e.append(CatalogueEntry("Rv0678", "LoF", "CFZ", 2, "BDQ/CFZ cross-resistance"))
+    e.append(CatalogueEntry("atpE", "D28N", "BDQ", 1, "atpE — bedaquiline target"))
+    e.append(CatalogueEntry("atpE", "A63P", "BDQ", 1, "atpE — bedaquiline target"))
+    e.append(CatalogueEntry("pepQ", "LoF", "BDQ", 3, "pepQ — significance not established"))
 
     # --- Линезолид -------------------------------------------------------
-    e.append(CatalogueEntry("rrl", "g2814t", "LZD", 2, "23S рРНК"))
-    e.append(CatalogueEntry("rrl", "g2270c", "LZD", 2, "23S рРНК"))
-    e.append(CatalogueEntry("rplC", "C154R", "LZD", 1, "rplC — рибосомный белок L3"))
+    e.append(CatalogueEntry("rrl", "g2814t", "LZD", 2, "23S rRNA"))
+    e.append(CatalogueEntry("rrl", "g2270c", "LZD", 2, "23S rRNA"))
+    e.append(CatalogueEntry("rplC", "C154R", "LZD", 1, "rplC — ribosomal protein L3"))
 
     # --- Деламанид: активируется ферментами биосинтеза F420 --------------
     for gene in ("ddn", "fbiA", "fbiB", "fbiC", "fgd1"):
-        e.append(CatalogueEntry(gene, "LoF", "DLM", 2, "нарушение активации пролекарства"))
+        e.append(CatalogueEntry(gene, "LoF", "DLM", 2, "prodrug activation impaired"))
 
     # --- Аминогликозиды --------------------------------------------------
     e.append(
-        CatalogueEntry("rrs", "a1401g", "AMI", 1, "16S рРНК — высокий уровень устойчивости")
+        CatalogueEntry("rrs", "a1401g", "AMI", 1, "16S rRNA — high-level resistance")
     )
-    e.append(CatalogueEntry("rrs", "a1484g", "AMI", 1, "16S рРНК"))
-    e.append(CatalogueEntry("rrs", "a1401g", "KAN", 1, "перекрёстная устойчивость AMI/KAN"))
-    e.append(CatalogueEntry("rrs", "a1484g", "KAN", 1, "16S рРНК"))
+    e.append(CatalogueEntry("rrs", "a1484g", "AMI", 1, "16S rRNA"))
+    e.append(CatalogueEntry("rrs", "a1401g", "KAN", 1, "AMI/KAN cross-resistance"))
+    e.append(CatalogueEntry("rrs", "a1484g", "KAN", 1, "16S rRNA"))
     for m in ["c-14t", "c-12t", "g-10a", "c-37t"]:
         e.append(
-            CatalogueEntry("eis", m, "KAN", 1, "промотор eis — устойчивость только к канамицину")
+            CatalogueEntry("eis", m, "KAN", 1, "eis promoter — kanamycin-only resistance")
         )
 
     # --- Этионамид: общая мишень с изониазидом ---------------------------
-    e.append(CatalogueEntry("ethA", "LoF", "ETH", 1, "ethA — активация пролекарства"))
-    e.append(CatalogueEntry("fabG1", "c-15t", "ETH", 1, "перекрёстная устойчивость INH/ETH"))
-    e.append(CatalogueEntry("inhA", "S94A", "ETH", 1, "общая мишень с изониазидом"))
+    e.append(CatalogueEntry("ethA", "LoF", "ETH", 1, "ethA — prodrug activation"))
+    e.append(CatalogueEntry("fabG1", "c-15t", "ETH", 1, "INH/ETH cross-resistance"))
+    e.append(CatalogueEntry("inhA", "S94A", "ETH", 1, "shared target with isoniazid"))
 
     # --- Варианты, НЕ связанные с устойчивостью --------------------------
     # Их присутствие в каталоге не менее важно: оно позволяет системе
     # уверенно сказать «эта мутация ни на что не влияет», вместо того
     # чтобы молчать и порождать необоснованную тревогу.
-    e.append(CatalogueEntry("rpoB", "S488A", "RIF", 5, "филогенетический маркер, не влияет"))
-    e.append(CatalogueEntry("embB", "E378A", "EMB", 5, "филогенетический маркер"))
-    e.append(CatalogueEntry("gyrA", "S95T", "LEV", 5, "филогенетический полиморфизм"))
-    e.append(CatalogueEntry("gyrA", "S95T", "MXF", 5, "филогенетический полиморфизм"))
-    e.append(CatalogueEntry("gyrA", "E21Q", "LEV", 5, "филогенетический полиморфизм"))
-    e.append(CatalogueEntry("gyrA", "G668D", "MXF", 5, "филогенетический полиморфизм"))
+    e.append(CatalogueEntry("rpoB", "S488A", "RIF", 5, "phylogenetic marker, no effect"))
+    e.append(CatalogueEntry("embB", "E378A", "EMB", 5, "phylogenetic marker"))
+    e.append(CatalogueEntry("gyrA", "S95T", "LEV", 5, "phylogenetic polymorphism"))
+    e.append(CatalogueEntry("gyrA", "S95T", "MXF", 5, "phylogenetic polymorphism"))
+    e.append(CatalogueEntry("gyrA", "E21Q", "LEV", 5, "phylogenetic polymorphism"))
+    e.append(CatalogueEntry("gyrA", "G668D", "MXF", 5, "phylogenetic polymorphism"))
 
     return e
 
@@ -335,7 +342,7 @@ class MutationCatalogue:
                         mutation=row[cols["mutation"]].strip(),
                         drug=row[cols["drug"]].strip().upper()[:3],
                         group=group,
-                        note="каталог ВОЗ",
+                        note="WHO catalogue",
                     )
                 )
         if not entries:

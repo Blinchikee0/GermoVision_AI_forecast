@@ -236,8 +236,8 @@ def temporal_cluster_split(
             "actual_test_size": round(test_idx.size / labels.size, 4),
             "date_semantics": "submission_date",
             "note": (
-                "границы смещены относительно календарных дат, поскольку "
-                "неделимой единицей является кластер родства"
+                "boundaries are shifted away from round calendar dates because "
+                "the indivisible unit is a relatedness cluster, not an isolate"
             ),
         },
     )

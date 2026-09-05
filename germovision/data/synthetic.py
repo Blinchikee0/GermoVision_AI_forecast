@@ -146,15 +146,15 @@ class SyntheticConfig:
         seed: int = 20260904,
     ) -> None:
         if n_isolates < 100:
-            raise ValueError("нужно минимум 100 изолятов")
+            raise ValueError("at least 100 isolates are required")
         if not 0.5 <= penetrance_known <= 1.0:
-            raise ValueError("penetrance_known должен лежать в [0.5, 1.0]")
+            raise ValueError("penetrance_known must lie in [0.5, 1.0]")
         self.n_isolates = n_isolates
         self.mean_cluster_size = mean_cluster_size
         self.year_start = year_start
         self.year_end = year_end
         if not 0.0 <= unexplained_fraction + novel_fraction < 1.0:
-            raise ValueError("unexplained_fraction + novel_fraction должно быть < 1")
+            raise ValueError("unexplained_fraction + novel_fraction must be < 1")
         self.penetrance_known = penetrance_known
         self.unexplained_fraction = unexplained_fraction
         self.novel_fraction = novel_fraction
@@ -325,9 +325,9 @@ def generate_isolates(
             "novel_fraction": cfg.novel_fraction,
             "phenotype_error": cfg.phenotype_error,
             "warning": (
-                "СИНТЕТИЧЕСКИЕ ДАННЫЕ. Метрики характеризуют корректность "
-                "пайплайна, а не качество модели. Для проверки гипотезы H1 "
-                "требуется набор CRyPTIC."
+                "SYNTHETIC DATA. These metrics show that the pipeline is correct, "
+                "not that the model is clinically good. Hypothesis H1 requires the "
+                "CRyPTIC dataset."
             ),
         },
     )
@@ -337,14 +337,14 @@ def generate_isolates(
 #: Различие объёмов принципиально: именно оно проверяет, действительно ли
 #: иерархическая модель роста помогает регионам с малой выборкой.
 KZ_REGIONS: dict[str, int] = {
-    "Алматы": 40,
-    "Астана": 35,
-    "Шымкент": 25,
-    "Актобе": 12,
-    "Караганда": 15,
-    "Павлодар": 8,
-    "Атырау": 7,
-    "Костанай": 9,
+    "Almaty": 40,
+    "Astana": 35,
+    "Shymkent": 25,
+    "Aktobe": 12,
+    "Karaganda": 15,
+    "Pavlodar": 8,
+    "Atyrau": 7,
+    "Kostanay": 9,
 }
 
 

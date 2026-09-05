@@ -7,6 +7,7 @@
 
 from .catalogue import (
     DRUG_GENES,
+    DRUG_NAMES,
     DRUG_NAMES_RU,
     DRUGS,
     CatalogueEntry,
@@ -19,6 +20,7 @@ from .synthetic import SyntheticConfig, generate_isolates
 
 __all__ = [
     "DRUGS",
+    "DRUG_NAMES",
     "DRUG_NAMES_RU",
     "DRUG_GENES",
     "CatalogueEntry",

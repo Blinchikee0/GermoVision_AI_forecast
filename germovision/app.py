@@ -23,6 +23,7 @@
 # взяты в кавычки вручную.
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -72,11 +73,64 @@ def create_app(models_dir: "str | Path | None" = "models"):
         page = WEBUI / "index.html"
         if not page.exists():
             return HTMLResponse(
-                "<h1>Не найден файл интерфейса</h1>"
-                f"<p>Ожидался {page}</p>",
+                "<h1>Interface files not found</h1>"
+                f"<p>Expected {page}</p>",
                 status_code=500,
             )
         return HTMLResponse(page.read_text(encoding="utf-8"))
+
+    @app.get("/app.css")
+    def stylesheet():
+        from fastapi.responses import Response
+
+        path = WEBUI / "app.css"
+        if not path.exists():
+            return Response("/* app.css not found */", media_type="text/css")
+        return Response(path.read_text(encoding="utf-8"), media_type="text/css")
+
+    @app.get("/app.js")
+    def script():
+        from fastapi.responses import Response
+
+        path = WEBUI / "app.js"
+        if not path.exists():
+            return Response("// app.js not found", media_type="text/javascript")
+        return Response(
+            path.read_text(encoding="utf-8"), media_type="text/javascript"
+        )
+
+    @app.get("/api/surveillance")
+    def surveillance() -> JSONResponse:
+        """Национальная картина надзора из последнего прогона обучения.
+
+        Приложение работает и без неё: раздел анализа файлов не зависит от
+        того, обучались ли модели на этой машине. Поэтому отсутствие
+        отчёта возвращается как признак, а не как ошибка — интерфейс
+        покажет объяснение вместо пустых графиков.
+        """
+        from .dashboard import build_payload
+
+        candidates = (
+            Path("reports/metrics.json"),
+            WEBUI.parent.parent / "reports" / "metrics.json",
+        )
+        for candidate in candidates:
+            if candidate.exists():
+                try:
+                    data = json.loads(candidate.read_text(encoding="utf-8"))
+                    return JSONResponse({"available": True, **build_payload(data)})
+                except (json.JSONDecodeError, KeyError) as exc:
+                    return JSONResponse({
+                        "available": False,
+                        "reason": f"reports/metrics.json is unreadable: {exc}",
+                    })
+        return JSONResponse({
+            "available": False,
+            "reason": (
+                "No training report found. Run: python -m germovision.train "
+                "--save-models models"
+            ),
+        })
 
     @app.get("/api/status")
     def status() -> dict:
@@ -107,19 +161,18 @@ def create_app(models_dir: "str | Path | None" = "models"):
             try:
                 content = await upload.read()
             except Exception as exc:  # noqa: BLE001 — сеть и диск дают что угодно
-                results.append(_failure(name, f"не удалось прочитать файл: {exc}"))
+                results.append(_failure(name, f"Could not read file: {exc}"))
                 continue
 
             if not content:
-                results.append(_failure(name, "файл пуст"))
+                results.append(_failure(name, "File is empty."))
                 continue
             if len(content) > MAX_FILE_BYTES:
                 mb = len(content) / (1024 * 1024)
                 results.append(_failure(
                     name,
-                    f"файл занимает {mb:.0f} МБ при пределе "
-                    f"{MAX_FILE_BYTES // (1024 * 1024)} МБ. Для наборов такого "
-                    "размера используйте командный режим: "
+                    f"File is {mb:.0f} MB, over the {MAX_FILE_BYTES // (1024 * 1024)} MB "
+                    "limit. For datasets this size use the command line: "
                     "python -m germovision.predict",
                 ))
                 continue
@@ -137,7 +190,7 @@ def create_app(models_dir: "str | Path | None" = "models"):
                 continue
             except Exception as exc:  # noqa: BLE001
                 results.append(_failure(
-                    name, f"внутренняя ошибка анализа: {exc}", kind=parsed.kind
+                    name, f"Internal analysis error: {exc}", kind=parsed.kind
                 ))
                 continue
 
