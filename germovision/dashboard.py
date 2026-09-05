@@ -64,6 +64,10 @@ def build_payload(metrics: dict) -> dict:
     # Средняя доля закрытых без фенотипического теста по основным препаратам.
     core = [r for r in internal if r["drug"] in ("RIF", "INH", "EMB", "LEV", "MXF")]
     answer_rate = sum(r["answer_rate"] for r in core) / len(core) if core else None
+    closed = (
+        sum(r["correctly_closed"] for r in internal) / len(internal) if internal else None
+    )
+    n_needs = sum(1 for r in internal if r["requires_confirmation"])
 
     # Наибольшее преимущество роста среди регионов — главный сигнал панели.
     sig_growth = [
@@ -113,6 +117,9 @@ def build_payload(metrics: dict) -> dict:
             "mdr_kz_n": kz["mdr_n"] if kz else None,
             "rif_sens_external": external[0]["sensitivity"][0] if external else None,
             "answer_rate": answer_rate,
+            "closed": closed,
+            "n_needs_confirmation": n_needs,
+            "n_drugs": len(internal),
             "top_growth": top_growth,
             "ece_rif": rif_int["calibration"]["ece"] if rif_int else None,
         },
@@ -140,6 +147,9 @@ def build_payload(metrics: dict) -> dict:
                 "pr_auc": round(r["ranking"]["pr_auc"][0], 3),
                 "base_sens": round(r["baseline_catalogue"]["sensitivity"][0], 3),
                 "answer_rate": round(r["answer_rate"], 3),
+                "closed": round(r["correctly_closed"], 4),
+                "missed": round(r["missed_resistance"], 4),
+                "needs_confirmation": bool(r["requires_confirmation"]),
                 "ece": round(r["calibration"]["ece"], 3),
                 "by_catalogue": r["routing"]["by_catalogue"],
                 "by_model": r["routing"]["by_model"],

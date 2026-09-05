@@ -48,6 +48,7 @@ from .data import (
 from .data.synthetic import generate_lineage_counts
 from .models import CatalogueBaseline, GVGrowth, GVResist
 from .models.resist import Decision
+from .persistence import ModelBundle, save_bundle
 
 #: Целевые пороги гипотезы H1 (§ 2.3 мастер-документа), зафиксированные
 #: до эксперимента. Проверяются на внешней валидации, а не на внутреннем
@@ -141,6 +142,10 @@ def train_drug(
             "no_call_rate": round(ev.abstention_rate, 4),
         },
         "answer_rate": round(ev.answer_rate, 4),
+        "correctly_closed": round(ev.correctly_closed, 4),
+        "missed_resistance": round(ev.missed_resistance, 4),
+        "requires_confirmation": bool(ev.requires_confirmation),
+        "operating_point": model.operating_point_,
         "coverage_tradeoff": tradeoff,
         "delta_sensitivity_vs_catalogue": round(
             ev.decision_sensitivity.value - baseline.sensitivity.value, 4
@@ -199,6 +204,8 @@ def external_validation(
         "specificity": _ci(ev.decision_specificity),
         "pr_auc": _ci(ev.ranking.pr_auc),
         "abstention_rate": round(ev.abstention_rate, 4),
+        "correctly_closed": round(ev.correctly_closed, 4),
+        "missed_resistance": round(ev.missed_resistance, 4),
         "baseline_sensitivity": baseline.sensitivity.value,
         "baseline_specificity": baseline.specificity.value,
         "h1_target": list(target) if target else None,
@@ -220,16 +227,17 @@ def run_ablations(
             "мутации, без признаков каталога",
             dict(
                 use_catalogue_features=False, use_burden=False,
-                use_context=False, use_catalogue_tier=False,
+                use_discovery=False, use_catalogue_tier=False,
             ),
         ),
         (
             "+ признаки каталога",
-            dict(use_burden=False, use_context=False, use_catalogue_tier=False),
+            dict(use_discovery=False, use_burden=False, use_catalogue_tier=False),
         ),
-        ("+ нагрузка по генам", dict(use_context=False, use_catalogue_tier=False)),
-        ("+ контекст линии", dict(use_catalogue_tier=False)),
+        ("+ нагрузка по генам", dict(use_discovery=False, use_catalogue_tier=False)),
+        ("+ варианты вне целевых генов", dict(use_catalogue_tier=False)),
         ("полная модель (+ уровень правил)", {}),
+        ("… и с контекстом линии (вредит)", dict(use_context=True)),
     ]
 
     rows: list[dict] = []
@@ -312,7 +320,7 @@ def build_example_reports(
     split: Split,
     catalogue: MutationCatalogue,
     n_examples: int = 3,
-) -> list[dict]:
+) -> tuple[list[dict], dict[str, GVResist]]:
     """Собрать полные заключения по нескольким изолятам из тестовой части.
 
     Это то, что реально видит врач: таблица по всем препаратам с решением,
@@ -334,7 +342,7 @@ def build_example_reports(
         except ValueError:
             continue
     if not models:
-        return []
+        return [], {}
 
     test_idx = np.asarray(split.test, dtype=int)
     all_preds: dict[int, dict[str, object]] = {i: {} for i in test_idx}
@@ -392,7 +400,7 @@ def build_example_reports(
             "n_no_call": n_nocall(i),
             "drugs": rows,
         })
-    return reports
+    return reports, models
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -405,6 +413,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--catalogue-tsv", default=None, help="полный каталог ВОЗ в TSV")
     parser.add_argument("--quick", action="store_true", help="меньше данных и бутстрэпа")
     parser.add_argument("--no-growth", action="store_true")
+    parser.add_argument(
+        "--save-models",
+        default=None,
+        help="каталог для сохранения обученных моделей (см. germovision.predict)",
+    )
     args = parser.parse_args(argv)
 
     if hasattr(sys.stdout, "reconfigure"):
@@ -446,9 +459,13 @@ def main(argv: list[str] | None = None) -> int:
 
     # --- 4–5. Обучение и оценка ------------------------------------------
     _header("4. ОБУЧЕНИЕ И ОЦЕНКА НА ВНУТРЕННЕМ ТЕСТЕ")
+    _log("Закрыто — доля изолятов, по которым выдан верный ответ за 1–2 дня.")
+    _log("Пропущено — доля устойчивых, которым выдано уверенное «чувствителен».")
+    _log("Обе величины считаются от полного числа изолятов, а не от отвеченных.")
+    _log("")
     _log(
-        f"{'Препарат':<16}{'Чувств. (модель)':<22}{'Чувств. (каталог)':<22}"
-        f"{'Δ':>7}{'Ответов':>10}"
+        f"{'Препарат':<16}{'Чувств. (модель)':<22}{'Каталог':>9}"
+        f"{'Закрыто':>10}{'Пропущ.':>10}{'Ответов':>9}"
     )
     _log("-" * 76)
 
@@ -466,9 +483,11 @@ def main(argv: list[str] | None = None) -> int:
         _log(
             f"{res['drug_name']:<16}"
             f"{f'{m[0]:.3f} [{m[1]:.3f}–{m[2]:.3f}]':<22}"
-            f"{f'{b[0]:.3f} [{b[1]:.3f}–{b[2]:.3f}]':<22}"
-            f"{res['delta_sensitivity_vs_catalogue']:>+7.3f}"
-            f"{res['answer_rate']:>10.1%}"
+            f"{b[0]:>9.3f}"
+            f"{res['correctly_closed']:>10.1%}"
+            f"{res['missed_resistance']:>10.1%}"
+            f"{res['answer_rate']:>9.1%}"
+            f"{'  нужен фенотип' if res['requires_confirmation'] else ''}"
         )
 
     # --- 6. Внешняя валидация --------------------------------------------
@@ -543,13 +562,43 @@ def main(argv: list[str] | None = None) -> int:
 
     # --- 9. Примеры заключений -------------------------------------------
     _header("8. ПРИМЕРЫ ЗАКЛЮЧЕНИЙ ПО ИЗОЛЯТАМ")
-    examples = build_example_reports(ds, split, catalogue)
+    examples, trained = build_example_reports(ds, split, catalogue)
     for ex in examples:
         _log(
             f"{ex['isolate_id']}  линия {ex['lineage']}  ({ex['country']}): "
             f"устойчив к {ex['n_resistant']} препаратам, "
             f"нет заключения по {ex['n_no_call']}"
         )
+
+    # --- 9-бис. Сохранение моделей ---------------------------------------
+    if args.save_models and trained:
+        quality = {
+            r["drug"]: {
+                "correctly_closed": r["correctly_closed"],
+                "missed_resistance": r["missed_resistance"],
+                "requires_confirmation": r["requires_confirmation"],
+                "sensitivity": r["decision"]["sensitivity"][0],
+                "specificity": r["decision"]["specificity"][0],
+            }
+            for r in per_drug
+        }
+        bundle = ModelBundle(
+            models=trained,
+            manifest={
+                "source": args.source,
+                "synthetic": bool(ds.meta.get("synthetic")),
+                "warning": ds.meta.get("warning", ""),
+                "n_train": int(split.train.size),
+                "split_strategy": split.strategy,
+                "split_meta": split.meta,
+                "catalogue_size": len(catalogue),
+                "quality": quality,
+            },
+        )
+        saved = save_bundle(bundle, args.save_models)
+        _log(f"\nМодели сохранены: {saved}")
+        _log("Применение:  python -m germovision.predict --models "
+             f"{saved} --mutations образцы.csv")
 
     # --- 10. Отчёт -------------------------------------------------------
     out = Path(args.out)
@@ -667,16 +716,27 @@ def _markdown_report(p: dict) -> str:
         "",
         "## Внутренний тест",
         "",
-        "| Препарат | N | Устойч. | Чувствительность | Специфичность | PR-AUC | "
-        "Каталог (чувств.) | Δ | Отказов |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "Закрыто — доля изолятов, по которым выдан верный ответ за 1–2 дня вместо",
+        "~60. Пропущено — доля устойчивых, получивших уверенное «чувствителен»:",
+        "единственный по-настоящему опасный исход. Обе величины считаются от",
+        "полного числа изолятов, а не от числа отвеченных.",
+        "",
+        "Столбец «Фенотип» отмечает препараты, по которым лимит пропущенной",
+        "устойчивости не достигнут: геномного прогноза недостаточно, требуется",
+        "лабораторное подтверждение.",
+        "",
+        "| Препарат | N | Устойч. | Закрыто | Пропущено | Фенотип | Чувствительность | "
+        "Специфичность | PR-AUC | Каталог | Ответов |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in p["per_drug"]:
         lines.append(
             f"| {r['drug_name']} | {r['n_test']} | {r['n_positive']} | "
+            f"**{r['correctly_closed']:.1%}** | {r['missed_resistance']:.1%} | "
+            f"{'нужен' if r['requires_confirmation'] else '—'} | "
             f"{_fmt(r['decision']['sensitivity'])} | {_fmt(r['decision']['specificity'])} | "
             f"{_fmt(r['ranking']['pr_auc'])} | {_fmt(r['baseline_catalogue']['sensitivity'])} | "
-            f"{r['delta_sensitivity_vs_catalogue']:+.3f} | {r['routing']['no_call_rate']:.1%} |"
+            f"{r['answer_rate']:.1%} |"
         )
 
     if p["external_validation"]:

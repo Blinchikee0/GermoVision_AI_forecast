@@ -86,6 +86,7 @@ class ResistancePrediction:
     contributions: list[tuple[str, float]] = field(default_factory=list)
     ood: bool = False
     reason: str = ""
+    needs_confirmation: bool = False
 
     @property
     def drug_name(self) -> str:
@@ -95,13 +96,17 @@ class ResistancePrediction:
         """Обоснование для врача. Заключение без обоснования не выдаётся."""
         if self.decision == Decision.NO_CALL:
             return f"нет заключения — {self.reason}"
+        # Пометка о необходимости подтверждения выводится один раз в
+        # сводке заключения, а не в каждой строке: продублированная
+        # тринадцать раз, она перестаёт читаться и теряет смысл.
+        note = ""
         if self.source == "catalogue" and self.evidence:
             top = self.evidence[0]
-            return f"{top.key} — каталог ВОЗ, группа {top.group}: {top.note}"
+            return f"{top.key} — каталог ВОЗ, группа {top.group}: {top.note}{note}"
         if self.contributions:
             parts = [f"{name} ({delta:+.2f})" for name, delta in self.contributions[:3]]
-            return "модель, вклад признаков: " + ", ".join(parts)
-        return "модель: известных маркеров не обнаружено"
+            return "модель, вклад признаков: " + ", ".join(parts) + note
+        return "модель: известных маркеров не обнаружено" + note
 
 
 @dataclass
@@ -135,6 +140,10 @@ class DrugEvaluation:
         total = self.n_evaluated + self.n_abstained
         return self.n_abstained / total if total else 0.0
 
+    correctly_closed: float = float("nan")
+    missed_resistance: float = float("nan")
+    requires_confirmation: bool = False
+
     @property
     def answer_rate(self) -> float:
         """Доля изолятов, закрытых за 1–2 дня без фенотипического теста.
@@ -145,6 +154,15 @@ class DrugEvaluation:
         в половине случаев».
         """
         return 1.0 - self.abstention_rate
+
+    def summary_line(self) -> str:
+        """Одна строка, отвечающая на вопрос «что это даёт»."""
+        flag = " ⚠ нужен фенотип" if self.requires_confirmation else ""
+        return (
+            f"{self.drug}: верно закрыто без фенотипа {self.correctly_closed:.1%}, "
+            f"пропущено устойчивости {self.missed_resistance:.1%}, "
+            f"ответов {self.answer_rate:.1%}{flag}"
+        )
 
     def meets_h1(self, min_sens: float = 0.90, min_spec: float = 0.95) -> bool:
         """Проверка целевых порогов гипотезы H1 по фактическим решениям."""
@@ -168,11 +186,14 @@ class GVResist:
         drug: str,
         catalogue: MutationCatalogue | None = None,
         alpha: float = 0.10,
+        max_missed_resistance: float = 0.10,
+        max_utility_sacrifice: float = 0.15,
         min_count: int = 3,
         use_catalogue_tier: bool = True,
         use_catalogue_features: bool = True,
         use_burden: bool = True,
-        use_context: bool = True,
+        use_context: bool = False,
+        use_discovery: bool = True,
         ood_threshold: float = 0.5,
         random_state: int = 0,
     ) -> None:
@@ -180,9 +201,26 @@ class GVResist:
         Args:
             drug: код препарата.
             catalogue: каталог мутаций; по умолчанию встроенное ядро.
-            alpha: уровень ошибки конформного предсказания. 0,10 означает
-                гарантию покрытия 90 %: истинная метка попадает в выдаваемое
-                множество не реже чем в 90 % случаев.
+            alpha: уровень конформного предсказания. Задаёт, когда система
+                отказывается отвечать: при 0,10 гарантируется, что истинная
+                метка попадает в выдаваемое множество не реже чем в 90 %
+                случаев.
+            max_missed_resistance: доля устойчивых изолятов, которым
+                допустимо выдать уверенное «чувствителен». Это единственный
+                по-настоящему опасный исход системы, и он ограничивается
+                явно.
+
+                Значение 0,10 соответствует клинической планке порядка 90 %
+                чувствительности, принятой для молекулярной диагностики
+                туберкулёза. Более строгие значения обходятся дорого и
+                нелинейно и зависит от разделяющей способности модели.
+                Достижимость лимита проверяется: если он не выдержан,
+                препарат помечается как требующий фенотипического
+                подтверждения.
+            max_utility_sacrifice: сколько закрытых случаев допустимо
+                отдать ради соблюдения лимита пропусков. При превышении
+                этой цены лимит не навязывается — вместо этого выставляется
+                пометка о необходимости подтверждения.
 
                 Величина задаёт компромисс, а не «точность». Требование
                 покрытия выше, чем собственная точность модели, математически
@@ -203,10 +241,11 @@ class GVResist:
         """
         if not 0.0 < alpha < 0.5:
             raise ValueError("alpha должен лежать в (0, 0.5)")
-
         self.drug = drug
         self.catalogue = catalogue or MutationCatalogue()
         self.alpha = alpha
+        self.max_missed_resistance = max_missed_resistance
+        self.max_utility_sacrifice = max_utility_sacrifice
         self.ood_threshold = ood_threshold
         self.use_catalogue_tier = use_catalogue_tier
         self.random_state = random_state
@@ -218,10 +257,14 @@ class GVResist:
             use_catalogue=use_catalogue_features,
             use_burden=use_burden,
             use_context=use_context,
+            use_discovery=use_discovery,
         )
         self.model_ = None
         self.calibrator_: IsotonicCalibrator | None = None
         self.conformal_q_: float | None = None
+        self.threshold_: float = 0.5
+        self.requires_confirmation_: bool = False
+        self.operating_point_: dict = {"tuned": False}
         self.feature_names_: list[str] = []
         self.n_train_: int = 0
         self.prevalence_: float = float("nan")
@@ -287,13 +330,13 @@ class GVResist:
         return self
 
     def _fit_calibration(self, ds: IsolateDataset, split: Split) -> None:
-        """Обучить калибратор и конформный порог на отдельной части.
+        """Откалибровать вероятности, порог решения и конформный порог.
 
-        Если выделенной части нет, калибровка пропускается — но тогда
-        отказ от ответа отключается, а не подменяется калибровкой на
-        обучающих данных. Калибровка на обучении выглядит идеальной и на
-        новых данных не работает; молча делать это было бы хуже, чем не
-        калибровать вовсе.
+        Три величины оцениваются на выделенной части выборки, не
+        пересекающейся ни с обучением, ни с тестом. Если такой части нет,
+        калибровка пропускается целиком — а не подменяется обучающей
+        выборкой: на обучении она выглядит идеальной и на новых данных не
+        работает, так что молчаливая подмена хуже отсутствия калибровки.
         """
         source = split.calib if split.calib is not None else split.val
         if source is None:
@@ -311,11 +354,95 @@ class GVResist:
         self.calibrator_ = IsotonicCalibrator().fit(p_raw, y_cal)
         p_cal = np.clip(self.calibrator_.transform(p_raw), 1e-6, 1 - 1e-6)
 
-        # Split conformal: нонконформность = 1 − вероятность истинной метки.
+        # Отказ от ответа: маргинальное конформное предсказание.
+        # Нонконформность — 1 минус вероятность истинной метки.
         scores = np.where(y_cal == 1, 1.0 - p_cal, p_cal)
+        self.conformal_q_ = self._quantile(scores, self.alpha)
+
+        # Клиническая асимметрия: порог решения.
+        self.threshold_ = self._tune_threshold(p_cal, y_cal)
+
+    @staticmethod
+    def _quantile(scores: np.ndarray, alpha: float) -> float | None:
+        """Конформный квантиль с поправкой на объём выборки.
+
+        Множитель (n + 1) / n — стандартная поправка split conformal: без
+        неё гарантия покрытия нарушается на малых выборках, а именно они
+        и встречаются у редких препаратов.
+        """
         n = scores.size
-        level = min(1.0, np.ceil((n + 1) * (1 - self.alpha)) / n)
-        self.conformal_q_ = float(np.quantile(scores, level, method="higher"))
+        if n < 20:
+            return None
+        level = min(1.0, np.ceil((n + 1) * (1 - alpha)) / n)
+        return float(np.quantile(scores, level, method="higher"))
+
+    def _tune_threshold(self, p: np.ndarray, y: np.ndarray) -> float:
+        """Выбрать порог решения по пользе, которую система приносит.
+
+        Максимизируется доля изолятов, **закрытых верно** — то есть
+        получивших правильный ответ за сутки вместо шестидесяти дней.
+        Величина считается от полного числа изолятов, поэтому оптимум не
+        вырождается: назвать всех устойчивыми так же плохо, как назвать
+        всех чувствительными.
+
+        Почему цель не «выдержать лимит пропусков любой ценой». Такой
+        лимит выполним всегда — достаточно понизить порог, — но цена
+        нелинейна и зависит от того, насколько хорошо модель вообще
+        разделяет классы. На рифампицине переход к лимиту 10 % стоит
+        14 процентных пунктов закрытых случаев; на левофлоксацине, где
+        разделение слабее, — уже 69, и от системы не остаётся пользы.
+        Отказ не бесплатен: образец возвращается к шестидесятидневному
+        ожиданию, то есть к тому, от чего система должна избавлять.
+
+        Поэтому порог выбирается по пользе, а достижимость клинической
+        планки **проверяется и объявляется**. Если лимит пропусков не
+        выдержан, препарат помечается как требующий фенотипического
+        подтверждения, и пометка доходит до заключения врача. Система,
+        которая делает вид, что справилась, опаснее системы, которая
+        сообщает, где ей нельзя доверять одной.
+        """
+        n_pos = int((y == 1).sum())
+        if n_pos < 10 or (y == 0).sum() < 10:
+            return 0.5
+
+        candidates = np.unique(np.quantile(p, np.linspace(0.01, 0.99, 60)))
+        best_t, best_closed, best_missed = 0.5, -1.0, 1.0
+        for t in candidates:
+            said_res = p >= t
+            closed = float((said_res == (y == 1)).mean())
+            missed = float((~said_res & (y == 1)).sum()) / n_pos
+            if closed > best_closed:
+                best_t, best_closed, best_missed = float(t), closed, missed
+
+        # Проверка клинической планки при выбранном пороге.
+        meets = best_missed <= self.max_missed_resistance
+
+        # Если планка не выдержана, смотрим, во что обошлось бы её
+        # соблюдение. Когда цена умеренная — платим её: пропуск
+        # устойчивости дороже лишнего фенотипического теста.
+        if not meets:
+            strict_t = float(
+                np.quantile(p[y == 1], self.max_missed_resistance, method="lower")
+            )
+            said_res = p >= strict_t
+            strict_closed = float((said_res == (y == 1)).mean())
+            if strict_closed >= best_closed - self.max_utility_sacrifice:
+                best_t = strict_t
+                best_closed = strict_closed
+                best_missed = float((~said_res & (y == 1)).sum()) / n_pos
+                meets = True
+
+        self.requires_confirmation_ = not meets
+        self.operating_point_ = {
+            "tuned": True,
+            "threshold": round(best_t, 4),
+            "correctly_closed_calib": round(best_closed, 4),
+            "missed_resistance_calib": round(best_missed, 4),
+            "clinical_limit": self.max_missed_resistance,
+            "meets_clinical_limit": bool(meets),
+            "n_positive_calib": n_pos,
+        }
+        return float(np.clip(best_t, 0.01, 0.99))
 
     # -- предсказание -----------------------------------------------------
 
@@ -424,6 +551,7 @@ class GVResist:
                         source="catalogue",
                         evidence=evidence,
                         ood=is_ood,
+                        needs_confirmation=self.requires_confirmation_,
                     )
                 )
                 continue
@@ -454,36 +582,54 @@ class GVResist:
                     contributions=self._local_contributions(fm.x[r]) if explain else [],
                     ood=is_ood,
                     reason=reason,
+                    needs_confirmation=self.requires_confirmation_,
                 )
             )
         return out
 
     def _conformal_decision(self, p: float) -> tuple[str, str]:
-        """Решение по конформному множеству меток."""
+        """Решение по одному изоляту.
+
+        Разделение обязанностей: конформное предсказание отвечает на
+        вопрос «достаточно ли данных, чтобы вообще отвечать», порог — на
+        вопрос «что именно ответить».
+
+        Если обе метки совместимы с калибровочными данными, система
+        отказывается от ответа: это штатный и безопасный исход, образец
+        уходит на фенотипическое подтверждение. Если ни одна не
+        совместима, изолят нетипичен — тоже отказ.
+        """
         if self.conformal_q_ is None:
-            # Калибровки нет — работаем по порогу, но об этом сообщаем.
             return (
-                Decision.RESISTANT if p >= 0.5 else Decision.SUSCEPTIBLE,
+                Decision.RESISTANT if p >= self.threshold_ else Decision.SUSCEPTIBLE,
                 "калибровочная выборка отсутствует, отказ от ответа отключён",
             )
 
         q = self.conformal_q_
-        includes_resistant = (1.0 - p) <= q
-        includes_susceptible = p <= q
+        plausible_resistant = (1.0 - p) <= q
+        plausible_susceptible = p <= q
 
-        if includes_resistant and includes_susceptible:
+        if plausible_resistant and plausible_susceptible:
             return Decision.NO_CALL, (
                 f"обе гипотезы совместимы с данными при уровне {1 - self.alpha:.0%} "
                 f"(вероятность {p:.2f})"
             )
-        if includes_resistant:
-            return Decision.RESISTANT, ""
-        if includes_susceptible:
-            return Decision.SUSCEPTIBLE, ""
-        return Decision.NO_CALL, (
-            f"изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными "
-            f"(вероятность {p:.2f})"
-        )
+        if not plausible_resistant and not plausible_susceptible:
+            return Decision.NO_CALL, (
+                f"изолят нетипичен: ни одна гипотеза не согласуется с обучающими "
+                f"данными (вероятность {p:.2f})"
+            )
+
+        # Ровно одна гипотеза правдоподобна. Метку назначает порог: он
+        # несёт клиническую асимметрию, тогда как конформное множество
+        # симметрично по построению. В редком случае расхождения выбор
+        # делается в сторону «устойчив» — ошибиться в эту сторону дешевле.
+        return (
+            Decision.RESISTANT
+            if (p >= self.threshold_ or not plausible_susceptible)
+            else Decision.SUSCEPTIBLE
+        ), ""
+
 
     def coverage_tradeoff(
         self, ds: IsolateDataset, idx: np.ndarray, alphas=(0.02, 0.05, 0.10, 0.15, 0.20, 0.30)
@@ -496,8 +642,12 @@ class GVResist:
         организация, а не разработчик. Задача системы — показать цену
         каждого варианта.
 
+        Перебирается уровень конформного предсказания, то есть готовность
+        системы отвечать. Порог решения при этом не трогается: он задан
+        клиническим критерием и от готовности отвечать не зависит.
+
         Returns:
-            Список словарей с долей отвеченных изолятов и точностью,
+            Список словарей с долей отвеченных изолятов, а также точностью,
             чувствительностью и специфичностью среди них.
         """
         eval_idx = self._labelled(ds, idx)
@@ -505,7 +655,7 @@ class GVResist:
             raise ValueError(f"{self.drug}: в выборке нет измеренных фенотипов")
 
         y = ds.phenotypes[self.drug][eval_idx].astype(int)
-        saved_alpha, saved_q = self.alpha, self.conformal_q_
+        saved = (self.alpha, self.conformal_q_, self.threshold_)
 
         rows: list[dict] = []
         try:
@@ -530,7 +680,7 @@ class GVResist:
                     "n_answered": int(answered.sum()),
                 })
         finally:
-            self.alpha, self.conformal_q_ = saved_alpha, saved_q
+            self.alpha, self.conformal_q_, self.threshold_ = saved
 
         return rows
 
@@ -562,7 +712,7 @@ class GVResist:
             y,
             p,
             label=DRUG_NAMES_RU.get(self.drug, self.drug),
-            threshold=0.5,
+            threshold=self.threshold_,
             abstained=abstained,
             n_boot=n_boot,
             seed=self.random_state,
@@ -574,9 +724,19 @@ class GVResist:
             [q.decision == Decision.RESISTANT for q in preds], dtype=float
         )[answered]
 
+        # Операционные метрики считаются от ПОЛНОГО числа изолятов, а не
+        # от числа отвеченных: именно так измеряется польза системы.
+        said_res = np.array([q.decision == Decision.RESISTANT for q in preds])
+        correct = answered & (said_res == (y == 1))
+        n_pos_all = int((y == 1).sum())
+        missed = int((answered & ~said_res & (y == 1)).sum())
+
         return DrugEvaluation(
             drug=self.drug,
             ranking=ranking,
+            correctly_closed=float(correct.mean()),
+            missed_resistance=(missed / n_pos_all) if n_pos_all else float("nan"),
+            requires_confirmation=self.requires_confirmation_,
             decision_sensitivity=bootstrap_ci(
                 lambda a, b: sensitivity(a, b >= 0.5),
                 y_ans, decided, n_boot, seed=self.random_state,

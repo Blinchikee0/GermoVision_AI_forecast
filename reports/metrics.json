@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-04 23:38:45",
-  "elapsed_sec": 116.6,
+  "generated_at": "2026-09-05 14:33:41",
+  "elapsed_sec": 36.6,
   "source": "synthetic",
   "synthetic": true,
   "warning": "СИНТЕТИЧЕСКИЕ ДАННЫЕ. Метрики характеризуют корректность пайплайна, а не качество модели. Для проверки гипотезы H1 требуется набор CRyPTIC.",
@@ -163,373 +163,409 @@
       "drug": "RIF",
       "drug_name": "Рифампицин",
       "n_train": 3831,
-      "n_test": 1153,
-      "n_positive": 310,
+      "n_test": 1161,
+      "n_positive": 319,
       "prevalence": 0.2582,
       "decision": {
         "sensitivity": [
-          0.7645161290322581,
-          0.7161290322580646,
-          0.8096774193548387
+          0.774294670846395,
+          0.7287617554858935,
+          0.8150470219435737
         ],
         "specificity": [
-          0.8434163701067615,
-          0.8185053380782918,
-          0.8683274021352313
+          0.8420427553444181,
+          0.815914489311164,
+          0.8657957244655582
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.735882739675791,
-          0.686971551320959,
-          0.7747359263150922
+          0.7503114281273497,
+          0.7100283962918015,
+          0.790673093362472
         ],
         "roc_auc": [
-          0.8698695136417556,
-          0.8460319328052653,
-          0.8940286706463093
+          0.8669386964906663,
+          0.8403777671464419,
+          0.8903035856558873
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.6787878787878788,
-          0.6256818181818182,
-          0.7272727272727273
+          0.6242424242424243,
+          0.7303030303030303
         ],
         "specificity": [
           0.8511137162954279,
-          0.8300117233294255,
+          0.8276670574443142,
           0.8757327080890973
         ],
         "pr_auc": [
           0.5227892715072202,
-          0.4812011570524616,
-          0.5603317163457947
+          0.4859738941544636,
+          0.5628631941528568
         ]
       },
       "calibration": {
-        "brier": 0.11247524001242096,
-        "ece": 0.01900791206998799,
+        "brier": 0.1140309269745935,
+        "ece": 0.03340054404339478,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 351,
         "by_model": 832,
-        "no_call": 30,
-        "no_call_rate": 0.0254
+        "no_call": 22,
+        "no_call_rate": 0.0186
       },
-      "answer_rate": 0.9746,
+      "answer_rate": 0.9814,
+      "correctly_closed": 0.8081,
+      "missed_resistance": 0.2182,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.7209,
+        "correctly_closed_calib": 0.8645,
+        "missed_resistance_calib": 0.4734,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 207
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.3220625528317836,
-          "accuracy": 0.6614173228346457,
-          "sensitivity": 0.9911504424778761,
-          "specificity": 0.18064516129032257,
-          "n_answered": 381
+          "answer_rate": 0.3364327979712595,
+          "accuracy": 0.6658291457286433,
+          "sensitivity": 0.9739130434782609,
+          "specificity": 0.24404761904761904,
+          "n_answered": 398
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.9230769230769231,
-          "accuracy": 0.8342490842490843,
-          "sensitivity": 0.8274647887323944,
-          "specificity": 0.8366336633663366,
-          "n_answered": 1092
+          "answer_rate": 0.9137785291631445,
+          "accuracy": 0.8353376503237743,
+          "sensitivity": 0.8152173913043478,
+          "specificity": 0.8422360248447205,
+          "n_answered": 1081
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9746407438715131,
-          "accuracy": 0.8222029488291414,
-          "sensitivity": 0.7645161290322581,
-          "specificity": 0.8434163701067615,
-          "n_answered": 1153
+          "answer_rate": 0.981403212172443,
+          "accuracy": 0.8234280792420328,
+          "sensitivity": 0.774294670846395,
+          "specificity": 0.8420427553444181,
+          "n_answered": 1161
         },
         {
           "alpha": 0.15,
-          "answer_rate": 0.9839391377852916,
-          "accuracy": 0.8230240549828178,
-          "sensitivity": 0.771875,
-          "specificity": 0.8424170616113744,
-          "n_answered": 1164
+          "answer_rate": 1.0,
+          "accuracy": 0.8174133558748944,
+          "sensitivity": 0.7484848484848485,
+          "specificity": 0.8440797186400938,
+          "n_answered": 1183
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.9746407438715131,
-          "accuracy": 0.8222029488291414,
-          "sensitivity": 0.7645161290322581,
-          "specificity": 0.8434163701067615,
-          "n_answered": 1153
+          "answer_rate": 0.981403212172443,
+          "accuracy": 0.8234280792420328,
+          "sensitivity": 0.774294670846395,
+          "specificity": 0.8420427553444181,
+          "n_answered": 1161
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9230769230769231,
-          "accuracy": 0.8342490842490843,
-          "sensitivity": 0.8274647887323944,
-          "specificity": 0.8366336633663366,
-          "n_answered": 1092
+          "answer_rate": 0.9095519864750634,
+          "accuracy": 0.8364312267657993,
+          "sensitivity": 0.8205128205128205,
+          "specificity": 0.8418430884184309,
+          "n_answered": 1076
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0857
+      "delta_sensitivity_vs_catalogue": 0.0955
     },
     {
       "drug": "RFB",
       "drug_name": "Рифабутин",
       "n_train": 3438,
-      "n_test": 1023,
-      "n_positive": 233,
+      "n_test": 988,
+      "n_positive": 217,
       "prevalence": 0.2144,
       "decision": {
         "sensitivity": [
-          0.6909871244635193,
-          0.630901287553648,
-          0.7510729613733905
+          0.7557603686635944,
+          0.695852534562212,
+          0.8064516129032258
         ],
         "specificity": [
-          0.9037974683544304,
-          0.881613924050633,
-          0.9227848101265823
+          0.9027237354085603,
+          0.8832684824902723,
+          0.9241569390402076
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.6441724861941812,
-          0.5912884153913978,
-          0.700542743030117
+          0.6331321471220068,
+          0.5774084925478361,
+          0.6981134020834079
         ],
         "roc_auc": [
-          0.8436138425598957,
-          0.8112996414407562,
-          0.875564594991036
+          0.8426604983652806,
+          0.811893853813648,
+          0.8717584291153389
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.61328125,
           0.54873046875,
-          0.6700195312499999
+          0.66796875
         ],
         "specificity": [
           0.9106699751861043,
-          0.890818858560794,
-          0.9280397022332506
+          0.8895781637717122,
+          0.9305210918114144
         ],
         "pr_auc": [
           0.5136795365813042,
-          0.47038707513045785,
-          0.5599366135131248
+          0.45930730308017015,
+          0.5627630218833858
         ]
       },
       "calibration": {
-        "brier": 0.11240995591568435,
-        "ece": 0.04176958959295651,
+        "brier": 0.1117534338754574,
+        "ece": 0.030965268078442885,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 229,
         "by_model": 833,
-        "no_call": 39,
-        "no_call_rate": 0.0367
+        "no_call": 74,
+        "no_call_rate": 0.0697
       },
-      "answer_rate": 0.9633,
+      "answer_rate": 0.9303,
+      "correctly_closed": 0.8098,
+      "missed_resistance": 0.207,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.4634,
+        "correctly_closed_calib": 0.8745,
+        "missed_resistance_calib": 0.1892,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 148
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.4444444444444444,
-          "accuracy": 0.8177966101694916,
-          "sensitivity": 0.9181286549707602,
-          "specificity": 0.760797342192691,
-          "n_answered": 472
+          "answer_rate": 0.2391713747645951,
+          "accuracy": 0.7165354330708661,
+          "sensitivity": 1.0,
+          "specificity": 0.25773195876288657,
+          "n_answered": 254
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.923728813559322,
-          "accuracy": 0.8715596330275229,
-          "sensitivity": 0.7440758293838863,
-          "specificity": 0.9064935064935065,
-          "n_answered": 981
+          "answer_rate": 0.9209039548022598,
+          "accuracy": 0.8721881390593047,
+          "sensitivity": 0.7476190476190476,
+          "specificity": 0.90625,
+          "n_answered": 978
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.963276836158192,
-          "accuracy": 0.855327468230694,
-          "sensitivity": 0.6909871244635193,
-          "specificity": 0.9037974683544304,
-          "n_answered": 1023
+          "answer_rate": 0.9303201506591338,
+          "accuracy": 0.8704453441295547,
+          "sensitivity": 0.7557603686635944,
+          "specificity": 0.9027237354085603,
+          "n_answered": 988
         },
         {
           "alpha": 0.15,
-          "answer_rate": 1.0,
-          "accuracy": 0.8455743879472694,
-          "sensitivity": 0.71875,
-          "specificity": 0.8858560794044665,
-          "n_answered": 1062
+          "answer_rate": 0.9990583804143126,
+          "accuracy": 0.8463713477851084,
+          "sensitivity": 0.792156862745098,
+          "specificity": 0.8635235732009926,
+          "n_answered": 1061
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.931261770244821,
-          "accuracy": 0.8685540950455005,
-          "sensitivity": 0.7488372093023256,
-          "specificity": 0.9018087855297158,
-          "n_answered": 989
+          "answer_rate": 0.9303201506591338,
+          "accuracy": 0.8704453441295547,
+          "sensitivity": 0.7557603686635944,
+          "specificity": 0.9027237354085603,
+          "n_answered": 988
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9171374764595104,
-          "accuracy": 0.8726899383983573,
+          "answer_rate": 0.9190207156308852,
+          "accuracy": 0.8729508196721312,
           "sensitivity": 0.7511961722488039,
-          "specificity": 0.9058823529411765,
-          "n_answered": 974
+          "specificity": 0.9061277705345502,
+          "n_answered": 976
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0777
+      "delta_sensitivity_vs_catalogue": 0.1425
     },
     {
       "drug": "INH",
       "drug_name": "Изониазид",
       "n_train": 3816,
-      "n_test": 1110,
-      "n_positive": 331,
+      "n_test": 1133,
+      "n_positive": 349,
       "prevalence": 0.3173,
       "decision": {
         "sensitivity": [
-          0.8126888217522659,
-          0.7673716012084593,
-          0.8535498489425981
+          0.8223495702005731,
+          0.780730659025788,
+          0.8624641833810889
         ],
         "specificity": [
-          0.8883183568677792,
-          0.8645378690629012,
-          0.9062901155327343
+          0.8762755102040817,
+          0.8533163265306123,
+          0.8986288265306123
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.7667456057758084,
-          0.7243517400045524,
-          0.8065093439533221
+          0.7801524910062341,
+          0.7423008683631479,
+          0.8185664138007614
         ],
         "roc_auc": [
-          0.8812735360618036,
-          0.8580479272752657,
-          0.9037128319287644
+          0.8749524881585872,
+          0.8486645060961348,
+          0.8986978100695866
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.6631299734748011,
-          0.6206896551724138,
-          0.7069628647214854
+          0.6180371352785146,
+          0.7108753315649867
         ],
         "specificity": [
           0.8967661691542289,
-          0.8730721393034826,
+          0.8749689054726368,
           0.9166666666666666
         ],
         "pr_auc": [
           0.6053813118836915,
-          0.5644592266668552,
-          0.642817227587474
+          0.5653496905220341,
+          0.6423809926693539
         ]
       },
       "calibration": {
-        "brier": 0.11078716668090731,
-        "ece": 0.016006036848456202,
+        "brier": 0.11215922556417357,
+        "ece": 0.02598642474491556,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 333,
         "by_model": 848,
-        "no_call": 71,
-        "no_call_rate": 0.0601
+        "no_call": 48,
+        "no_call_rate": 0.0406
       },
-      "answer_rate": 0.9399,
+      "answer_rate": 0.9594,
+      "correctly_closed": 0.8247,
+      "missed_resistance": 0.1645,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.5652,
+        "correctly_closed_calib": 0.8713,
+        "missed_resistance_calib": 0.3008,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 246
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.46655376799322607,
-          "accuracy": 0.8294010889292196,
-          "sensitivity": 0.9578544061302682,
-          "specificity": 0.7137931034482758,
-          "n_answered": 551
+          "answer_rate": 0.6206604572396275,
+          "accuracy": 0.8472032742155525,
+          "sensitivity": 0.8960573476702509,
+          "specificity": 0.8171806167400881,
+          "n_answered": 733
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.46655376799322607,
-          "accuracy": 0.8294010889292196,
-          "sensitivity": 0.9578544061302682,
-          "specificity": 0.7137931034482758,
-          "n_answered": 551
+          "answer_rate": 0.8890770533446232,
+          "accuracy": 0.8657142857142858,
+          "sensitivity": 0.8116883116883117,
+          "specificity": 0.8881401617250674,
+          "n_answered": 1050
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9398814563928873,
-          "accuracy": 0.8657657657657658,
-          "sensitivity": 0.8126888217522659,
-          "specificity": 0.8883183568677792,
-          "n_answered": 1110
+          "answer_rate": 0.9593564775613886,
+          "accuracy": 0.8596646072374228,
+          "sensitivity": 0.8223495702005731,
+          "specificity": 0.8762755102040817,
+          "n_answered": 1133
         },
         {
           "alpha": 0.15,
-          "answer_rate": 1.0,
-          "accuracy": 0.8526672311600338,
-          "sensitivity": 0.8355437665782494,
-          "specificity": 0.8606965174129353,
-          "n_answered": 1181
+          "answer_rate": 0.983065198983912,
+          "accuracy": 0.85099052540913,
+          "sensitivity": 0.790633608815427,
+          "specificity": 0.8784461152882206,
+          "n_answered": 1161
         },
         {
           "alpha": 0.2,
-          "answer_rate": 1.0,
-          "accuracy": 0.8526672311600338,
-          "sensitivity": 0.8355437665782494,
-          "specificity": 0.8606965174129353,
-          "n_answered": 1181
+          "answer_rate": 0.9585097375105842,
+          "accuracy": 0.8604240282685512,
+          "sensitivity": 0.8223495702005731,
+          "specificity": 0.8773946360153256,
+          "n_answered": 1132
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9204064352243861,
-          "accuracy": 0.8666053357865685,
-          "sensitivity": 0.8012820512820513,
-          "specificity": 0.8929032258064517,
-          "n_answered": 1087
+          "answer_rate": 0.8890770533446232,
+          "accuracy": 0.8657142857142858,
+          "sensitivity": 0.8116883116883117,
+          "specificity": 0.8881401617250674,
+          "n_answered": 1050
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.1496
+      "delta_sensitivity_vs_catalogue": 0.1592
     },
     {
       "drug": "EMB",
       "drug_name": "Этамбутол",
       "n_train": 3716,
-      "n_test": 1093,
-      "n_positive": 196,
+      "n_test": 1096,
+      "n_positive": 197,
       "prevalence": 0.1564,
       "decision": {
         "sensitivity": [
-          0.7602040816326531,
-          0.6989795918367347,
-          0.8190051020408162
+          0.7563451776649747,
+          0.6954314720812182,
+          0.8121827411167513
         ],
         "specificity": [
-          0.9899665551839465,
-          0.9832775919732442,
-          0.9955406911928651
+          0.9899888765294772,
+          0.9833147942157954,
+          0.996662958843159
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.7746575301375417,
-          0.7174628370217058,
-          0.8271634260008363
+          0.7850807675230019,
+          0.7326780974553373,
+          0.8387260509989793
         ],
         "roc_auc": [
-          0.8867426569289923,
-          0.8567526676222329,
-          0.9172678770504858
+          0.882585275235315,
+          0.8492395668057571,
+          0.9134489534338774
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.6727272727272727,
-          0.6090909090909091,
+          0.6136363636363636,
           0.7363636363636363
         ],
         "specificity": [
@@ -539,330 +575,342 @@
         ],
         "pr_auc": [
           0.7016645615764558,
-          0.640756772622749,
-          0.753081630120779
+          0.6465344713484991,
+          0.7554848304598439
         ]
       },
       "calibration": {
-        "brier": 0.05569396034106565,
-        "ece": 0.01966240718343152,
+        "brier": 0.05740696818455374,
+        "ece": 0.0190038819140512,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 156,
         "by_model": 979,
-        "no_call": 42,
-        "no_call_rate": 0.037
+        "no_call": 39,
+        "no_call_rate": 0.0344
       },
-      "answer_rate": 0.963,
+      "answer_rate": 0.9656,
+      "correctly_closed": 0.9154,
+      "missed_resistance": 0.2182,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.6,
+        "correctly_closed_calib": 0.9297,
+        "missed_resistance_calib": 0.3556,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 135
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.23788546255506607,
-          "accuracy": 0.9629629629629629,
-          "sensitivity": 0.9866666666666667,
-          "specificity": 0.9333333333333333,
-          "n_answered": 270
+          "answer_rate": 0.2960352422907489,
+          "accuracy": 0.9583333333333334,
+          "sensitivity": 0.961038961038961,
+          "specificity": 0.9560439560439561,
+          "n_answered": 336
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.5400881057268723,
-          "accuracy": 0.9543230016313213,
-          "sensitivity": 0.8809523809523809,
-          "specificity": 0.9820224719101124,
-          "n_answered": 613
+          "answer_rate": 0.6537444933920705,
+          "accuracy": 0.9501347708894878,
+          "sensitivity": 0.8361581920903954,
+          "specificity": 0.9858407079646018,
+          "n_answered": 742
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9629955947136564,
-          "accuracy": 0.9487648673376029,
-          "sensitivity": 0.7602040816326531,
-          "specificity": 0.9899665551839465,
-          "n_answered": 1093
+          "answer_rate": 0.9656387665198238,
+          "accuracy": 0.947992700729927,
+          "sensitivity": 0.7563451776649747,
+          "specificity": 0.9899888765294772,
+          "n_answered": 1096
         },
         {
           "alpha": 0.15,
-          "answer_rate": 0.9629955947136564,
-          "accuracy": 0.9487648673376029,
-          "sensitivity": 0.7602040816326531,
-          "specificity": 0.9899665551839465,
-          "n_answered": 1093
+          "answer_rate": 0.947136563876652,
+          "accuracy": 0.9488372093023256,
+          "sensitivity": 0.7589743589743589,
+          "specificity": 0.990909090909091,
+          "n_answered": 1075
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.9612334801762115,
-          "accuracy": 0.9495875343721356,
-          "sensitivity": 0.7589743589743589,
-          "specificity": 0.9910714285714286,
-          "n_answered": 1091
+          "answer_rate": 0.8748898678414097,
+          "accuracy": 0.9526686807653575,
+          "sensitivity": 0.7914438502673797,
+          "specificity": 0.9900744416873449,
+          "n_answered": 993
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9612334801762115,
-          "accuracy": 0.9495875343721356,
-          "sensitivity": 0.7589743589743589,
-          "specificity": 0.9910714285714286,
-          "n_answered": 1091
+          "answer_rate": 0.8748898678414097,
+          "accuracy": 0.9526686807653575,
+          "sensitivity": 0.7914438502673797,
+          "specificity": 0.9900744416873449,
+          "n_answered": 993
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0875
+      "delta_sensitivity_vs_catalogue": 0.0836
     },
     {
       "drug": "LEV",
       "drug_name": "Левофлоксацин",
       "n_train": 3536,
-      "n_test": 1098,
-      "n_positive": 150,
+      "n_test": 1108,
+      "n_positive": 157,
       "prevalence": 0.1499,
       "decision": {
         "sensitivity": [
-          0.58,
-          0.5066666666666667,
-          0.66
+          0.5477707006369427,
+          0.4713375796178344,
+          0.6178343949044586
         ],
         "specificity": [
-          0.9040084388185654,
-          0.8829113924050633,
-          0.9229957805907173
+          0.9064143007360673,
+          0.8869348054679286,
+          0.9221871713985279
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.43515402109214907,
-          0.36865243541832304,
-          0.5030614816497806
+          0.43498379169724655,
+          0.3707676298941081,
+          0.5072757791609102
         ],
         "roc_auc": [
-          0.8036111111111112,
-          0.7592343530239101,
-          0.8404360935302391
+          0.8044063573710543,
+          0.7660108869644424,
+          0.8358199046260391
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.5408805031446541,
-          0.4716981132075472,
+          0.4591194968553459,
           0.6226415094339622
         ],
         "specificity": [
           0.9069037656903766,
-          0.8875261506276151,
-          0.9246861924686193
+          0.8880753138075314,
+          0.9257322175732218
         ],
         "pr_auc": [
           0.3312749849918815,
-          0.2837133587342152,
-          0.3877464299547675
+          0.28290181321953906,
+          0.38874300156001856
         ]
       },
       "calibration": {
-        "brier": 0.09199943426933781,
-        "ece": 0.032141163831810336,
+        "brier": 0.09123355763901798,
+        "ece": 0.02696147203510709,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 175,
         "by_model": 940,
-        "no_call": 17,
-        "no_call_rate": 0.0152
+        "no_call": 7,
+        "no_call_rate": 0.0063
       },
-      "answer_rate": 0.9848,
+      "answer_rate": 0.9937,
+      "correctly_closed": 0.8502,
+      "missed_resistance": 0.4465,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.5,
+        "correctly_closed_calib": 0.8875,
+        "missed_resistance_calib": 0.4336,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 113
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.15695067264573992,
-          "accuracy": 0.49142857142857144,
+          "answer_rate": 0.16681614349775784,
+          "accuracy": 0.521505376344086,
           "sensitivity": 1.0,
-          "specificity": 0.0,
-          "n_answered": 175
+          "specificity": 0.11,
+          "n_answered": 186
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.9434977578475336,
-          "accuracy": 0.8745247148288974,
-          "sensitivity": 0.6666666666666666,
-          "specificity": 0.9035752979414952,
-          "n_answered": 1052
+          "answer_rate": 0.9497757847533632,
+          "accuracy": 0.8734655335221907,
+          "sensitivity": 0.6564885496183206,
+          "specificity": 0.9040948275862069,
+          "n_answered": 1059
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9847533632286996,
-          "accuracy": 0.8597449908925319,
-          "sensitivity": 0.58,
-          "specificity": 0.9040084388185654,
-          "n_answered": 1098
+          "answer_rate": 0.9937219730941704,
+          "accuracy": 0.855595667870036,
+          "sensitivity": 0.5477707006369427,
+          "specificity": 0.9064143007360673,
+          "n_answered": 1108
         },
         {
           "alpha": 0.15,
-          "answer_rate": 0.9820627802690582,
-          "accuracy": 0.8611872146118722,
-          "sensitivity": 0.5771812080536913,
-          "specificity": 0.9059196617336153,
-          "n_answered": 1095
+          "answer_rate": 0.9937219730941704,
+          "accuracy": 0.855595667870036,
+          "sensitivity": 0.5477707006369427,
+          "specificity": 0.9064143007360673,
+          "n_answered": 1108
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.9820627802690582,
-          "accuracy": 0.8611872146118722,
-          "sensitivity": 0.5771812080536913,
-          "specificity": 0.9059196617336153,
-          "n_answered": 1095
+          "answer_rate": 0.9937219730941704,
+          "accuracy": 0.855595667870036,
+          "sensitivity": 0.5477707006369427,
+          "specificity": 0.9064143007360673,
+          "n_answered": 1108
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9076233183856502,
-          "accuracy": 0.8725296442687747,
-          "sensitivity": 0.6825396825396826,
-          "specificity": 0.899548532731377,
-          "n_answered": 1012
+          "answer_rate": 0.9237668161434978,
+          "accuracy": 0.8718446601941747,
+          "sensitivity": 0.6666666666666666,
+          "specificity": 0.9012208657047724,
+          "n_answered": 1030
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0391
+      "delta_sensitivity_vs_catalogue": 0.0069
     },
     {
       "drug": "MXF",
       "drug_name": "Моксифлоксацин",
       "n_train": 3493,
-      "n_test": 1046,
+      "n_test": 1040,
       "n_positive": 132,
       "prevalence": 0.1443,
       "decision": {
         "sensitivity": [
-          0.75,
-          0.6742424242424242,
-          0.8181818181818182
+          0.7348484848484849,
+          0.6666666666666666,
+          0.8106060606060606
         ],
         "specificity": [
-          0.9113785557986871,
-          0.8927789934354485,
-          0.9294584245076586
+          0.9129955947136564,
+          0.8920704845814978,
+          0.9317180616740088
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.48288826359026066,
-          0.4162339845033736,
-          0.5647927265024878
+          0.44612334903360895,
+          0.3879349775263131,
+          0.5264137369644332
         ],
         "roc_auc": [
-          0.8448876069226178,
-          0.8081760576221736,
-          0.8849078517671243
+          0.8301670337738619,
+          0.7928056375984515,
+          0.8639298408089708
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.6423841059602649,
-          0.5594370860927153,
-          0.7218543046357616
+          0.5660596026490067,
+          0.7152317880794702
         ],
         "specificity": [
           0.916135881104034,
-          0.8991507430997877,
-          0.9331210191082803
+          0.8980891719745223,
+          0.9341825902335457
         ],
         "pr_auc": [
           0.4034465467126198,
-          0.34609426117569786,
-          0.45862140592880607
+          0.3482219447026341,
+          0.46386639492333914
         ]
       },
       "calibration": {
-        "brier": 0.0817085629843665,
-        "ece": 0.021708846473109288,
+        "brier": 0.08377158281110353,
+        "ece": 0.027598791607390583,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 176,
         "by_model": 917,
-        "no_call": 47,
-        "no_call_rate": 0.043
+        "no_call": 53,
+        "no_call_rate": 0.0485
       },
-      "answer_rate": 0.957,
+      "answer_rate": 0.9515,
+      "correctly_closed": 0.8472,
+      "missed_resistance": 0.2318,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.5,
+        "correctly_closed_calib": 0.8702,
+        "missed_resistance_calib": 0.7,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 120
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.4455626715462031,
-          "accuracy": 0.8193018480492813,
-          "sensitivity": 0.9150943396226415,
-          "specificity": 0.7926509186351706,
-          "n_answered": 487
+          "answer_rate": 0.16102470265324795,
+          "accuracy": 0.5511363636363636,
+          "sensitivity": 1.0,
+          "specificity": 0.0,
+          "n_answered": 176
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.9469350411710887,
-          "accuracy": 0.8927536231884058,
-          "sensitivity": 0.751937984496124,
+          "answer_rate": 0.9478499542543458,
+          "accuracy": 0.8918918918918919,
+          "sensitivity": 0.7461538461538462,
           "specificity": 0.91280353200883,
-          "n_answered": 1035
+          "n_answered": 1036
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9569990850869168,
-          "accuracy": 0.8910133843212237,
-          "sensitivity": 0.75,
-          "specificity": 0.9113785557986871,
-          "n_answered": 1046
+          "answer_rate": 0.9515096065873742,
+          "accuracy": 0.8903846153846153,
+          "sensitivity": 0.7348484848484849,
+          "specificity": 0.9129955947136564,
+          "n_answered": 1040
         },
         {
           "alpha": 0.15,
           "answer_rate": 0.9963403476669717,
           "accuracy": 0.8787878787878788,
-          "sensitivity": 0.66,
-          "specificity": 0.9137380191693291,
+          "sensitivity": 0.6466666666666666,
+          "specificity": 0.9158679446219382,
           "n_answered": 1089
         },
         {
           "alpha": 0.2,
           "answer_rate": 0.9963403476669717,
           "accuracy": 0.8787878787878788,
-          "sensitivity": 0.66,
-          "specificity": 0.9137380191693291,
+          "sensitivity": 0.6466666666666666,
+          "specificity": 0.9158679446219382,
           "n_answered": 1089
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9322964318389753,
-          "accuracy": 0.8920510304219823,
-          "sensitivity": 0.7578125,
-          "specificity": 0.9113355780022446,
-          "n_answered": 1019
+          "answer_rate": 0.9469350411710887,
+          "accuracy": 0.8917874396135266,
+          "sensitivity": 0.7461538461538462,
+          "specificity": 0.912707182320442,
+          "n_answered": 1035
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.1076
+      "delta_sensitivity_vs_catalogue": 0.0925
     },
     {
       "drug": "BDQ",
       "drug_name": "Бедаквилин",
       "n_train": 2727,
-      "n_test": 844,
-      "n_positive": 54,
+      "n_test": 860,
+      "n_positive": 56,
       "prevalence": 0.0451,
       "decision": {
-        "sensitivity": [
-          0.46296296296296297,
-          0.3333333333333333,
-          0.6023148148148144
-        ],
-        "specificity": [
-          0.9658227848101266,
-          0.9512341772151899,
-          0.9784810126582278
-        ]
-      },
-      "ranking": {
-        "pr_auc": [
-          0.42935967621045734,
-          0.300320902279598,
-          0.5500807129898321
-        ],
-        "roc_auc": [
-          0.7489217065166432,
-          0.6663633966244726,
-          0.8229283872480074
-        ]
-      },
-      "baseline_catalogue": {
         "sensitivity": [
           0.44642857142857145,
           0.31205357142857143,
@@ -872,76 +920,112 @@
           0.9664179104477612,
           0.9520833333333334,
           0.9776119402985075
+        ]
+      },
+      "ranking": {
+        "pr_auc": [
+          0.3981476227306535,
+          0.2785060145249071,
+          0.518882606628425
+        ],
+        "roc_auc": [
+          0.7257240582800284,
+          0.6519703380419332,
+          0.8016266324626865
+        ]
+      },
+      "baseline_catalogue": {
+        "sensitivity": [
+          0.44642857142857145,
+          0.31205357142857143,
+          0.5714285714285714
+        ],
+        "specificity": [
+          0.9664179104477612,
+          0.9539800995024875,
+          0.9788557213930348
         ],
         "pr_auc": [
           0.25067563250702785,
-          0.16713236038763316,
-          0.3603664890206541
+          0.16468617775653482,
+          0.36949574441904964
         ]
       },
       "calibration": {
-        "brier": 0.04375302974011494,
-        "ece": 0.01193414325573569,
+        "brier": 0.044265382948309104,
+        "ece": 0.017164467170213478,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 52,
         "by_model": 808,
-        "no_call": 16,
-        "no_call_rate": 0.0186
+        "no_call": 0,
+        "no_call_rate": 0.0
       },
-      "answer_rate": 0.9814,
+      "answer_rate": 1.0,
+      "correctly_closed": 0.9326,
+      "missed_resistance": 0.5536,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.1429,
+        "correctly_closed_calib": 0.9346,
+        "missed_resistance_calib": 0.7895,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 38
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.30348837209302326,
-          "accuracy": 0.8735632183908046,
-          "sensitivity": 0.8064516129032258,
-          "specificity": 0.8826086956521739,
-          "n_answered": 261
+          "answer_rate": 0.06279069767441861,
+          "accuracy": 0.5,
+          "sensitivity": 1.0,
+          "specificity": 0.06896551724137931,
+          "n_answered": 54
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.9813953488372092,
-          "accuracy": 0.933649289099526,
-          "sensitivity": 0.46296296296296297,
-          "specificity": 0.9658227848101266,
-          "n_answered": 844
+          "answer_rate": 1.0,
+          "accuracy": 0.9325581395348838,
+          "sensitivity": 0.44642857142857145,
+          "specificity": 0.9664179104477612,
+          "n_answered": 860
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9813953488372092,
-          "accuracy": 0.933649289099526,
-          "sensitivity": 0.46296296296296297,
-          "specificity": 0.9658227848101266,
-          "n_answered": 844
+          "answer_rate": 1.0,
+          "accuracy": 0.9325581395348838,
+          "sensitivity": 0.44642857142857145,
+          "specificity": 0.9664179104477612,
+          "n_answered": 860
         },
         {
           "alpha": 0.15,
-          "answer_rate": 0.9813953488372092,
-          "accuracy": 0.933649289099526,
+          "answer_rate": 0.9162790697674419,
+          "accuracy": 0.9289340101522843,
           "sensitivity": 0.46296296296296297,
-          "specificity": 0.9658227848101266,
-          "n_answered": 844
+          "specificity": 0.9632152588555858,
+          "n_answered": 788
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.9813953488372092,
-          "accuracy": 0.933649289099526,
+          "answer_rate": 0.8930232558139535,
+          "accuracy": 0.9270833333333334,
           "sensitivity": 0.46296296296296297,
-          "specificity": 0.9658227848101266,
-          "n_answered": 844
+          "specificity": 0.9621848739495799,
+          "n_answered": 768
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9813953488372092,
-          "accuracy": 0.933649289099526,
+          "answer_rate": 0.8930232558139535,
+          "accuracy": 0.9270833333333334,
           "sensitivity": 0.46296296296296297,
-          "specificity": 0.9658227848101266,
-          "n_answered": 844
+          "specificity": 0.9621848739495799,
+          "n_answered": 768
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0165
+      "delta_sensitivity_vs_catalogue": 0.0
     },
     {
       "drug": "LZD",
@@ -964,21 +1048,21 @@
       },
       "ranking": {
         "pr_auc": [
-          0.3545827843653931,
-          0.24182134044507955,
-          0.47659927727994544
+          0.366310568888343,
+          0.25607548703792427,
+          0.4860800522781594
         ],
         "roc_auc": [
-          0.6328849185496584,
-          0.5340680504466632,
-          0.7321605359957959
+          0.6888071466106148,
+          0.6025215449290594,
+          0.7708208092485549
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.32727272727272727,
-          0.21818181818181817,
-          0.45454545454545453
+          0.2,
+          0.43636363636363634
         ],
         "specificity": [
           0.9976878612716763,
@@ -987,13 +1071,13 @@
         ],
         "pr_auc": [
           0.33476284584980237,
-          0.22128458498023718,
-          0.45296442687747035
+          0.2307312252964427,
+          0.45260474308300397
         ]
       },
       "calibration": {
-        "brier": 0.04115223857323309,
-        "ece": 0.0076583671145320185,
+        "brier": 0.04097803557228228,
+        "ece": 0.0073683502033099115,
         "acceptable": true
       },
       "routing": {
@@ -1003,14 +1087,26 @@
         "no_call_rate": 0.0
       },
       "answer_rate": 1.0,
+      "correctly_closed": 0.9576,
+      "missed_resistance": 0.6727,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.7333,
+        "correctly_closed_calib": 0.953,
+        "missed_resistance_calib": 0.7317,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 41
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.1608695652173913,
-          "accuracy": 0.9121621621621622,
-          "sensitivity": 0.6206896551724138,
-          "specificity": 0.9831932773109243,
-          "n_answered": 148
+          "answer_rate": 0.21304347826086956,
+          "accuracy": 0.9540816326530612,
+          "sensitivity": 0.72,
+          "specificity": 0.9883040935672515,
+          "n_answered": 196
         },
         {
           "alpha": 0.05,
@@ -1030,27 +1126,27 @@
         },
         {
           "alpha": 0.15,
-          "answer_rate": 1.0,
-          "accuracy": 0.9576086956521739,
-          "sensitivity": 0.32727272727272727,
-          "specificity": 0.9976878612716763,
-          "n_answered": 920
+          "answer_rate": 0.9228260869565217,
+          "accuracy": 0.9611307420494699,
+          "sensitivity": 0.3673469387755102,
+          "specificity": 0.9975,
+          "n_answered": 849
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.9043478260869565,
-          "accuracy": 0.9603365384615384,
+          "answer_rate": 0.9228260869565217,
+          "accuracy": 0.9611307420494699,
           "sensitivity": 0.3673469387755102,
-          "specificity": 0.9974457215836526,
-          "n_answered": 832
+          "specificity": 0.9975,
+          "n_answered": 849
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9043478260869565,
-          "accuracy": 0.9603365384615384,
+          "answer_rate": 0.9228260869565217,
+          "accuracy": 0.9611307420494699,
           "sensitivity": 0.3673469387755102,
-          "specificity": 0.9974457215836526,
-          "n_answered": 832
+          "specificity": 0.9975,
+          "n_answered": 849
         }
       ],
       "delta_sensitivity_vs_catalogue": 0.0
@@ -1076,14 +1172,14 @@
       },
       "ranking": {
         "pr_auc": [
-          0.30483719638325163,
-          0.18996553507302938,
-          0.439428450711443
+          0.3052520866019196,
+          0.1931496417730889,
+          0.4542980477580276
         ],
         "roc_auc": [
-          0.6947139870262156,
-          0.6252771001983595,
-          0.770318447434729
+          0.7024607301774514,
+          0.6361054522060794,
+          0.7784531978770171
         ]
       },
       "baseline_catalogue": {
@@ -1099,13 +1195,13 @@
         ],
         "pr_auc": [
           0.2718651211801897,
-          0.1624364287605056,
-          0.3965898540997237
+          0.16487609743453996,
+          0.4011566162706094
         ]
       },
       "calibration": {
-        "brier": 0.043502559660576916,
-        "ece": 0.012696748272457493,
+        "brier": 0.043620359468333536,
+        "ece": 0.01117704367490046,
         "acceptable": true
       },
       "routing": {
@@ -1115,14 +1211,26 @@
         "no_call_rate": 0.0217
       },
       "answer_rate": 0.9783,
+      "correctly_closed": 0.9372,
+      "missed_resistance": 0.5185,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.619,
+        "correctly_closed_calib": 0.9457,
+        "missed_resistance_calib": 0.675,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 40
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.1095890410958904,
-          "accuracy": 0.8958333333333334,
-          "sensitivity": 0.9,
-          "specificity": 0.8947368421052632,
-          "n_answered": 96
+          "answer_rate": 0.09931506849315068,
+          "accuracy": 0.896551724137931,
+          "sensitivity": 0.9473684210526315,
+          "specificity": 0.8823529411764706,
+          "n_answered": 87
         },
         {
           "alpha": 0.05,
@@ -1171,14 +1279,14 @@
       "drug": "DLM",
       "drug_name": "Деламанид",
       "n_train": 2368,
-      "n_test": 721,
-      "n_positive": 40,
+      "n_test": 670,
+      "n_positive": 39,
       "prevalence": 0.0384,
       "decision": {
         "sensitivity": [
-          0.425,
-          0.275,
-          0.575
+          0.4358974358974359,
+          0.28205128205128205,
+          0.5897435897435898
         ],
         "specificity": [
           1.0,
@@ -1188,14 +1296,14 @@
       },
       "ranking": {
         "pr_auc": [
-          0.06358306761042144,
-          0.0535675023223682,
-          0.0796127789412777
+          0.08439574646166935,
+          0.05207264290110549,
+          0.13971686468406572
         ],
         "roc_auc": [
-          0.5619676945668135,
-          0.4828698604992658,
-          0.643884453010279
+          0.5060750132065505,
+          0.42013237027103906,
+          0.587642732333699
         ]
       },
       "baseline_catalogue": {
@@ -1216,404 +1324,452 @@
         ]
       },
       "calibration": {
-        "brier": 0.05252931476085792,
-        "ece": 0.013564989332702575,
+        "brier": 0.055351668038097206,
+        "ece": 0.023377175937734373,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 17,
         "by_model": 704,
-        "no_call": 0,
-        "no_call_rate": 0.0
+        "no_call": 51,
+        "no_call_rate": 0.0707
       },
-      "answer_rate": 1.0,
+      "answer_rate": 0.9293,
+      "correctly_closed": 0.8988,
+      "missed_resistance": 0.55,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.1739,
+        "correctly_closed_calib": 0.9134,
+        "missed_resistance_calib": 0.8387,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 31
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.14285714285714285,
-          "accuracy": 1.0,
-          "sensitivity": 1.0,
+          "answer_rate": 0.2510402219140083,
+          "accuracy": 0.9779005524861878,
+          "sensitivity": 0.8095238095238095,
           "specificity": 1.0,
-          "n_answered": 103
+          "n_answered": 181
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.680998613037448,
-          "accuracy": 0.9714867617107943,
-          "sensitivity": 0.5483870967741935,
+          "answer_rate": 0.8335644937586685,
+          "accuracy": 0.9683860232945092,
+          "sensitivity": 0.4722222222222222,
           "specificity": 1.0,
-          "n_answered": 491
+          "n_answered": 601
         },
         {
           "alpha": 0.1,
-          "answer_rate": 1.0,
-          "accuracy": 0.9680998613037448,
-          "sensitivity": 0.425,
+          "answer_rate": 0.9292649098474342,
+          "accuracy": 0.9671641791044776,
+          "sensitivity": 0.4358974358974359,
           "specificity": 1.0,
-          "n_answered": 721
+          "n_answered": 670
         },
         {
           "alpha": 0.15,
-          "answer_rate": 1.0,
-          "accuracy": 0.9680998613037448,
-          "sensitivity": 0.425,
+          "answer_rate": 0.9292649098474342,
+          "accuracy": 0.9671641791044776,
+          "sensitivity": 0.4358974358974359,
           "specificity": 1.0,
-          "n_answered": 721
+          "n_answered": 670
         },
         {
           "alpha": 0.2,
-          "answer_rate": 1.0,
-          "accuracy": 0.9680998613037448,
-          "sensitivity": 0.425,
+          "answer_rate": 0.9292649098474342,
+          "accuracy": 0.9671641791044776,
+          "sensitivity": 0.4358974358974359,
           "specificity": 1.0,
-          "n_answered": 721
+          "n_answered": 670
         },
         {
           "alpha": 0.3,
-          "answer_rate": 1.0,
-          "accuracy": 0.9680998613037448,
-          "sensitivity": 0.425,
+          "answer_rate": 0.8307905686546463,
+          "accuracy": 0.9682804674457429,
+          "sensitivity": 0.4722222222222222,
           "specificity": 1.0,
-          "n_answered": 721
+          "n_answered": 599
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0
+      "delta_sensitivity_vs_catalogue": 0.0109
     },
     {
       "drug": "AMI",
       "drug_name": "Амикацин",
       "n_train": 3313,
-      "n_test": 998,
-      "n_positive": 80,
+      "n_test": 1005,
+      "n_positive": 83,
       "prevalence": 0.1011,
       "decision": {
         "sensitivity": [
-          0.6,
-          0.49343750000000003,
-          0.7125
+          0.5783132530120482,
+          0.46987951807228917,
+          0.6746987951807228
         ],
         "specificity": [
-          0.9662309368191722,
-          0.9553376906318083,
-          0.9766067538126362
+          0.9663774403470716,
+          0.955531453362256,
+          0.9772234273318872
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.40437866509628406,
-          0.31714904757774365,
-          0.5075443359300273
+          0.39501419247913255,
+          0.3006990943746923,
+          0.5056941888516421
         ],
         "roc_auc": [
-          0.7938997821350762,
-          0.7382004016884532,
-          0.8480637254901962
+          0.7728288424849071,
+          0.7169435878002247,
+          0.8268609688210543
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.5,
           0.3958333333333333,
-          0.59375
+          0.6041666666666666
         ],
         "specificity": [
           0.9672995780590717,
-          0.9556962025316456,
-          0.9789029535864979
+          0.9546413502109705,
+          0.9778481012658228
         ],
         "pr_auc": [
           0.34977447984868326,
-          0.2736005956916334,
-          0.4372721757777904
+          0.26731506041850867,
+          0.442789366289795
         ]
       },
       "calibration": {
-        "brier": 0.05860567515705098,
-        "ece": 0.012574218201520779,
+        "brier": 0.060394109410340256,
+        "ece": 0.009297474723971999,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 79,
         "by_model": 965,
-        "no_call": 46,
-        "no_call_rate": 0.0441
+        "no_call": 39,
+        "no_call_rate": 0.0374
       },
-      "answer_rate": 0.9559,
+      "answer_rate": 0.9626,
+      "correctly_closed": 0.8994,
+      "missed_resistance": 0.3646,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.5176,
+        "correctly_closed_calib": 0.9332,
+        "missed_resistance_calib": 0.4394,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 66
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.1781609195402299,
-          "accuracy": 0.8225806451612904,
-          "sensitivity": 0.96,
-          "specificity": 0.7720588235294118,
-          "n_answered": 186
+          "answer_rate": 0.07567049808429119,
+          "accuracy": 0.6075949367088608,
+          "sensitivity": 1.0,
+          "specificity": 0.0,
+          "n_answered": 79
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.9559386973180076,
-          "accuracy": 0.93687374749499,
-          "sensitivity": 0.6,
-          "specificity": 0.9662309368191722,
-          "n_answered": 998
+          "answer_rate": 0.9626436781609196,
+          "accuracy": 0.9343283582089552,
+          "sensitivity": 0.5783132530120482,
+          "specificity": 0.9663774403470716,
+          "n_answered": 1005
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9559386973180076,
-          "accuracy": 0.93687374749499,
-          "sensitivity": 0.6,
-          "specificity": 0.9662309368191722,
-          "n_answered": 998
+          "answer_rate": 0.9626436781609196,
+          "accuracy": 0.9343283582089552,
+          "sensitivity": 0.5783132530120482,
+          "specificity": 0.9663774403470716,
+          "n_answered": 1005
         },
         {
           "alpha": 0.15,
-          "answer_rate": 0.9559386973180076,
-          "accuracy": 0.93687374749499,
-          "sensitivity": 0.6,
-          "specificity": 0.9662309368191722,
-          "n_answered": 998
+          "answer_rate": 0.9626436781609196,
+          "accuracy": 0.9343283582089552,
+          "sensitivity": 0.5783132530120482,
+          "specificity": 0.9663774403470716,
+          "n_answered": 1005
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.9559386973180076,
-          "accuracy": 0.93687374749499,
-          "sensitivity": 0.6,
-          "specificity": 0.9662309368191722,
-          "n_answered": 998
+          "answer_rate": 0.9626436781609196,
+          "accuracy": 0.9343283582089552,
+          "sensitivity": 0.5783132530120482,
+          "specificity": 0.9663774403470716,
+          "n_answered": 1005
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.9559386973180076,
-          "accuracy": 0.93687374749499,
-          "sensitivity": 0.6,
-          "specificity": 0.9662309368191722,
-          "n_answered": 998
+          "answer_rate": 0.9626436781609196,
+          "accuracy": 0.9343283582089552,
+          "sensitivity": 0.5783132530120482,
+          "specificity": 0.9663774403470716,
+          "n_answered": 1005
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.1
+      "delta_sensitivity_vs_catalogue": 0.0783
     },
     {
       "drug": "KAN",
       "drug_name": "Канамицин",
       "n_train": 3241,
-      "n_test": 942,
-      "n_positive": 107,
+      "n_test": 955,
+      "n_positive": 111,
       "prevalence": 0.124,
       "decision": {
         "sensitivity": [
-          0.6822429906542056,
-          0.5981308411214953,
-          0.7757009345794392
+          0.6756756756756757,
+          0.5898648648648649,
+          0.7567567567567568
         ],
         "specificity": [
-          0.9317365269461078,
-          0.9143413173652695,
-          0.9473053892215569
+          0.9324644549763034,
+          0.9146919431279621,
+          0.9484893364928909
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.5536519548489558,
-          0.46878740246190703,
-          0.6526987929188337
+          0.5630180223324418,
+          0.468974667914978,
+          0.6522921297863937
         ],
         "roc_auc": [
-          0.8265263864793777,
-          0.7699142369466675,
-          0.8738461861324082
+          0.8338029973101063,
+          0.7814087784466932,
+          0.882462053285513
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.5887096774193549,
-          0.5080645161290323,
-          0.6774193548387096
+          0.5038306451612903,
+          0.6735887096774191
         ],
         "specificity": [
           0.9334112149532711,
-          0.9152745327102804,
-          0.9509345794392523
+          0.9170560747663551,
+          0.9492114485981309
         ],
         "pr_auc": [
           0.38262394287739915,
-          0.31730114341152416,
-          0.44835663038588125
+          0.3223826550683216,
+          0.457671368985385
         ]
       },
       "calibration": {
-        "brier": 0.07288594438138701,
-        "ece": 0.034826381315418084,
+        "brier": 0.07137299986034888,
+        "ece": 0.030964267683816913,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 130,
         "by_model": 850,
-        "no_call": 38,
-        "no_call_rate": 0.0388
+        "no_call": 25,
+        "no_call_rate": 0.0255
       },
-      "answer_rate": 0.9612,
+      "answer_rate": 0.9745,
+      "correctly_closed": 0.8796,
+      "missed_resistance": 0.2903,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.9487,
+        "correctly_closed_calib": 0.9473,
+        "missed_resistance_calib": 0.5,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 74
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.6928571428571428,
-          "accuracy": 0.8836524300441826,
-          "sensitivity": 0.7684210526315789,
-          "specificity": 0.9023972602739726,
-          "n_answered": 679
+          "answer_rate": 0.2938775510204082,
+          "accuracy": 0.7777777777777778,
+          "sensitivity": 0.9125,
+          "specificity": 0.7259615384615384,
+          "n_answered": 288
         },
         {
           "alpha": 0.05,
           "answer_rate": 0.9785714285714285,
-          "accuracy": 0.8967674661105318,
-          "sensitivity": 0.6347826086956522,
-          "specificity": 0.9324644549763034,
+          "accuracy": 0.9009384775808134,
+          "sensitivity": 0.6637168141592921,
+          "specificity": 0.9326241134751773,
           "n_answered": 959
         },
         {
           "alpha": 0.1,
-          "answer_rate": 0.9612244897959183,
-          "accuracy": 0.9033970276008493,
-          "sensitivity": 0.6822429906542056,
-          "specificity": 0.9317365269461078,
-          "n_answered": 942
+          "answer_rate": 0.9744897959183674,
+          "accuracy": 0.9026178010471204,
+          "sensitivity": 0.6756756756756757,
+          "specificity": 0.9324644549763034,
+          "n_answered": 955
         },
         {
           "alpha": 0.15,
-          "answer_rate": 0.960204081632653,
-          "accuracy": 0.9032943676939427,
-          "sensitivity": 0.6822429906542056,
-          "specificity": 0.9316546762589928,
-          "n_answered": 941
+          "answer_rate": 0.9448979591836735,
+          "accuracy": 0.9103671706263499,
+          "sensitivity": 0.7425742574257426,
+          "specificity": 0.9309090909090909,
+          "n_answered": 926
         },
         {
           "alpha": 0.2,
-          "answer_rate": 0.960204081632653,
-          "accuracy": 0.9032943676939427,
-          "sensitivity": 0.6822429906542056,
-          "specificity": 0.9316546762589928,
-          "n_answered": 941
+          "answer_rate": 0.9428571428571428,
+          "accuracy": 0.9101731601731602,
+          "sensitivity": 0.7373737373737373,
+          "specificity": 0.9309090909090909,
+          "n_answered": 924
         },
         {
           "alpha": 0.3,
-          "answer_rate": 0.960204081632653,
-          "accuracy": 0.9032943676939427,
-          "sensitivity": 0.6822429906542056,
-          "specificity": 0.9316546762589928,
-          "n_answered": 941
+          "answer_rate": 0.7765306122448979,
+          "accuracy": 0.900131406044678,
+          "sensitivity": 0.7934782608695652,
+          "specificity": 0.9147982062780269,
+          "n_answered": 761
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0935
+      "delta_sensitivity_vs_catalogue": 0.087
     },
     {
       "drug": "ETH",
       "drug_name": "Этионамид",
       "n_train": 3314,
-      "n_test": 1021,
-      "n_positive": 179,
+      "n_test": 1009,
+      "n_positive": 171,
       "prevalence": 0.1798,
       "decision": {
         "sensitivity": [
-          0.6871508379888268,
-          0.6145251396648045,
-          0.7597765363128491
+          0.8245614035087719,
+          0.7660818713450293,
+          0.8771929824561403
         ],
         "specificity": [
-          0.9323040380047506,
-          0.9144893111638955,
-          0.9477434679334917
+          0.9140811455847255,
+          0.8949880668257757,
+          0.9295942720763724
         ]
       },
       "ranking": {
         "pr_auc": [
-          0.5950311914843203,
-          0.5284704583991279,
-          0.6638733913506077
+          0.723018357562908,
+          0.6511434403975077,
+          0.7892749547086655
         ],
         "roc_auc": [
-          0.8292141615467297,
-          0.7927552614817076,
-          0.8674076752610838
+          0.8950194699158397,
+          0.8612287854680457,
+          0.9229890682354255
         ]
       },
       "baseline_catalogue": {
         "sensitivity": [
           0.6871508379888268,
           0.6145251396648045,
-          0.7597765363128491
+          0.7541899441340782
         ],
         "specificity": [
           0.9323040380047506,
-          0.9144893111638955,
-          0.9477434679334917
+          0.9156769596199525,
+          0.9489311163895487
         ],
         "pr_auc": [
           0.5244012606766288,
-          0.46753522530698705,
-          0.5829831995321233
+          0.46283745112097646,
+          0.588977326208324
         ]
       },
       "calibration": {
-        "brier": 0.08845453862592735,
-        "ece": 0.033482273367892494,
+        "brier": 0.07129469145509842,
+        "ece": 0.01770423682779552,
         "acceptable": true
       },
       "routing": {
         "by_catalogue": 180,
         "by_model": 841,
-        "no_call": 0,
-        "no_call_rate": 0.0
+        "no_call": 12,
+        "no_call_rate": 0.0118
       },
-      "answer_rate": 1.0,
+      "answer_rate": 0.9882,
+      "correctly_closed": 0.8883,
+      "missed_resistance": 0.1676,
+      "requires_confirmation": true,
+      "operating_point": {
+        "tuned": true,
+        "threshold": 0.5556,
+        "correctly_closed_calib": 0.9214,
+        "missed_resistance_calib": 0.2764,
+        "clinical_limit": 0.1,
+        "meets_clinical_limit": false,
+        "n_positive_calib": 123
+      },
       "coverage_tradeoff": [
         {
           "alpha": 0.02,
-          "answer_rate": 0.28697355533790403,
-          "accuracy": 0.7918088737201365,
-          "sensitivity": 0.968503937007874,
-          "specificity": 0.6566265060240963,
-          "n_answered": 293
+          "answer_rate": 0.6287952987267384,
+          "accuracy": 0.8878504672897196,
+          "sensitivity": 0.8913043478260869,
+          "specificity": 0.8869047619047619,
+          "n_answered": 642
         },
         {
           "alpha": 0.05,
-          "answer_rate": 0.7375122428991185,
-          "accuracy": 0.8778220451527224,
-          "sensitivity": 0.7784810126582279,
-          "specificity": 0.9042016806722689,
-          "n_answered": 753
+          "answer_rate": 0.9627815866797258,
+          "accuracy": 0.9074262461851476,
+          "sensitivity": 0.8076923076923077,
+          "specificity": 0.9262394195888755,
+          "n_answered": 983
         },
         {
           "alpha": 0.1,
-          "answer_rate": 1.0,
-          "accuracy": 0.8893241919686582,
-          "sensitivity": 0.6871508379888268,
-          "specificity": 0.9323040380047506,
-          "n_answered": 1021
+          "answer_rate": 0.9882468168462292,
+          "accuracy": 0.8989098116947473,
+          "sensitivity": 0.8245614035087719,
+          "specificity": 0.9140811455847255,
+          "n_answered": 1009
         },
         {
           "alpha": 0.15,
-          "answer_rate": 1.0,
-          "accuracy": 0.8893241919686582,
-          "sensitivity": 0.6871508379888268,
-          "specificity": 0.9323040380047506,
-          "n_answered": 1021
+          "answer_rate": 0.9627815866797258,
+          "accuracy": 0.9074262461851476,
+          "sensitivity": 0.8076923076923077,
+          "specificity": 0.9262394195888755,
+          "n_answered": 983
         },
         {
           "alpha": 0.2,
-          "answer_rate": 1.0,
-          "accuracy": 0.8893241919686582,
-          "sensitivity": 0.6871508379888268,
-          "specificity": 0.9323040380047506,
-          "n_answered": 1021
+          "answer_rate": 0.9451518119490695,
+          "accuracy": 0.9119170984455959,
+          "sensitivity": 0.8145695364238411,
+          "specificity": 0.9299754299754299,
+          "n_answered": 965
         },
         {
           "alpha": 0.3,
-          "answer_rate": 1.0,
-          "accuracy": 0.8893241919686582,
-          "sensitivity": 0.6871508379888268,
-          "specificity": 0.9323040380047506,
-          "n_answered": 1021
+          "answer_rate": 0.9451518119490695,
+          "accuracy": 0.9119170984455959,
+          "sensitivity": 0.8145695364238411,
+          "specificity": 0.9299754299754299,
+          "n_answered": 965
         }
       ],
-      "delta_sensitivity_vs_catalogue": 0.0
+      "delta_sensitivity_vs_catalogue": 0.1374
     }
   ],
   "external_validation": [
@@ -1621,24 +1777,26 @@
       "drug": "RIF",
       "drug_name": "Рифампицин",
       "country": "KZ",
-      "n_test": 450,
-      "n_positive": 207,
+      "n_test": 466,
+      "n_positive": 217,
       "sensitivity": [
-        0.8888888888888888,
-        0.8454106280193237,
-        0.927536231884058
+        0.8709677419354839,
+        0.8248847926267281,
+        0.9124423963133641
       ],
       "specificity": [
-        0.6707818930041153,
-        0.6090534979423868,
-        0.7223251028806584
+        0.6666666666666666,
+        0.5983935742971888,
+        0.7169678714859437
       ],
       "pr_auc": [
-        0.8119187252830383,
-        0.76114274317164,
-        0.8658840671697449
+        0.8260185622843457,
+        0.7846920260478811,
+        0.8654040563334218
       ],
-      "abstention_rate": 0.1036,
+      "abstention_rate": 0.0717,
+      "correctly_closed": 0.7072,
+      "missed_resistance": 0.1186,
       "baseline_sensitivity": 0.7372881355932204,
       "baseline_specificity": 0.7105263157894737,
       "h1_target": [
@@ -1651,24 +1809,26 @@
       "drug": "RFB",
       "drug_name": "Рифабутин",
       "country": "KZ",
-      "n_test": 411,
-      "n_positive": 154,
+      "n_test": 406,
+      "n_positive": 151,
       "sensitivity": [
-        0.8506493506493507,
-        0.7922077922077922,
-        0.9025974025974026
+        0.8675496688741722,
+        0.8145695364238411,
+        0.9205298013245033
       ],
       "specificity": [
-        0.8249027237354085,
-        0.7821011673151751,
-        0.8715953307392996
+        0.8235294117647058,
+        0.7803921568627451,
+        0.8705882352941177
       ],
       "pr_auc": [
-        0.7845946971477775,
-        0.7345089204728873,
-        0.8346801881672412
+        0.758685632964322,
+        0.6989342312536517,
+        0.8203395534830706
       ],
-      "abstention_rate": 0.0947,
+      "abstention_rate": 0.1057,
+      "correctly_closed": 0.7511,
+      "missed_resistance": 0.1156,
       "baseline_sensitivity": 0.7456647398843931,
       "baseline_specificity": 0.8398576512455516,
       "h1_target": null,
@@ -1678,24 +1838,26 @@
       "drug": "INH",
       "drug_name": "Изониазид",
       "country": "KZ",
-      "n_test": 483,
-      "n_positive": 245,
+      "n_test": 487,
+      "n_positive": 246,
       "sensitivity": [
-        0.8734693877551021,
-        0.8285714285714286,
-        0.9142857142857143
+        0.8739837398373984,
+        0.8333333333333334,
+        0.9127032520325202
       ],
       "specificity": [
-        0.7436974789915967,
-        0.6826680672268908,
-        0.7941176470588235
+        0.7344398340248963,
+        0.6763485477178424,
+        0.7925311203319502
       ],
       "pr_auc": [
-        0.8282021251790561,
-        0.7878651762427351,
-        0.8707156508580843
+        0.8271446372639403,
+        0.7902913917334327,
+        0.8702507224817152
       ],
-      "abstention_rate": 0.0417,
+      "abstention_rate": 0.0337,
+      "correctly_closed": 0.7778,
+      "missed_resistance": 0.1202,
       "baseline_sensitivity": 0.7093023255813954,
       "baseline_specificity": 0.8130081300813008,
       "h1_target": [
@@ -1708,24 +1870,26 @@
       "drug": "EMB",
       "drug_name": "Этамбутол",
       "country": "KZ",
-      "n_test": 447,
+      "n_test": 441,
       "n_positive": 123,
       "sensitivity": [
         0.8373983739837398,
-        0.776219512195122,
+        0.7723577235772358,
         0.8943089430894309
       ],
       "specificity": [
-        0.9876543209876543,
-        0.9753086419753086,
-        0.9969135802469136
+        0.9874213836477987,
+        0.9748427672955975,
+        0.9968553459119497
       ],
       "pr_auc": [
-        0.8646088716734593,
-        0.812347590253441,
-        0.9112766373518119
+        0.8765431222946296,
+        0.8248664980226613,
+        0.920598843364403
       ],
-      "abstention_rate": 0.0726,
+      "abstention_rate": 0.0851,
+      "correctly_closed": 0.8651,
+      "missed_resistance": 0.1439,
       "baseline_sensitivity": 0.7410071942446043,
       "baseline_specificity": 0.9883381924198251,
       "h1_target": null,
@@ -1735,24 +1899,26 @@
       "drug": "LEV",
       "drug_name": "Левофлоксацин",
       "country": "KZ",
-      "n_test": 412,
-      "n_positive": 99,
+      "n_test": 440,
+      "n_positive": 111,
       "sensitivity": [
-        0.7676767676767676,
-        0.6767676767676768,
-        0.8484848484848485
+        0.6936936936936937,
+        0.6036036036036037,
+        0.7704954954954952
       ],
       "specificity": [
-        0.7827476038338658,
-        0.7363418530351438,
-        0.8274760383386581
+        0.790273556231003,
+        0.7430851063829788,
+        0.8358662613981763
       ],
       "pr_auc": [
-        0.5614265238578494,
-        0.4851269475105671,
-        0.643240415577111
+        0.5486818901980036,
+        0.4669394157018057,
+        0.6385669407393431
       ],
-      "abstention_rate": 0.0945,
+      "abstention_rate": 0.033,
+      "correctly_closed": 0.7407,
+      "missed_resistance": 0.2931,
       "baseline_sensitivity": 0.6551724137931034,
       "baseline_specificity": 0.799410029498525,
       "h1_target": null,
@@ -1762,24 +1928,26 @@
       "drug": "MXF",
       "drug_name": "Моксифлоксацин",
       "country": "KZ",
-      "n_test": 422,
+      "n_test": 419,
       "n_positive": 97,
       "sensitivity": [
         0.8350515463917526,
-        0.7525773195876289,
+        0.7628865979381443,
         0.9072164948453608
       ],
       "specificity": [
-        0.7846153846153846,
-        0.7384615384615385,
-        0.8246153846153846
+        0.782608695652174,
+        0.7406055900621118,
+        0.824611801242236
       ],
       "pr_auc": [
-        0.5961546244457085,
-        0.5242621177436945,
-        0.6768305148546562
+        0.5519584273189355,
+        0.48378214007560616,
+        0.6247460397924398
       ],
-      "abstention_rate": 0.0925,
+      "abstention_rate": 0.0989,
+      "correctly_closed": 0.7161,
+      "missed_resistance": 0.1356,
       "baseline_sensitivity": 0.6864406779661016,
       "baseline_specificity": 0.7982708933717579,
       "h1_target": null,
@@ -1789,24 +1957,26 @@
       "drug": "BDQ",
       "drug_name": "Бедаквилин",
       "country": "KZ",
-      "n_test": 343,
+      "n_test": 342,
       "n_positive": 23,
       "sensitivity": [
         0.391304347826087,
-        0.21739130434782608,
-        0.6086956521739131
+        0.17391304347826086,
+        0.5652173913043478
       ],
       "specificity": [
-        0.971875,
-        0.953125,
-        0.9875
+        0.9717868338557993,
+        0.9544670846394985,
+        0.987460815047022
       ],
       "pr_auc": [
-        0.38656316836421833,
-        0.20199332464673464,
-        0.5803375614352455
+        0.42384984859872504,
+        0.24613123495586356,
+        0.6226922314711553
       ],
-      "abstention_rate": 0.02,
+      "abstention_rate": 0.0229,
+      "correctly_closed": 0.9114,
+      "missed_resistance": 0.56,
       "baseline_sensitivity": 0.36,
       "baseline_specificity": 0.9723076923076923,
       "h1_target": null,
@@ -1816,24 +1986,26 @@
       "drug": "LZD",
       "drug_name": "Линезолид",
       "country": "KZ",
-      "n_test": 385,
+      "n_test": 384,
       "n_positive": 27,
       "sensitivity": [
         0.48148148148148145,
-        0.2962962962962963,
-        0.7037037037037037
+        0.25925925925925924,
+        0.6666666666666666
       ],
       "specificity": [
-        0.9916201117318436,
-        0.9804469273743017,
+        0.9915966386554622,
+        0.9803921568627451,
         1.0
       ],
       "pr_auc": [
-        0.43782132409181584,
-        0.26786348641999846,
-        0.6267112745478337
+        0.44216880519145324,
+        0.26129875723248225,
+        0.6394167515266231
       ],
-      "abstention_rate": 0.0128,
+      "abstention_rate": 0.0154,
+      "correctly_closed": 0.941,
+      "missed_resistance": 0.4516,
       "baseline_sensitivity": 0.41935483870967744,
       "baseline_specificity": 0.9916434540389972,
       "h1_target": null,
@@ -1843,24 +2015,26 @@
       "drug": "CFZ",
       "drug_name": "Клофазимин",
       "country": "KZ",
-      "n_test": 360,
+      "n_test": 350,
       "n_positive": 22,
       "sensitivity": [
         0.5,
         0.2727272727272727,
-        0.6818181818181818
+        0.7272727272727273
       ],
       "specificity": [
-        0.9940828402366864,
-        0.985207100591716,
+        0.9939024390243902,
+        0.9847560975609756,
         1.0
       ],
       "pr_auc": [
-        0.4911386593204775,
-        0.2886257533417819,
-        0.7037715624450552
+        0.46323267616956937,
+        0.256538987451447,
+        0.6693244668238949
       ],
-      "abstention_rate": 0.0137,
+      "abstention_rate": 0.0411,
+      "correctly_closed": 0.9233,
+      "missed_resistance": 0.4583,
       "baseline_sensitivity": 0.4583333333333333,
       "baseline_specificity": 0.9941348973607038,
       "h1_target": null,
@@ -1883,11 +2057,13 @@
         1.0
       ],
       "pr_auc": [
-        0.3191179413530471,
-        0.1646940658928116,
-        0.5164608185720109
+        0.30744449106733707,
+        0.10908241312460687,
+        0.5089387634835345
       ],
       "abstention_rate": 0.0,
+      "correctly_closed": 0.9557,
+      "missed_resistance": 0.7368,
       "baseline_sensitivity": 0.2631578947368421,
       "baseline_specificity": 1.0,
       "h1_target": null,
@@ -1897,24 +2073,26 @@
       "drug": "AMI",
       "drug_name": "Амикацин",
       "country": "KZ",
-      "n_test": 435,
-      "n_positive": 68,
+      "n_test": 429,
+      "n_positive": 65,
       "sensitivity": [
-        0.6470588235294118,
-        0.5294117647058824,
-        0.7647058823529411
+        0.676923076923077,
+        0.5692307692307692,
+        0.8
       ],
       "specificity": [
-        0.9346049046321526,
-        0.9086512261580382,
-        0.9591280653950953
+        0.9340659340659341,
+        0.9093406593406593,
+        0.9587912087912088
       ],
       "pr_auc": [
-        0.55631422198504,
-        0.4656886324913744,
-        0.6596396824787879
+        0.5644173616883884,
+        0.4818037818604335,
+        0.6683566329559134
       ],
-      "abstention_rate": 0.0,
+      "abstention_rate": 0.0138,
+      "correctly_closed": 0.8828,
+      "missed_resistance": 0.3088,
       "baseline_sensitivity": 0.6470588235294118,
       "baseline_specificity": 0.9346049046321526,
       "h1_target": null,
@@ -1927,21 +2105,23 @@
       "n_test": 418,
       "n_positive": 80,
       "sensitivity": [
-        0.7375,
-        0.65,
-        0.825
+        0.7625,
+        0.6625,
+        0.85
       ],
       "specificity": [
-        0.8550295857988166,
-        0.8165680473372781,
-        0.893491124260355
+        0.8668639053254438,
+        0.8284023668639053,
+        0.9023668639053254
       ],
       "pr_auc": [
-        0.6843078269264702,
-        0.5918706643241688,
-        0.7722423828256578
+        0.6872573006542871,
+        0.5985854767638313,
+        0.7795779734890147
       ],
       "abstention_rate": 0.0,
+      "correctly_closed": 0.8469,
+      "missed_resistance": 0.2375,
       "baseline_sensitivity": 0.7,
       "baseline_specificity": 0.8757396449704142,
       "h1_target": null,
@@ -1954,21 +2134,23 @@
       "n_test": 432,
       "n_positive": 139,
       "sensitivity": [
-        0.7050359712230215,
-        0.6293165467625899,
-        0.7769784172661871
+        0.8705035971223022,
+        0.8091726618705036,
+        0.920863309352518
       ],
       "specificity": [
-        0.9010238907849829,
-        0.8668941979522184,
-        0.931740614334471
+        0.856655290102389,
+        0.8156996587030717,
+        0.89419795221843
       ],
       "pr_auc": [
-        0.7314405271993154,
-        0.6772067473432395,
-        0.7941126299514253
+        0.8121396452433113,
+        0.7584036194131057,
+        0.8608945309391056
       ],
       "abstention_rate": 0.0,
+      "correctly_closed": 0.8611,
+      "missed_resistance": 0.1295,
       "baseline_sensitivity": 0.7050359712230215,
       "baseline_specificity": 0.9010238907849829,
       "h1_target": null,
@@ -1985,38 +2167,45 @@
     },
     {
       "config": "мутации, без признаков каталога",
-      "sensitivity": 0.6231884057971014,
-      "specificity": 0.9537869062901155,
+      "sensitivity": 0.8804347826086957,
+      "specificity": 0.686777920410783,
       "pr_auc": 0.768265881977928,
       "abstention_rate": 0.10819949281487742
     },
     {
       "config": "+ признаки каталога",
-      "sensitivity": 0.7795918367346939,
-      "specificity": 0.9356164383561644,
-      "pr_auc": 0.7805903069783391,
+      "sensitivity": 0.8653061224489796,
+      "specificity": 0.7328767123287672,
+      "pr_auc": 0.7805903069783392,
       "abstention_rate": 0.17582417582417584
     },
     {
       "config": "+ нагрузка по генам",
-      "sensitivity": 0.7795918367346939,
-      "specificity": 0.9356164383561644,
+      "sensitivity": 0.8653061224489796,
+      "specificity": 0.7328767123287672,
       "pr_auc": 0.7773974869056004,
       "abstention_rate": 0.17582417582417584
     },
     {
-      "config": "+ контекст линии",
-      "sensitivity": 0.5664335664335665,
-      "specificity": 0.9762796504369539,
-      "pr_auc": 0.7452591787500106,
-      "abstention_rate": 0.08114961961115807
+      "config": "+ варианты вне целевых генов",
+      "sensitivity": 0.6338028169014085,
+      "specificity": 0.9528061224489796,
+      "pr_auc": 0.7674150341206878,
+      "abstention_rate": 0.09721048182586645
     },
     {
       "config": "полная модель (+ уровень правил)",
-      "sensitivity": 0.7645161290322581,
-      "specificity": 0.8434163701067615,
-      "pr_auc": 0.735882739675791,
-      "abstention_rate": 0.0253592561284869
+      "sensitivity": 0.774294670846395,
+      "specificity": 0.8420427553444181,
+      "pr_auc": 0.7503114281273497,
+      "abstention_rate": 0.018596787827557058
+    },
+    {
+      "config": "… и с контекстом линии (вредит)",
+      "sensitivity": 0.7767295597484277,
+      "specificity": 0.8418549346016647,
+      "pr_auc": 0.7577597443506809,
+      "abstention_rate": 0.02028740490278952
     }
   ],
   "growth": {
@@ -3367,9 +3556,9 @@
           "drug": "RIF",
           "drug_name": "Рифампицин",
           "decision": "resistant",
-          "probability": 0.5,
+          "probability": 0.07,
           "source": "catalogue",
-          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: RRDR rpoB — устойчивость к рифампицину",
+          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: RRDR rpoB — устойчивость к рифампицину ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 1
         },
@@ -3377,9 +3566,9 @@
           "drug": "RFB",
           "drug_name": "Рифабутин",
           "decision": "resistant",
-          "probability": 0.645,
+          "probability": 0.539,
           "source": "catalogue",
-          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: перекрёстная устойчивость с рифампицином",
+          "explanation": "rpoB_S450L — каталог ВОЗ, группа 1: перекрёстная устойчивость с рифампицином ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3387,9 +3576,9 @@
           "drug": "INH",
           "drug_name": "Изониазид",
           "decision": "resistant",
-          "probability": 0.93,
+          "probability": 0.932,
           "source": "catalogue",
-          "explanation": "katG_S315N — каталог ВОЗ, группа 1: katG S315N",
+          "explanation": "katG_S315N — каталог ВОЗ, группа 1: katG S315N ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 1
         },
@@ -3397,9 +3586,9 @@
           "drug": "EMB",
           "drug_name": "Этамбутол",
           "decision": "susceptible",
-          "probability": 0.072,
+          "probability": 0.068,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.68), lineage_L2_Beijing (+0.11)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.62), rpoB_S450L (+0.28), eis_g-10a (+0.22) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3407,9 +3596,9 @@
           "drug": "LEV",
           "drug_name": "Левофлоксацин",
           "decision": "resistant",
-          "probability": 0.369,
+          "probability": 0.286,
           "source": "catalogue",
-          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам",
+          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3417,9 +3606,9 @@
           "drug": "MXF",
           "drug_name": "Моксифлоксацин",
           "decision": "resistant",
-          "probability": 0.457,
+          "probability": 0.656,
           "source": "catalogue",
-          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам",
+          "explanation": "gyrA_D94H — каталог ВОЗ, группа 1: QRDR gyrA — устойчивость к фторхинолонам ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3429,7 +3618,7 @@
           "decision": "susceptible",
           "probability": 0.053,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.27), lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.23), inhA_S94A (+0.11), gyrA_S95T (-0.04) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": null
         },
@@ -3437,9 +3626,9 @@
           "drug": "LZD",
           "drug_name": "Линезолид",
           "decision": "susceptible",
-          "probability": 0.042,
+          "probability": 0.045,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.57), lineage_L2_Beijing (-0.00)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.32), rrs_a1484g (+0.19), eis_g-10a (-0.09) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3447,9 +3636,9 @@
           "drug": "CFZ",
           "drug_name": "Клофазимин",
           "decision": "susceptible",
-          "probability": 0.048,
+          "probability": 0.0,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: gyrA_D94H (-0.14), eis_g-10a (-0.01) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": null
         },
@@ -3457,9 +3646,9 @@
           "drug": "DLM",
           "drug_name": "Деламанид",
           "decision": "susceptible",
-          "probability": 0.094,
+          "probability": 0.0,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: inhA_S94A (-0.14) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3467,9 +3656,9 @@
           "drug": "AMI",
           "drug_name": "Амикацин",
           "decision": "resistant",
-          "probability": 0.628,
+          "probability": 0.654,
           "source": "catalogue",
-          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК",
+          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": null
         },
@@ -3477,9 +3666,9 @@
           "drug": "KAN",
           "drug_name": "Канамицин",
           "decision": "resistant",
-          "probability": 0.9,
+          "probability": 0.949,
           "source": "catalogue",
-          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК",
+          "explanation": "rrs_a1484g — каталог ВОЗ, группа 1: 16S рРНК ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 1
         },
@@ -3487,58 +3676,58 @@
           "drug": "ETH",
           "drug_name": "Этионамид",
           "decision": "resistant",
-          "probability": 0.565,
+          "probability": 0.556,
           "source": "catalogue",
-          "explanation": "inhA_S94A — каталог ВОЗ, группа 1: общая мишень с изониазидом",
+          "explanation": "inhA_S94A — каталог ВОЗ, группа 1: общая мишень с изониазидом ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 1
         }
       ]
     },
     {
-      "isolate_id": "SYN-003677",
+      "isolate_id": "SYN-001314",
       "lineage": "L2_Beijing",
-      "country": "KZ",
-      "collection_date": "2022-10-31",
-      "submission_date": "2022-12-02",
+      "country": "ZA",
+      "collection_date": "2024-11-10",
+      "submission_date": "2024-11-30",
       "mutations": [
-        "fabG1_c-8t",
-        "gyrA_G88C",
-        "gyrA_S95T",
+        "inhA_S94A",
+        "katG_S315T",
         "rpoB_I491F",
         "rpoB_S488A",
-        "rrs_c1402t"
+        "rrs_c1402t",
+        "whiB7_c-73t"
       ],
-      "n_resistant": 1,
-      "n_no_call": 6,
+      "n_resistant": 2,
+      "n_no_call": 4,
       "drugs": [
         {
           "drug": "RIF",
           "drug_name": "Рифампицин",
           "decision": "no_call",
-          "probability": 0.5,
+          "probability": 0.444,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.50)",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.44)",
           "ood": false,
-          "phenotype": 1
+          "phenotype": 0
         },
         {
           "drug": "RFB",
           "drug_name": "Рифабутин",
           "decision": "no_call",
-          "probability": 0.509,
+          "probability": 0.5,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.51)",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.50)",
           "ood": false,
-          "phenotype": 1
+          "phenotype": null
         },
         {
           "drug": "INH",
           "drug_name": "Изониазид",
           "decision": "resistant",
-          "probability": 0.93,
+          "probability": 0.932,
           "source": "catalogue",
-          "explanation": "fabG1_c-8t — каталог ВОЗ, группа 2: промотор inhA",
+          "explanation": "katG_S315T — каталог ВОЗ, группа 1: katG S315T — высокий уровень устойчивости ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 1
         },
@@ -3546,49 +3735,49 @@
           "drug": "EMB",
           "drug_name": "Этамбутол",
           "decision": "susceptible",
-          "probability": 0.072,
+          "probability": 0.067,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.68), lineage_L2_Beijing (+0.11)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.73), rpoB_S488A (+0.19), whiB7_c-73t (+0.14) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "LEV",
           "drug_name": "Левофлоксацин",
-          "decision": "no_call",
-          "probability": 0.565,
+          "decision": "susceptible",
+          "probability": 0.036,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.57)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.48), rpoB_I491F (-0.08), rpoB_S488A (-0.05) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
-          "phenotype": 0
+          "phenotype": null
         },
         {
           "drug": "MXF",
           "drug_name": "Моксифлоксацин",
-          "decision": "no_call",
-          "probability": 0.457,
+          "decision": "susceptible",
+          "probability": 0.055,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.46)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.69), katG_S315T (-0.05), rrs_c1402t (+0.03) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
-          "phenotype": 1
+          "phenotype": null
         },
         {
           "drug": "BDQ",
           "drug_name": "Бедаквилин",
           "decision": "susceptible",
-          "probability": 0.053,
+          "probability": 0.065,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.27), lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: inhA_S94A (+0.24), cat_min_group (-0.15), rrs_c1402t (+0.00) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
-          "phenotype": 0
+          "phenotype": null
         },
         {
           "drug": "LZD",
           "drug_name": "Линезолид",
           "decision": "susceptible",
-          "probability": 0.042,
+          "probability": 0.035,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.57), lineage_L2_Beijing (-0.00)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.60), rpoB_I491F (-0.04), inhA_S94A (+0.03) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3596,9 +3785,9 @@
           "drug": "CFZ",
           "drug_name": "Клофазимин",
           "decision": "susceptible",
-          "probability": 0.048,
+          "probability": 0.047,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: rrs_c1402t (-0.05), inhA_S94A (-0.04), rpoB_S488A (-0.03) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3606,11 +3795,11 @@
           "drug": "DLM",
           "drug_name": "Деламанид",
           "decision": "susceptible",
-          "probability": 0.094,
+          "probability": 0.0,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: inhA_S94A (-0.37) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
-          "phenotype": 0
+          "phenotype": null
         },
         {
           "drug": "AMI",
@@ -3620,72 +3809,72 @@
           "source": "model",
           "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.50)",
           "ood": false,
-          "phenotype": 0
+          "phenotype": 1
         },
         {
           "drug": "KAN",
           "drug_name": "Канамицин",
           "decision": "no_call",
-          "probability": 0.357,
+          "probability": 0.535,
           "source": "model",
-          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.36)",
+          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.54)",
           "ood": false,
-          "phenotype": null
+          "phenotype": 0
         },
         {
           "drug": "ETH",
           "drug_name": "Этионамид",
-          "decision": "susceptible",
-          "probability": 0.107,
-          "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.09), fabG1_c-8t (+0.03), cat_min_group (-0.02)",
+          "decision": "resistant",
+          "probability": 0.857,
+          "source": "catalogue",
+          "explanation": "inhA_S94A — каталог ВОЗ, группа 1: общая мишень с изониазидом ⚠ требуется фенотипическое подтверждение",
           "ood": false,
-          "phenotype": 0
+          "phenotype": 1
         }
       ]
     },
     {
-      "isolate_id": "SYN-002531",
+      "isolate_id": "SYN-005671",
       "lineage": "L2_Beijing",
-      "country": "CN",
-      "collection_date": "2024-11-26",
-      "submission_date": "2025-01-19",
+      "country": "UZ",
+      "collection_date": "2023-09-21",
+      "submission_date": "2023-11-05",
       "mutations": [
         "embA_c-16g",
-        "gyrA_S95T",
+        "ethR_LoF",
         "rpoB_I491F",
         "rpoB_S488A"
       ],
       "n_resistant": 0,
-      "n_no_call": 3,
+      "n_no_call": 4,
       "drugs": [
         {
           "drug": "RIF",
           "drug_name": "Рифампицин",
           "decision": "no_call",
-          "probability": 0.5,
+          "probability": 0.444,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.50)",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.44)",
           "ood": false,
-          "phenotype": 0
+          "phenotype": 1
         },
         {
           "drug": "RFB",
           "drug_name": "Рифабутин",
           "decision": "no_call",
-          "probability": 0.509,
+          "probability": 0.539,
           "source": "model",
-          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.51)",
+          "explanation": "нет заключения — обе гипотезы совместимы с данными при уровне 90% (вероятность 0.54)",
           "ood": false,
-          "phenotype": 1
+          "phenotype": 0
         },
         {
           "drug": "INH",
           "drug_name": "Изониазид",
           "decision": "susceptible",
-          "probability": 0.088,
+          "probability": 0.019,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.54), lineage_L2_Beijing (+0.12)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.88), embA_c-16g (-0.26), rpoB_S488A (+0.05) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3693,19 +3882,19 @@
           "drug": "EMB",
           "drug_name": "Этамбутол",
           "decision": "no_call",
-          "probability": 0.333,
+          "probability": 0.167,
           "source": "model",
-          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.33)",
+          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.17)",
           "ood": false,
-          "phenotype": 1
+          "phenotype": 0
         },
         {
           "drug": "LEV",
           "drug_name": "Левофлоксацин",
           "decision": "susceptible",
-          "probability": 0.037,
+          "probability": 0.036,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.60), gyrA_S95T (-0.06)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.64), ethR_LoF (-0.27), rpoB_S488A (-0.01) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3713,9 +3902,9 @@
           "drug": "MXF",
           "drug_name": "Моксифлоксацин",
           "decision": "susceptible",
-          "probability": 0.048,
+          "probability": 0.055,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.67), gyrA_S95T (-0.04), lineage_L2_Beijing (-0.01)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.65), ethR_LoF (-0.05), rpoB_S488A (-0.03) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3723,9 +3912,9 @@
           "drug": "BDQ",
           "drug_name": "Бедаквилин",
           "decision": "susceptible",
-          "probability": 0.053,
+          "probability": 0.045,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.27), lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.51), embA_c-16g (-0.07), rpoB_I491F (-0.04) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": null
         },
@@ -3733,19 +3922,19 @@
           "drug": "LZD",
           "drug_name": "Линезолид",
           "decision": "susceptible",
-          "probability": 0.042,
+          "probability": 0.037,
           "source": "model",
-          "explanation": "модель, вклад признаков: cat_min_group (-0.57), lineage_L2_Beijing (-0.00)",
+          "explanation": "модель, вклад признаков: cat_min_group (-0.49), rpoB_I491F (-0.16), ethR_LoF (+0.15) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
-          "phenotype": null
+          "phenotype": 0
         },
         {
           "drug": "CFZ",
           "drug_name": "Клофазимин",
           "decision": "susceptible",
-          "probability": 0.048,
+          "probability": 0.047,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: rpoB_S488A (+0.35), ethR_LoF (-0.02) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3753,19 +3942,19 @@
           "drug": "DLM",
           "drug_name": "Деламанид",
           "decision": "susceptible",
-          "probability": 0.094,
+          "probability": 0.059,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.01)",
+          "explanation": "модель, вклад признаков: embA_c-16g (-0.12), ethR_LoF (-0.03), rpoB_S488A (+0.02) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
-          "phenotype": 0
+          "phenotype": null
         },
         {
           "drug": "AMI",
           "drug_name": "Амикацин",
           "decision": "susceptible",
-          "probability": 0.043,
+          "probability": 0.038,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.11)",
+          "explanation": "модель, вклад признаков: ethR_LoF (-0.20), rpoB_S488A (+0.01), rpoB_I491F (+0.01) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
@@ -3773,19 +3962,19 @@
           "drug": "KAN",
           "drug_name": "Канамицин",
           "decision": "susceptible",
-          "probability": 0.054,
+          "probability": 0.012,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.22), cat_min_group (-0.02)",
+          "explanation": "модель, вклад признаков: embA_c-16g (-0.31), rpoB_S488A (+0.03), ethR_LoF (+0.01) ⚠ требуется фенотипическое подтверждение",
           "ood": false,
           "phenotype": 0
         },
         {
           "drug": "ETH",
           "drug_name": "Этионамид",
-          "decision": "susceptible",
-          "probability": 0.107,
+          "decision": "no_call",
+          "probability": 0.556,
           "source": "model",
-          "explanation": "модель, вклад признаков: lineage_L2_Beijing (+0.10), cat_min_group (-0.00)",
+          "explanation": "нет заключения — изолят нетипичен: ни одна гипотеза не согласуется с обучающими данными (вероятность 0.56)",
           "ood": false,
           "phenotype": 0
         }

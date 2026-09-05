@@ -11,3 +11,4 @@ data/raw/
 data/interim/
 *.ipynb_checkpoints
 reports_full.log
+models/

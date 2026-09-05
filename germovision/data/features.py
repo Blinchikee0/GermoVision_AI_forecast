@@ -59,12 +59,26 @@ class FeatureBuilder:
     столбцов и ухудшила бы обобщение на редких мутациях.
 
     Группы признаков:
-        `mutation`  — индикатор конкретного варианта (частого в обучении);
+        `mutation`  — индикатор конкретного варианта в гене с известным
+                      механизмом устойчивости к этому препарату;
+        `discovery` — индикатор частого варианта в **любом другом** гене;
         `catalogue` — сводка по каталогу ВОЗ: есть ли маркер группы 1, 2,
                       минимальный уровень доказательности среди найденных;
         `burden`    — число вариантов в каждом релевантном гене, включая
                       не встречавшиеся при обучении;
         `context`   — линия возбудителя.
+
+    Про группу `discovery`. Ограничить признаки генами с известным
+    механизмом кажется разумным — и это ошибка. Список известных генов
+    неполон по определению: новый механизм устойчивости на то и новый,
+    что его гена в списке ещё нет. Жёсткий фильтр по генам ослеплял бы
+    модель ровно в том случае, ради которого ML-уровень и существует, —
+    оставляя ей только то, что и так знает каталог.
+
+    Поэтому варианты вне целевых генов не выбрасываются, а попадают в
+    отдельную группу с более высоким порогом частоты: редкий шум в
+    посторонних генах столбца не получает, а систематически
+    встречающийся кандидат — получает.
 
     Example:
         >>> fb = FeatureBuilder("RIF").fit(train_ds)
@@ -78,17 +92,40 @@ class FeatureBuilder:
         min_count: int = 3,
         use_catalogue: bool = True,
         use_burden: bool = True,
-        use_context: bool = True,
+        use_context: bool = False,
+        use_discovery: bool = True,
+        discovery_min_count: int = 12,
     ) -> None:
+        """
+        Args:
+            drug: код препарата.
+            catalogue: каталог мутаций.
+            min_count: минимальная частота варианта в целевых генах.
+            use_catalogue: включать сводку по каталогу.
+            use_burden: включать нагрузку по генам.
+            use_context: включать линию возбудителя. По умолчанию выключено:
+                линия коррелирует с устойчивостью через страну
+                происхождения, и модель начинает опираться на эту
+                корреляцию вместо самих мутаций. На сдвинутой во времени
+                тестовой выборке обходной путь перестаёт работать —
+                абляция показывала падение чувствительности с 0,78 до 0,57.
+            use_discovery: включать варианты вне целевых генов.
+            discovery_min_count: порог частоты для них. Выше основного,
+                поскольку кандидатов на порядок больше и большинство —
+                филогенетический шум.
+        """
         self.drug = drug
         self.catalogue = catalogue or MutationCatalogue()
         self.min_count = min_count
         self.use_catalogue = use_catalogue
         self.use_burden = use_burden
         self.use_context = use_context
+        self.use_discovery = use_discovery
+        self.discovery_min_count = discovery_min_count
 
         self.genes: tuple[str, ...] = DRUG_GENES.get(drug, ())
         self.vocabulary_: list[str] = []
+        self.discovery_: list[str] = []
         self.lineages_: list[str] = []
         self.names_: list[str] = []
         self.groups_: list[str] = []
@@ -109,18 +146,27 @@ class FeatureBuilder:
         """
         rows = range(len(ds)) if idx is None else np.asarray(idx, dtype=int)
 
-        counts: dict[str, int] = {}
+        target: dict[str, int] = {}
+        other: dict[str, int] = {}
         for i in rows:
-            for m in self._relevant(ds.mutations[i]):
-                counts[m] = counts.get(m, 0) + 1
+            for m in ds.mutations[i]:
+                bucket = target if m.split("_", 1)[0] in self.genes else other
+                bucket[m] = bucket.get(m, 0) + 1
 
-        self.vocabulary_ = sorted(k for k, c in counts.items() if c >= self.min_count)
+        self.vocabulary_ = sorted(k for k, c in target.items() if c >= self.min_count)
+        self.discovery_ = (
+            sorted(k for k, c in other.items() if c >= self.discovery_min_count)
+            if self.use_discovery
+            else []
+        )
         self.lineages_ = (
             sorted(set(np.asarray(ds.lineages)[list(rows)].tolist())) if self.use_context else []
         )
 
-        names: list[str] = list(self.vocabulary_)
-        groups: list[str] = ["mutation"] * len(self.vocabulary_)
+        names: list[str] = list(self.vocabulary_) + list(self.discovery_)
+        groups: list[str] = ["mutation"] * len(self.vocabulary_) + [
+            "discovery"
+        ] * len(self.discovery_)
 
         if self.use_catalogue:
             names += ["cat_group1", "cat_group2", "cat_min_group", "cat_n_markers"]
@@ -147,6 +193,9 @@ class FeatureBuilder:
 
         rows = np.arange(len(ds)) if idx is None else np.asarray(idx, dtype=int)
         vocab_index = {m: j for j, m in enumerate(self.vocabulary_)}
+        disc_index = {
+            m: len(self.vocabulary_) + j for j, m in enumerate(self.discovery_)
+        }
         markers_g1 = {
             e.key for e in self.catalogue.entries if e.drug == self.drug and e.group == 1
         }
@@ -155,12 +204,15 @@ class FeatureBuilder:
         }
 
         x = np.zeros((rows.size, len(self.names_)), dtype=np.float32)
-        offset = len(self.vocabulary_)
+        offset = len(self.vocabulary_) + len(self.discovery_)
 
         for r, i in enumerate(rows):
-            muts = self._relevant(ds.mutations[i])
-            for m in muts:
+            all_muts = ds.mutations[i]
+            muts = self._relevant(all_muts)
+            for m in all_muts:
                 j = vocab_index.get(m)
+                if j is None:
+                    j = disc_index.get(m)
                 if j is not None:
                     x[r, j] = 1.0
 

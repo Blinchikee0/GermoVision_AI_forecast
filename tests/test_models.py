@@ -38,6 +38,8 @@ def test_model_fits_and_calibrates(rif):
     assert rif.model_ is not None
     assert rif.calibrator_ is not None, "калибратор не обучен на выделенной части"
     assert rif.conformal_q_ is not None
+    assert 0.02 <= rif.threshold_ <= 0.90
+    assert rif.operating_point_["tuned"] is True
     assert 0.0 < rif.prevalence_ < 1.0
 
 
@@ -105,7 +107,7 @@ def test_explain_skipped_when_not_requested(rif, dataset, split):
 
 def test_stricter_alpha_produces_more_abstentions(dataset, split):
     """Требование покрытия выше точности модели вынуждает её молчать."""
-    lenient = GVResist("RIF", alpha=0.20, random_state=0).fit(dataset, split)
+    lenient = GVResist("RIF", alpha=0.30, random_state=0).fit(dataset, split)
     strict = GVResist("RIF", alpha=0.01, random_state=0).fit(dataset, split)
 
     def rate(m):

@@ -354,18 +354,24 @@ footer li { margin-bottom: 6px; }
         <table id="t-drugs">
           <thead><tr>
             <th>Препарат</th><th class="num">N</th><th class="num">Устойч.</th>
+            <th class="num">Закрыто</th><th class="num">Пропущено</th>
+            <th>Фенотип</th>
             <th class="num">Чувств.</th><th class="num">Специф.</th>
-            <th class="num">PR-AUC</th><th class="num">Каталог</th>
-            <th class="num">Ответов</th><th class="num">ECE</th>
+            <th class="num">PR-AUC</th><th class="num">Каталог</th><th class="num">ECE</th>
           </tr></thead>
           <tbody></tbody>
         </table>
       </div>
       <p class="panel-note">
-        ECE — ошибка калибровки: насколько предсказанная вероятность
-        соответствует наблюдаемой частоте. Значение до 0,05 приемлемо для
-        клинического применения. «Ответов» — доля изолятов, закрытых без
-        фенотипического теста.
+        <b>Закрыто</b> — доля изолятов, получивших верный ответ за сутки вместо
+        шестидесяти дней. <b>Пропущено</b> — доля устойчивых, которым выдано
+        уверенное «чувствителен»: единственный по-настоящему опасный исход.
+        Обе величины считаются от полного числа изолятов, а не от отвеченных, —
+        иначе отказ от трудных случаев выглядел бы улучшением.
+        <b>Фенотип</b> отмечает препараты, где доля пропусков выше клинического
+        лимита: геномного прогноза для них недостаточно, и система говорит об
+        этом прямо, а не делает вид, что справилась.
+        <b>ECE</b> — ошибка калибровки; до 0,05 приемлемо.
       </p>
     </div>
   </section>
@@ -508,10 +514,13 @@ footer li { margin-bottom: 6px; }
     { label: "Чувствительность по рифампицину, внешняя валидация",
       value: fmt(D.kpi.rif_sens_external, 2),
       note: rifExt ? "ДИ " + fmt(rifExt.sens[1], 2) + "–" + fmt(rifExt.sens[2], 2) : "", cls: "" },
-    { label: "Образцов закрыто без фенотипического теста", value: pct(D.kpi.answer_rate, 0),
-      note: "в среднем по 5 основным препаратам", cls: "is-good" },
+    { label: "Верно закрыто без фенотипического теста", value: pct(D.kpi.closed, 0),
+      note: "в среднем по 13 препаратам", cls: "is-good" },
     { label: "Срок до заключения вместо ~60 дней культуры", value: "1–2 дн.",
       note: "после секвенирования", cls: "is-good" },
+    { label: "Препаратов, где геномного прогноза недостаточно",
+      value: D.kpi.n_needs_confirmation + " из " + D.kpi.n_drugs,
+      note: "требуют лабораторного подтверждения", cls: "is-warn" },
     { label: tg ? "Наибольший рост линии: " + (tg.region || "") : "Рост линий",
       value: tg ? "+" + tg.weekly_pct.toFixed(1) + " %" : "н/д",
       note: tg ? "в неделю · " + tg.lineage.replace(/_/g, " ") : "", cls: "is-warn" },
@@ -875,11 +884,14 @@ footer li { margin-bottom: 6px; }
     tb.innerHTML = D.internal.map((r) =>
       "<tr><td>" + r.name + '</td><td class="num">' + r.n +
       '</td><td class="num">' + r.pos +
+      '</td><td class="num"><b>' + pct(r.closed, 1) + "</b>" +
+      '</td><td class="num">' + pct(r.missed, 1) +
+      "</td><td>" + (r.needs_confirmation
+        ? '<span class="pill none">нужен</span>' : '<span class="pill sus">—</span>') +
       '</td><td class="num">' + fmt(r.sens[0], 3) +
       '</td><td class="num">' + fmt(r.spec[0], 3) +
       '</td><td class="num">' + fmt(r.pr_auc, 3) +
       '</td><td class="num">' + fmt(r.base_sens, 3) +
-      '</td><td class="num">' + pct(r.answer_rate, 0) +
       '</td><td class="num">' + fmt(r.ece, 3) + "</td></tr>").join("");
   }
 

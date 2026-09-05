@@ -18,8 +18,11 @@ from dataclasses import dataclass
 import numpy as np
 from sklearn.metrics import average_precision_score, roc_auc_score
 
+from ._kernels import fast_average_precision, fast_roc_auc, fast_sens_spec
+
 __all__ = [
     "MetricCI",
+    "bootstrap_metrics",
     "ConfusionCounts",
     "confusion_counts",
     "sensitivity",
@@ -187,6 +190,70 @@ def bootstrap_ci(
     return MetricCI(point, float(lo), float(hi), int(yt.size))
 
 
+def bootstrap_metrics(
+    y_true,
+    y_score,
+    metrics: dict[str, Callable[[np.ndarray, np.ndarray], float]],
+    n_boot: int = 1000,
+    alpha: float = 0.05,
+    seed: int = 0,
+) -> dict[str, MetricCI]:
+    """Интервалы сразу для набора метрик на общих бутстрэп-выборках.
+
+    Отличие от четырёх независимых вызовов `bootstrap_ci` не только в
+    скорости. Общие выборки делают интервалы **совместимыми между собой**:
+    чувствительность и специфичность в одной строке отчёта посчитаны на
+    одних и тех же передискретизациях, поэтому их разброс сопоставим.
+    При независимом ресемплинге каждая метрика видела бы свою реальность.
+
+    Побочный эффект — вчетверо меньше операций передискретизации, что и
+    было основным источником времени прогона.
+
+    Args:
+        y_true: истинные метки.
+        y_score: баллы или предсказания.
+        metrics: словарь «имя → функция (y_true, y_score) -> float».
+        n_boot: число бутстрэп-выборок.
+        alpha: уровень значимости.
+        seed: сид.
+
+    Returns:
+        Словарь «имя → MetricCI».
+    """
+    yt = np.asarray(y_true)
+    ys = np.asarray(y_score)
+    point = {name: float(fn(yt, ys)) for name, fn in metrics.items()}
+
+    pos_idx = np.flatnonzero(yt.astype(bool))
+    neg_idx = np.flatnonzero(~yt.astype(bool))
+    n = int(yt.size)
+    if pos_idx.size == 0 or neg_idx.size == 0:
+        return {k: MetricCI(v, float("nan"), float("nan"), n) for k, v in point.items()}
+
+    rng = np.random.default_rng(seed)
+    # Стратифицированная передискретизация: число положительных объектов
+    # сохраняется, иначе при редком классе часть выборок вырождается.
+    draws_pos = rng.choice(pos_idx, size=(n_boot, pos_idx.size), replace=True)
+    draws_neg = rng.choice(neg_idx, size=(n_boot, neg_idx.size), replace=True)
+
+    values = {name: np.empty(n_boot, dtype=float) for name in metrics}
+    for b in range(n_boot):
+        idx = np.concatenate([draws_pos[b], draws_neg[b]])
+        yb, sb = yt[idx], ys[idx]
+        for name, fn in metrics.items():
+            values[name][b] = fn(yb, sb)
+
+    out: dict[str, MetricCI] = {}
+    for name, vals in values.items():
+        finite = vals[np.isfinite(vals)]
+        if finite.size == 0:
+            out[name] = MetricCI(point[name], float("nan"), float("nan"), n)
+            continue
+        lo, hi = np.quantile(finite, [alpha / 2, 1 - alpha / 2])
+        out[name] = MetricCI(point[name], float(lo), float(hi), n)
+    return out
+
+
 @dataclass
 class ClassificationReport:
     """Отчёт по одной бинарной задаче (одному препарату)."""
@@ -262,20 +329,27 @@ def evaluate_binary(
     if yt.size == 0:
         raise ValueError("после исключения отказов не осталось объектов")
 
-    def sens(a, b):
-        return sensitivity(a, b >= threshold)
-
-    def spec(a, b):
-        return specificity(a, b >= threshold)
+    cis = bootstrap_metrics(
+        yt,
+        ys,
+        {
+            "sensitivity": lambda a, b: fast_sens_spec(a, b >= threshold)[0],
+            "specificity": lambda a, b: fast_sens_spec(a, b >= threshold)[1],
+            "pr_auc": fast_average_precision,
+            "roc_auc": fast_roc_auc,
+        },
+        n_boot=n_boot,
+        seed=seed,
+    )
 
     return ClassificationReport(
         label=label,
         n=int(yt.size),
         n_positive=int(yt.sum()),
         threshold=threshold,
-        sensitivity=bootstrap_ci(sens, yt, ys, n_boot, seed=seed),
-        specificity=bootstrap_ci(spec, yt, ys, n_boot, seed=seed + 1),
-        pr_auc=bootstrap_ci(pr_auc, yt, ys, n_boot, seed=seed + 2),
-        roc_auc=bootstrap_ci(roc_auc, yt, ys, n_boot, seed=seed + 3),
+        sensitivity=cis["sensitivity"],
+        specificity=cis["specificity"],
+        pr_auc=cis["pr_auc"],
+        roc_auc=cis["roc_auc"],
         abstention_rate=abstention_rate,
     )
