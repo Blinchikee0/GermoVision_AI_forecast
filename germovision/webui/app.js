@@ -358,7 +358,7 @@
       .sort((a, b) => b.missed - a.missed).slice(0, 3);
 
     const items = sig.map((g, i) =>
-      '<div class="signal crit' + (i === 0 ? " pulse" : "") + '" style="animation-delay:' + (i * 0.07) + 's">' +
+      '<div class="signal crit" style="animation-delay:' + (i * 0.07) + 's">' +
       '<div class="s-t"><b>' + esc(g.lineage.replace(/_/g, " ")) + " · " + esc(g.region) + "</b>" +
       "<span>+" + g.weekly_pct.toFixed(1) + "%/wk</span></div>" +
       "<p>Growing significantly against the reference lineage. Based on " + g.n_samples +
@@ -831,7 +831,6 @@
         "pip install -e \".[app]\"<br>python -m germovision.train --save-models models<br>" +
         "python -m germovision.app</p></div>";
       zone.onclick = null;
-      $("rail-status").lastElementChild.textContent = "Published";
     }
 
     if (st) {
@@ -852,7 +851,6 @@
           "Train on the CRyPTIC dataset for real conclusions.</div>";
         $("data-badge").hidden = false;
       }
-      $("rail-status").lastElementChild.textContent = st.models_loaded ? "Ready" : "No models";
     }
 
     if (S && S.available) {
