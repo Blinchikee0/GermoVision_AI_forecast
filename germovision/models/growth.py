@@ -174,6 +174,11 @@ class GVGrowth:
             times: моменты наблюдений (обычно номер недели).
             regions: регион каждого наблюдения.
             lineages: названия линий; первая считается референсной.
+                Выбор референса влияет только на интерпретацию, не на
+                качество подгонки: все β отсчитываются от него. Разумный
+                референс — самая многочисленная линия; если референсом
+                окажется растущая, у всех прочих β станут отрицательными,
+                и рост придётся вычитать в уме.
 
         Raises:
             ValueError: несогласованные размеры или менее двух линий.
@@ -335,6 +340,15 @@ class GVGrowth:
 
         return point, np.clip(lo, 0, 1), np.clip(hi, 0, 1)
 
+    @staticmethod
+    def choose_reference(counts: np.ndarray, lineages: list[str]) -> int:
+        """Индекс линии, которую разумно взять референсной.
+
+        Берётся самая многочисленная: относительно неё растут или убывают
+        остальные, и знаки коэффициентов совпадают с интуитивным «растёт».
+        """
+        return int(np.asarray(counts, dtype=float).sum(axis=0).argmax())
+
     def growth_table(self) -> list[dict]:
         """Сводка коэффициентов роста по регионам и линиям — для панели."""
         rows: list[dict] = []
@@ -345,6 +359,7 @@ class GVGrowth:
                 rows.append({
                     "region": region,
                     "lineage": lin,
+                    "is_reference": j == 0,
                     "beta": beta,
                     "se": se,
                     "weekly_pct": float(np.expm1(beta) * 100.0),

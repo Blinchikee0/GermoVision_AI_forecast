@@ -1,0 +1,7 @@
+##fileformat=VCFv4.2
+##reference=NC_000962.3
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	TB-0417	TB-0418
+NC_000962.3	761155	.	C	T	980	PASS	ANN=T|missense_variant|MODERATE|rpoB|Rv0667|transcript|c.1349C>T|p.Ser450Leu	GT	1/1	0/0
+NC_000962.3	2155168	.	C	G	950	PASS	ANN=G|missense_variant|MODERATE|katG|Rv1908c|transcript|c.944G>C|p.Ser315Thr	GT	1/1	1/1
+NC_000962.3	7570	.	A	G	910	PASS	ANN=G|missense_variant|MODERATE|gyrA|Rv0006|transcript|c.281A>G|p.Asp94Gly	GT	0/0	1/1
+NC_000962.3	4247429	.	A	G	870	PASS	ANN=G|missense_variant|MODERATE|embB|Rv3795|transcript|c.916A>G|p.Met306Val	GT	1/1	0/0
