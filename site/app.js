@@ -118,6 +118,8 @@ function initDriftCharts(){
      scales:{x:{grid:{display:false},ticks:{color:INK3,maxTicksLimit:6}},y:{grid:{color:LINE},ticks:{color:INK3},min:0,max:1}}});
   state.charts.reached=makeChart('reachedChart','line',{labels:[],datasets:[{data:[],borderColor:INK,backgroundColor:'rgba(10,10,10,.08)',borderWidth:1.6,pointRadius:0,fill:true,tension:.2}]},
     {scales:{x:{grid:{display:false},ticks:{color:INK3,maxTicksLimit:6}},y:{grid:{color:LINE},ticks:{color:INK3},title:{display:true,text:'cities',color:INK3}}}});
+  state.charts.mlFeat=makeChart('mlFeatChart','bar',{labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:2}]},
+    {indexAxis:'y',scales:{x:{grid:{color:LINE},ticks:{color:INK3},title:{display:true,text:'importance',color:INK3},min:0},y:{grid:{display:false},ticks:{color:INK3,font:{size:9}}}}});
 }
 
 function initDrugCharts(){
@@ -417,24 +419,45 @@ function drawMutMap(a){
   ctx.fillText('hotspot band',W-90,15);
 }
 
+const CONTINENTS=[
+  {name:'north america',pts:[[-165,68],[-153,71],[-130,72],[-108,73],[-90,70],[-75,64],[-60,52],[-52,49],[-64,45],[-70,42],[-78,33],[-90,26],[-98,22],[-108,25],[-118,32],[-125,40],[-127,50],[-134,55],[-148,60],[-160,63]]},
+  {name:'south america',pts:[[-82,9],[-75,10],[-64,11],[-52,4],[-42,-3],[-36,-8],[-40,-22],[-48,-32],[-56,-38],[-64,-45],[-71,-54],[-74,-45],[-72,-33],[-73,-20],[-77,-10],[-80,-3]]},
+  {name:'europe',pts:[[-10,36],[-5,37],[3,44],[8,44],[12,38],[18,40],[24,36],[28,41],[34,45],[40,47],[44,52],[38,58],[30,66],[24,70],[15,68],[8,63],[-2,58],[-5,50],[-8,44]]},
+  {name:'africa',pts:[[-17,15],[-10,7],[-2,4],[8,5],[15,-2],[12,-10],[14,-22],[18,-30],[22,-34],[28,-34],[32,-28],[35,-20],[40,-14],[42,-4],[45,7],[42,12],[37,17],[30,22],[20,28],[10,32],[-2,32],[-12,26],[-16,20]]},
+  {name:'asia',pts:[[28,42],[35,45],[40,42],[45,40],[52,32],[58,26],[63,22],[70,20],[78,10],[85,8],[92,15],[100,12],[108,10],[115,18],[122,25],[128,30],[135,36],[140,44],[145,52],[152,58],[160,66],[150,70],[132,72],[110,72],[90,72],[70,68],[55,58],[40,56],[32,50]]},
+  {name:'australia',pts:[[113,-22],[121,-20],[128,-15],[134,-13],[142,-12],[148,-18],[152,-25],[150,-32],[146,-38],[138,-37],[128,-33],[118,-30],[114,-27]]},
+  {name:'antarctica',pts:[[-180,-72],[-140,-73],[-100,-72],[-60,-70],[-20,-72],[20,-73],[60,-72],[100,-70],[140,-72],[180,-73],[180,-90],[-180,-90],[-180,-72]]},
+  {name:'greenland',pts:[[-50,60],[-35,64],[-22,70],[-25,78],[-35,82],[-50,80],[-58,73],[-56,65]]},
+];
+
 function populateWorldMap(){
   const svg=$('#worldMap');
   const cities=state.meta.cities;
   const proj=(lng,lat)=>{const x=(lng+180)/360*900;const y=(90-lat)/180*460;return[x,y]};
   const parts=[];
+  parts.push(`<g class="map-continents">`);
+  CONTINENTS.forEach(c=>{
+    const d=c.pts.map((p,i)=>{const [x,y]=proj(p[0],p[1]);return `${i?'L':'M'} ${x.toFixed(1)} ${y.toFixed(1)}`}).join(' ')+' Z';
+    parts.push(`<path class="map-continent" d="${d}"/>`);
+  });
+  parts.push(`</g>`);
   parts.push(`<g class="map-graticule">`);
   for(let lng=-180;lng<=180;lng+=30){const [x1]=proj(lng,-90),[x2]=proj(lng,90);parts.push(`<line x1="${x1}" y1="0" x2="${x2}" y2="460"/>`)}
   for(let lat=-60;lat<=60;lat+=30){const [,y1]=proj(-180,lat),[,y2]=proj(180,lat);parts.push(`<line x1="0" y1="${y1}" x2="900" y2="${y2}"/>`)}
   parts.push(`</g>`);
+  parts.push(`<g id="mapArcs"></g>`);
+  parts.push(`<g id="mapCities">`);
   cities.forEach((c,i)=>{
     const [x,y]=proj(c.lng,c.lat);
     const r=Math.min(6,2+Math.log2(c.pop+1));
     parts.push(`<g class="map-city" data-i="${i}" transform="translate(${x},${y})">
+      <circle class="halo" r="6" style="animation:none"/>
       <circle class="ring" r="0" fill="none" stroke="#0a0a0a" stroke-width="1" opacity="0"/>
-      <circle class="core" r="${r}" fill="#e6e6e2" stroke="#8a8a8a" stroke-width=".8"/>
+      <circle class="core" r="${r}" fill="#c8c4b5" stroke="#5b5b5b" stroke-width=".8"/>
       <text y="-8" text-anchor="middle">${c.n}</text>
     </g>`);
   });
+  parts.push(`</g>`);
   svg.innerHTML=parts.join('');
   svg.querySelectorAll('.map-city').forEach(g=>{
     const i=+g.dataset.i;
@@ -447,6 +470,22 @@ function populateWorldMap(){
       const c=state.meta.cities[i];toast(`${c.n} · ${c.pop.toFixed(1)}M · click to seed`);
     });
   });
+}
+
+function projMap(lng,lat){return[(lng+180)/360*900,(90-lat)/180*460]}
+
+function renderMapArcs(){
+  const g=document.getElementById('mapArcs');if(!g||!state.drift)return;
+  const parts=[];
+  const arcs=state.drift.arcs||[];
+  const maxDelay=Math.max(...arcs.map(a=>a.delay),1);
+  arcs.forEach(a=>{
+    const risk=state.drift.ml_risk_60d?state.drift.ml_risk_60d[a.target]:0.5;
+    const opacity=(0.15+risk*0.55).toFixed(2);
+    const d=a.path.map((p,i)=>{const [x,y]=projMap(p[1],p[0]);return `${i?'L':'M'} ${x.toFixed(1)} ${y.toFixed(1)}`}).join(' ');
+    parts.push(`<path class="map-arc map-arc-dash" d="${d}" opacity="${opacity}"/>`);
+  });
+  g.innerHTML=parts.join('');
 }
 
 function initDrift(){
@@ -470,7 +509,10 @@ async function runDrift(){
     })});
     state.drift=res;state.driftT=0;
     const scr=$('#driftScrub');scr.max=res.days-1;scr.value=0;scr.disabled=false;$('#driftPlay').disabled=false;
-    renderDriftShare();renderReachedChart();renderDriftFrame(0);renderDriftRationale();
+    renderDriftShare();renderReachedChart();renderMlFeat();renderMapArcs();renderDriftFrame(0);renderDriftRationale();
+    const badge=$('#mlBadge');
+    if(res.ml_used){badge.textContent='ml · '+(res.ml_feature_importance?.length||0)+' features';badge.className='chip ok'}
+    else{badge.textContent='ml offline (heuristic fallback)';badge.className='chip warn'}
     toast('simulation done · '+res.days+' days','ok');
   }catch(e){toast('simulation failed: '+e.message,'err');console.error(e)}
   finally{btn.disabled=false;btn.textContent='Simulate'}
@@ -494,6 +536,17 @@ function renderReachedChart(){
   const c=state.charts.reached;
   c.data.labels=Array.from({length:days},(_,i)=>i);
   c.data.datasets[0].data=perDay;c.update();
+}
+
+function renderMlFeat(){
+  const fi=state.drift.ml_feature_importance||[];
+  if(!fi.length){return}
+  const sorted=[...fi].sort((a,b)=>b.risk_importance-a.risk_importance).slice(0,8);
+  const c=state.charts.mlFeat;
+  c.data.labels=sorted.map(x=>x.feature);
+  c.data.datasets[0].data=sorted.map(x=>+x.risk_importance.toFixed(3));
+  c.data.datasets[0].backgroundColor=sorted.map((_,i)=>i===0?'#8a1e1e':i<3?'#7a5b12':INK);
+  c.update();
 }
 
 function renderDriftRationale(){
@@ -520,10 +573,12 @@ function renderDriftFrame(t){
   const svg=$('#worldMap');
   svg.querySelectorAll('.map-city').forEach((g,i)=>{
     const share=state.drift.shares[i][t];
-    const core=g.querySelector('.core');const ring=g.querySelector('.ring');
-    let fill='#e6e6e2';
+    const arrivedDay=state.drift.arrival?.[i];
+    const core=g.querySelector('.core');const ring=g.querySelector('.ring');const halo=g.querySelector('.halo');
+    let fill='#c8c4b5';
     if(share>=0.5)fill='#0a0a0a';
     else if(share>=0.1)fill='#5b5b5b';
+    else if(share>=0.02)fill='#7a5b12';
     else if(share>0)fill='#a0a0a0';
     core.setAttribute('fill',fill);
     if(share>0.02){
@@ -531,6 +586,11 @@ function renderDriftFrame(t){
       ring.setAttribute('r',rad);
       ring.setAttribute('opacity',(0.15+share*0.4).toFixed(2));
     }else{ring.setAttribute('opacity','0')}
+    if(halo){
+      const dt=t-(arrivedDay??Infinity);
+      if(dt>=0&&dt<3){halo.style.animation='halo 2.6s ease-out infinite';halo.setAttribute('stroke',share>=0.5?'#0a0a0a':'#7a5b12')}
+      else{halo.style.animation='none';halo.setAttribute('opacity','0')}
+    }
   });
   const muts=state.drift.mutations_timeline[t]||[];
   $('#mutAccChip').textContent=muts.length+' aa changes';

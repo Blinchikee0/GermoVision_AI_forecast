@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GermoVision</title>
-<link rel="icon" type="image/png" href="/GermoVisionBlack.png">
+<link rel="icon" type="image/png" href="/logo_black.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 
 <aside class="rail">
   <a class="rail-brand" href="#">
-    <img src="/GermoVisionBlack.png" alt="GermoVision">
+    <img src="/logo_black.png" alt="GermoVision">
     <div><b>GermoVision</b><span>early warning</span></div>
   </a>
   <nav class="rail-nav">
@@ -197,9 +197,10 @@
         <div class="card-head">
           <h3>Global propagation</h3>
           <span class="chip" id="seedCityChip">click a city to seed</span>
+          <span class="chip" id="mlBadge">ml offline</span>
         </div>
-        <svg id="worldMap" viewBox="0 0 900 460"></svg>
-        <p class="card-note">Circle fill = current variant share in that city (dark ≥ 50 %). Ring size = growth momentum. Hover a city for details, click to change the seed.</p>
+        <svg id="worldMap" viewBox="0 0 900 460" preserveAspectRatio="xMidYMid meet"></svg>
+        <p class="card-note">Continent outlines drawn from an embedded low-res atlas. Cities coloured by current variant share (grey → amber → blue → black). Arcs are great-circle routes predicted by the sklearn geo model; opacity = arrival probability within 60 d.</p>
       </div>
       <div class="col-charts">
         <div class="card">
@@ -211,6 +212,11 @@
           <div class="card-head"><h3>Cities reached over time</h3></div>
           <canvas id="reachedChart" height="150"></canvas>
           <p class="card-note">Number of cities with ≥ 2 % detected share per day.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Geo-ML feature importance</h3></div>
+          <canvas id="mlFeatChart" height="150"></canvas>
+          <p class="card-note">Random-forest importances for the 60-day arrival risk classifier. Distance, gravity flow and R₀/generation-time typically dominate.</p>
         </div>
         <div class="card">
           <div class="card-head"><h3>Mutations acquired</h3><span class="chip" id="mutAccChip">0</span></div>
