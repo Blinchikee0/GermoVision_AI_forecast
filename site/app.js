@@ -42,6 +42,17 @@ function wrapCanvases(){
     c.parentNode.insertBefore(w,c);w.appendChild(c);
     c.removeAttribute('height');c.removeAttribute('width');
   });
+  if(typeof ResizeObserver!=='undefined'){
+    const ro=new ResizeObserver(entries=>{
+      entries.forEach(e=>{
+        const canvas=e.target.querySelector('canvas');
+        if(!canvas)return;
+        const chart=Object.values(state.charts).find(c=>c&&c.canvas===canvas);
+        if(chart){try{chart.resize();chart.update('none')}catch(err){}}
+      });
+    });
+    document.querySelectorAll('.ch').forEach(el=>ro.observe(el));
+  }
 }
 
 async function boot(){
@@ -72,14 +83,48 @@ function makeChart(id,type,data,opts={}){
   },opts)});
 }
 
-const inited={analyze:false,drift:false,drug:false};
+const barValuePlugin={
+  id:'barValues',
+  afterDatasetsDraw(chart){
+    try{
+      if(chart.config.type!=='bar')return;
+      const ds=chart.data.datasets[0];if(!ds||!ds.data)return;
+      const meta=chart.getDatasetMeta(0);if(!meta||!meta.data)return;
+      const ctx=chart.ctx;
+      ctx.save();ctx.font='700 10px JetBrains Mono, monospace';ctx.fillStyle='#0a0a0a';
+      const horiz=chart.options.indexAxis==='y';
+      if(horiz){ctx.textBaseline='middle';ctx.textAlign='left'}
+      else{ctx.textBaseline='bottom';ctx.textAlign='center'}
+      ds.data.forEach((v,i)=>{
+        const el=meta.data[i];if(!el||v==null||v===0)return;
+        const label=typeof v==='number'?(Math.abs(v)<1?(v*100).toFixed(0)+'%':Math.round(v).toString()):String(v);
+        if(horiz)ctx.fillText(label,el.x+6,el.y);
+        else ctx.fillText(label,el.x,el.y-3);
+      });
+      ctx.restore();
+    }catch(e){}
+  }
+};
+Chart.register(barValuePlugin);
+
+const MODE_CHARTS={
+  analyze:['compChart','hydroChart','entChart','impactDist','hotDist','physicoDist','cumImpact','kindPie','scatterChart','regionChart','imgHist'],
+  drift:['share','reached','mlFeat'],
+  drug:['radar','successHist','bindingChart','admetScatter','classChart','ic50Chart','robustScatter'],
+};
+
+function destroyModeCharts(mode){
+  (MODE_CHARTS[mode]||[]).forEach(k=>{
+    try{state.charts[k]?.destroy()}catch(e){}
+    delete state.charts[k];
+  });
+}
 
 function initChartsForMode(mode){
-  if(inited[mode])return;
+  destroyModeCharts(mode);
   if(mode==='analyze'){initAnalyzeCharts()}
   else if(mode==='drift'){initDriftCharts()}
   else if(mode==='drug'){initDrugCharts()}
-  inited[mode]=true;
 }
 
 function initAnalyzeCharts(){
@@ -842,6 +887,40 @@ function renderPocket(candidate){
   $('#pocketChip').textContent=`nearest mutation Δ ${nearest.toFixed(0)} aa`;
 }
 
+function makeDrugBar(id,labels,data,colors,opts={}){
+  try{state.charts[id]?.destroy()}catch(e){}
+  const canvas=document.getElementById(id);
+  const chart=new Chart(canvas.getContext('2d'),{
+    type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:colors||INK,borderRadius:3,maxBarThickness:opts.maxBar||24}]},
+    options:Object.assign({
+      responsive:true,maintainAspectRatio:false,animation:false,
+      layout:{padding:{top:16}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8}},
+      scales:{x:{grid:{display:false},ticks:{color:INK,font:{size:10,weight:'600'},maxRotation:0}},
+              y:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},beginAtZero:true,
+                 suggestedMax:Math.max(3,Math.max(...data.map(Number))+1)}},
+    },opts.chart||{})
+  });
+  state.charts[id]=chart;
+  return chart;
+}
+
+function makeDrugScatter(id,data,pointColors,xTitle,yTitle,opts={}){
+  try{state.charts[id]?.destroy()}catch(e){}
+  const canvas=document.getElementById(id);
+  const chart=new Chart(canvas.getContext('2d'),{
+    type:'scatter',
+    data:{datasets:[{data,pointBackgroundColor:pointColors,pointRadius:6,hoverRadius:9,borderColor:INK}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8,callbacks:{label:c=>opts.tooltipLabel?opts.tooltipLabel(c):`${c.raw.x}, ${c.raw.y}`}}},
+      scales:{x:Object.assign({grid:{color:LINE},ticks:{color:INK3,font:{size:10}},title:{display:true,text:xTitle,color:INK,font:{size:10,weight:'600'}}},opts.x||{}),
+              y:Object.assign({grid:{color:LINE},ticks:{color:INK3,font:{size:10}},title:{display:true,text:yTitle,color:INK,font:{size:10,weight:'600'}}},opts.y||{})}}
+  });
+  state.charts[id]=chart;
+  return chart;
+}
+
 function renderDrug(d){
   const top=d.top_pick;
   $('#drugCountChip').textContent=d.candidates.length;
@@ -873,40 +952,46 @@ function renderDrug(d){
 
   const dist=d.distributions;
   const total=d.candidates.length;
-  const sh=state.charts.successHist;
-  sh.data.labels=['5','15','25','35','45','55','65','75','85','95'];
-  sh.data.datasets[0].data=dist.success_hist;
-  sh.data.datasets[0].backgroundColor=dist.success_hist.map((_,i)=>i>=7?OK:i>=5?WARN:INK);
-  sh.options.scales.y.suggestedMax=Math.max(3,Math.max(...dist.success_hist)+1);
-  sh.update();
+
+  makeDrugBar('successHist',
+    ['5','15','25','35','45','55','65','75','85','95'],
+    dist.success_hist,
+    dist.success_hist.map((_,i)=>i>=7?OK:i>=5?WARN:INK));
   const succMean=d.candidates.reduce((a,b)=>a+b.success_prob,0)/total;
   const succHi=d.candidates.filter(c=>c.success_prob>=0.6).length;
   setChipUnderCard('successHist',`mean ${(succMean*100).toFixed(0)}% · ${succHi}/${total} ≥60%`);
 
-  const bind=state.charts.bindingChart;
-  bind.data.labels=['−4','−6','−7','−8.5','−10','−11.5'];
-  bind.data.datasets[0].data=dist.binding_bins;
-  bind.data.datasets[0].backgroundColor=dist.binding_bins.map((_,i)=>i>=3?OK:INK);
-  bind.options.scales.y.suggestedMax=Math.max(3,Math.max(...dist.binding_bins)+1);
-  bind.update();
+  makeDrugBar('bindingChart',
+    ['−4','−6','−7','−8.5','−10','−11.5'],
+    dist.binding_bins,
+    dist.binding_bins.map((_,i)=>i>=3?OK:INK));
   const bindMean=d.candidates.reduce((a,b)=>a+b.binding_kcal_mol,0)/total;
   const bindStrong=d.candidates.filter(c=>c.binding_kcal_mol<=-8).length;
   setChipUnderCard('bindingChart',`mean ΔG ${bindMean.toFixed(2)} · ${bindStrong}/${total} ≤−8`);
 
-  const scat=state.charts.admetScatter;
-  scat.data.datasets[0].data=dist.scatter_admet_synth.map(p=>({x:p.x,y:p.y,s:p.s,id:p.id}));
-  scat.data.datasets[0].pointBackgroundColor=dist.scatter_admet_synth.map(p=>p.s>=0.6?OK:p.s>=0.4?WARN:INK);
-  scat.update();
+  makeDrugScatter('admetScatter',
+    dist.scatter_admet_synth.map(p=>({x:p.x,y:p.y,s:p.s,id:p.id})),
+    dist.scatter_admet_synth.map(p=>p.s>=0.6?OK:p.s>=0.4?WARN:INK),
+    'ADMET (higher is better) →','← synth complexity (lower is better)',
+    {x:{min:0,max:1},y:{min:0,max:10,reverse:true},
+     tooltipLabel:c=>`${c.raw.id} · ADMET ${c.raw.x.toFixed(2)} · synth ${c.raw.y} · success ${(c.raw.s*100).toFixed(1)}%`});
   const admetMean=d.candidates.reduce((a,b)=>a+b.admet_score,0)/total;
   const synthMean=d.candidates.reduce((a,b)=>a+b.synth_complexity,0)/total;
   setChipUnderCard('admetScatter',`ADMET ${admetMean.toFixed(2)} · synth ${synthMean.toFixed(1)}/10`);
 
-  const cls=state.charts.classChart;
-  cls.data.labels=dist.class_summary.map(c=>c.class.length>26?c.class.slice(0,26)+'…':c.class);
-  cls.data.datasets[0].data=dist.class_summary.map(c=>c.mean_success);
-  cls.data.datasets[0].backgroundColor=dist.class_summary.map(c=>c.mean_success>=0.6?OK:c.mean_success>=0.4?WARN:INK);
-  cls.options.layout={padding:{right:60}};
-  cls.update();
+  const clsLabels=dist.class_summary.map(c=>c.class.length>26?c.class.slice(0,26)+'…':c.class);
+  const clsData=dist.class_summary.map(c=>c.mean_success);
+  const clsColors=dist.class_summary.map(c=>c.mean_success>=0.6?OK:c.mean_success>=0.4?WARN:INK);
+  try{state.charts.classChart?.destroy()}catch(e){}
+  state.charts.classChart=new Chart(document.getElementById('classChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:clsLabels,datasets:[{data:clsData,backgroundColor:clsColors,borderRadius:3,maxBarThickness:22}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,
+      layout:{padding:{right:60}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8,callbacks:{label:c=>`mean success ${(c.raw*100).toFixed(1)}%`}}},
+      scales:{x:{grid:{color:LINE},ticks:{color:INK3,font:{size:10},callback:v=>(v*100).toFixed(0)+'%'},min:0,max:1},
+              y:{grid:{display:false},ticks:{color:INK,font:{size:10,weight:'600'}}}}}
+  });
   const topClass=dist.class_summary[0];
   setChipUnderCard('classChart',topClass?`leader · ${topClass.class.split(' ').slice(0,2).join(' ')} @ ${(topClass.mean_success*100).toFixed(0)}%`:'—');
 
@@ -914,20 +999,20 @@ function renderDrug(d){
   const bins=[0,0,0,0,0,0];
   const edges=[10,50,100,500,1000,5000];
   ic50s.forEach(v=>{for(let i=0;i<edges.length;i++)if(v<=edges[i]){bins[i]++;break}});
-  const ic=state.charts.ic50Chart;
-  ic.data.labels=['≤10','≤50','≤100','≤500','≤1k','≤5k'];
-  ic.data.datasets[0].data=bins;
-  ic.data.datasets[0].backgroundColor=bins.map((_,i)=>i<=1?OK:i<=3?INK:WARN);
-  ic.options.scales.y.suggestedMax=Math.max(3,Math.max(...bins)+1);
-  ic.update();
+  makeDrugBar('ic50Chart',
+    ['≤10','≤50','≤100','≤500','≤1k','≤5k'],
+    bins,
+    bins.map((_,i)=>i<=1?OK:i<=3?INK:WARN));
   const ic50Median=[...ic50s].sort((a,b)=>a-b)[Math.floor(ic50s.length/2)];
   const sub100=ic50s.filter(v=>v<=100).length;
   setChipUnderCard('ic50Chart',`median ${ic50Median} nM · ${sub100}/${total} sub-100 nM`);
 
-  const rs=state.charts.robustScatter;
-  rs.data.datasets[0].data=d.candidates.map(c=>({x:c.resistance_robustness,y:c.binding_kcal_mol,id:c.id,s:c.success_prob}));
-  rs.data.datasets[0].pointBackgroundColor=d.candidates.map(c=>c.success_prob>=0.6?OK:c.success_prob>=0.4?WARN:INK);
-  rs.update();
+  makeDrugScatter('robustScatter',
+    d.candidates.map(c=>({x:c.resistance_robustness,y:c.binding_kcal_mol,id:c.id,s:c.success_prob})),
+    d.candidates.map(c=>c.success_prob>=0.6?OK:c.success_prob>=0.4?WARN:INK),
+    'resistance robustness →','← ΔG (kcal/mol, stronger)',
+    {x:{min:0,max:1},y:{reverse:true},
+     tooltipLabel:c=>`${c.raw.id} · robust ${c.raw.x.toFixed(2)} · ΔG ${c.raw.y} · success ${(c.raw.s*100).toFixed(1)}%`});
   const robMean=d.candidates.reduce((a,b)=>a+b.resistance_robustness,0)/total;
   const bestBoth=d.candidates.filter(c=>c.resistance_robustness>=0.7&&c.binding_kcal_mol<=-8).length;
   setChipUnderCard('robustScatter',`mean robust ${robMean.toFixed(2)} · ${bestBoth}/${total} top-left`);
@@ -942,6 +1027,16 @@ function renderDrug(d){
       try{state.charts[k].resize();state.charts[k].update('none')}catch(e){}
     });
   });
+  setTimeout(()=>{
+    ['successHist','bindingChart','admetScatter','classChart','ic50Chart','robustScatter','radar'].forEach(k=>{
+      try{const c=state.charts[k];c.resize();c.update()}catch(e){}
+    });
+  },250);
+  setTimeout(()=>{
+    ['successHist','bindingChart','admetScatter','classChart','ic50Chart','robustScatter','radar'].forEach(k=>{
+      try{const c=state.charts[k];c.resize();c.update()}catch(e){}
+    });
+  },800);
 }
 
 document.addEventListener('DOMContentLoaded',boot);
