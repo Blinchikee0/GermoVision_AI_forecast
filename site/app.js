@@ -123,6 +123,16 @@ function initDriftCharts(){
 }
 
 function initDrugCharts(){
+  state.charts.radar=new Chart(document.getElementById('radarChart').getContext('2d'),{
+    type:'radar',data:{labels:['binding','potency','ADMET','robustness','ease of synth'],
+      datasets:[
+        {label:'class avg',data:[0,0,0,0,0],borderColor:'#c8c4b5',backgroundColor:'rgba(200,196,181,.25)',borderWidth:1.4,pointRadius:2,pointBackgroundColor:'#c8c4b5'},
+        {label:'selected',data:[0,0,0,0,0],borderColor:INK,backgroundColor:'rgba(10,10,10,.14)',borderWidth:2,pointRadius:3,pointBackgroundColor:INK},
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},
+      plugins:{legend:{display:true,labels:{color:INK2,boxWidth:10,font:{size:10}}},tooltip:{backgroundColor:INK,padding:8}},
+      scales:{r:{angleLines:{color:LINE},grid:{color:LINE},ticks:{stepSize:0.25,color:INK3,font:{size:9},backdropColor:'rgba(0,0,0,0)'},pointLabels:{color:INK,font:{size:10,weight:'600'}},min:0,max:1}}}
+  });
   state.charts.successHist=makeChart('successHist','bar',{labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:2}]},
     {scales:{x:{grid:{display:false},ticks:{color:INK3,font:{size:9}},title:{display:true,text:'success %',color:INK3}},y:{grid:{color:LINE},ticks:{color:INK3}}}});
   state.charts.bindingChart=makeChart('bindingChart','bar',{labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:2}]},
@@ -694,6 +704,119 @@ async function runDrug(){
   finally{btn.disabled=false;btn.textContent='Rank candidates'}
 }
 
+const MOL_ICONS={
+  'small molecule protease inhibitor':`<g><polygon class="fill" points="32,10 52,22 52,44 32,56 12,44 12,22"/><line x1="32" y1="10" x2="32" y2="0"/><line x1="52" y1="22" x2="60" y2="18"/><line x1="52" y1="44" x2="60" y2="48"/><line x1="12" y1="44" x2="4" y2="48"/><line x1="12" y1="22" x2="4" y2="18"/></g>`,
+  'monoclonal antibody':`<g><line x1="32" y1="56" x2="32" y2="30"/><line x1="32" y1="30" x2="16" y2="10"/><line x1="32" y1="30" x2="48" y2="10"/><circle cx="16" cy="10" r="4" class="fill"/><circle cx="48" cy="10" r="4" class="fill"/><rect x="28" y="46" width="8" height="10" class="fill"/></g>`,
+  'peptide fusion inhibitor':`<g><circle cx="10" cy="20" r="4" class="fill"/><circle cx="22" cy="14" r="4" class="fill"/><circle cx="34" cy="20" r="4" class="fill"/><circle cx="46" cy="14" r="4" class="fill"/><circle cx="54" cy="24" r="4" class="fill"/><circle cx="46" cy="38" r="4" class="fill"/><circle cx="30" cy="46" r="4" class="fill"/><circle cx="16" cy="42" r="4" class="fill"/><polyline points="10,20 22,14 34,20 46,14 54,24 46,38 30,46 16,42"/></g>`,
+  'polymerase inhibitor':`<g><polygon class="fill" points="32,8 52,22 52,42 32,56 12,42 12,22"/><rect x="24" y="24" width="16" height="16" fill="var(--panel-2)" stroke="var(--panel-2)"/><line x1="32" y1="24" x2="32" y2="40"/><line x1="24" y1="32" x2="40" y2="32"/></g>`,
+  'neuraminidase inhibitor':`<g><circle cx="32" cy="32" r="16" class="fill"/><circle cx="32" cy="32" r="8" fill="var(--panel-2)" stroke="var(--panel-2)"/><line x1="16" y1="32" x2="8" y2="32"/><line x1="48" y1="32" x2="56" y2="32"/><line x1="32" y1="16" x2="32" y2="8"/><line x1="32" y1="48" x2="32" y2="56"/></g>`,
+  'hemagglutinin stem antibody':`<g><line x1="32" y1="56" x2="32" y2="30"/><line x1="32" y1="30" x2="16" y2="10"/><line x1="32" y1="30" x2="48" y2="10"/><circle cx="16" cy="10" r="4" class="fill"/><circle cx="48" cy="10" r="4" class="fill"/><rect x="28" y="46" width="8" height="10" class="fill"/></g>`,
+  'cap-snatching inhibitor':`<g><polygon class="fill" points="32,10 44,20 44,40 32,50 20,40 20,20"/><path d="M 20 20 L 12 14 M 44 20 L 52 14 M 20 40 L 12 46 M 44 40 L 52 46"/></g>`,
+  'integrase strand-transfer inhibitor':`<g><polygon class="fill" points="10,32 22,10 46,10 58,32 46,54 22,54"/><line x1="22" y1="10" x2="46" y2="54"/><line x1="46" y1="10" x2="22" y2="54"/></g>`,
+  'gp120 broadly neutralizing antibody':`<g><line x1="32" y1="56" x2="32" y2="30"/><line x1="32" y1="30" x2="16" y2="10"/><line x1="32" y1="30" x2="48" y2="10"/><circle cx="16" cy="10" r="5" class="fill"/><circle cx="48" cy="10" r="5" class="fill"/><rect x="28" y="46" width="8" height="10" class="fill"/></g>`,
+  'fusion inhibitor':`<g><path d="M 12 32 C 20 12, 44 12, 52 32 S 44 52, 12 32" fill="none"/><path d="M 20 32 C 24 22, 40 22, 44 32" fill="none"/></g>`,
+  'capsid inhibitor':`<g><polygon class="fill" points="32,6 54,20 54,44 32,58 10,44 10,20"/><circle cx="32" cy="32" r="6" fill="var(--panel-2)" stroke="var(--panel-2)"/></g>`,
+  'rpoB rescue rifamycin analog':`<g><rect x="12" y="24" width="40" height="16" rx="8" class="fill"/><circle cx="20" cy="32" r="3" fill="var(--panel-2)"/><circle cx="32" cy="32" r="3" fill="var(--panel-2)"/><circle cx="44" cy="32" r="3" fill="var(--panel-2)"/></g>`,
+  'bedaquiline analog':`<g><polygon class="fill" points="20,10 44,10 54,32 44,54 20,54 10,32"/><line x1="32" y1="10" x2="32" y2="54"/></g>`,
+  'cell-wall inhibitor':`<g><rect x="10" y="12" width="12" height="12" class="fill"/><rect x="26" y="12" width="12" height="12" class="fill"/><rect x="42" y="12" width="12" height="12" class="fill"/><rect x="18" y="26" width="12" height="12" class="fill"/><rect x="34" y="26" width="12" height="12" class="fill"/><rect x="10" y="40" width="12" height="12" class="fill"/><rect x="26" y="40" width="12" height="12" class="fill"/><rect x="42" y="40" width="12" height="12" class="fill"/></g>`,
+  'oxazolidinone':`<g><polygon points="32,10 46,20 40,38 24,38 18,20" class="fill"/><line x1="32" y1="38" x2="32" y2="54"/><line x1="24" y1="38" x2="20" y2="54"/><line x1="40" y1="38" x2="44" y2="54"/></g>`,
+};
+
+function moleculeSvg(className){
+  const inner=MOL_ICONS[className]||`<circle cx="32" cy="32" r="18" class="fill"/>`;
+  return `<svg class="drug-molecule" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+}
+
+function successRing(pct){
+  const r=22;const c=2*Math.PI*r;
+  const cls=pct>=0.6?'high':pct>=0.4?'med':'low';
+  const off=c*(1-pct);
+  return `<div class="success-ring"><svg viewBox="0 0 56 56"><circle class="ring-bg" cx="28" cy="28" r="${r}"/><circle class="ring-fg ${cls}" cx="28" cy="28" r="${r}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/><text class="ring-text" x="28" y="28">${(pct*100).toFixed(0)}%</text></svg></div>`;
+}
+
+function renderDrugCards(d){
+  const cards=$('#drugCards');const top=d.candidates.slice(0,8);
+  cards.innerHTML=top.map((c,i)=>{
+    const rankCls=i===0?'rank1':i===1?'rank2':i===2?'rank3':'';
+    return `<div class="drug-card ${i===0?'active':''}" data-idx="${i}">
+      <span class="rank-pill ${rankCls}">#${i+1}</span>
+      ${moleculeSvg(c.class)}
+      <div class="drug-name">${c.variant}</div>
+      <div class="drug-class">${c.class}</div>
+      ${successRing(c.success_prob)}
+    </div>`;
+  }).join('');
+  cards.querySelectorAll('.drug-card').forEach(el=>{
+    el.addEventListener('click',()=>{
+      cards.querySelectorAll('.drug-card').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      const idx=+el.dataset.idx;
+      selectDrug(d,idx);
+    });
+  });
+  selectDrug(d,0);
+}
+
+function selectDrug(d,idx){
+  const c=d.candidates[idx];
+  $('#drugCardsChip').textContent=c.id;
+  $('#radarChip').textContent=c.variant;
+  const norm={
+    binding:Math.min(1,Math.max(0,(-c.binding_kcal_mol-4)/9)),
+    potency:Math.min(1,Math.max(0,1-Math.log10(Math.max(c.ic50_nm,1))/4)),
+    admet:c.admet_score,
+    robustness:c.resistance_robustness,
+    ease:1-c.synth_complexity/10,
+  };
+  const sameClass=d.candidates.filter(x=>x.class===c.class);
+  const avg={
+    binding:sameClass.reduce((a,b)=>a+Math.min(1,Math.max(0,(-b.binding_kcal_mol-4)/9)),0)/sameClass.length,
+    potency:sameClass.reduce((a,b)=>a+Math.min(1,Math.max(0,1-Math.log10(Math.max(b.ic50_nm,1))/4)),0)/sameClass.length,
+    admet:sameClass.reduce((a,b)=>a+b.admet_score,0)/sameClass.length,
+    robustness:sameClass.reduce((a,b)=>a+b.resistance_robustness,0)/sameClass.length,
+    ease:sameClass.reduce((a,b)=>a+(1-b.synth_complexity/10),0)/sameClass.length,
+  };
+  const r=state.charts.radar;
+  r.data.datasets[0].data=[avg.binding,avg.potency,avg.admet,avg.robustness,avg.ease];
+  r.data.datasets[1].data=[norm.binding,norm.potency,norm.admet,norm.robustness,norm.ease];
+  r.update();
+  renderPocket(c);
+}
+
+function renderPocket(candidate){
+  const svg=$('#pocketDiagram');if(!svg)return;
+  const W=900,H=220;
+  const a=state.analysis;
+  if(!a){svg.innerHTML=`<text x="450" y="110" text-anchor="middle" class="pocket-label" fill="#8a8a8a">no sequence in memory</text>`;return}
+  const L=a.reference.length;const midY=110;
+  const parts=[];
+  parts.push(`<line class="pocket-axis" x1="40" y1="${midY}" x2="${W-40}" y2="${midY}"/>`);
+  parts.push(`<line class="pocket-rail" x1="40" y1="${midY}" x2="${W-40}" y2="${midY}"/>`);
+  a.reference.hotspots.forEach(pos=>{
+    const x=40+(pos/L)*(W-80);
+    parts.push(`<rect class="pocket-hotspot" x="${x-8}" y="${midY-40}" width="16" height="80"/>`);
+    parts.push(`<text class="pocket-label" x="${x}" y="${midY-46}" text-anchor="middle" fill="#7a5b12">${pos}</text>`);
+  });
+  a.mutations.forEach(m=>{
+    const x=40+(m.pos/L)*(W-80);
+    const h=8+m.impact*40;
+    const color=m.impact>=0.6?'#8a1e1e':m.impact>=0.35?'#7a5b12':'#5b5b5b';
+    parts.push(`<line class="pocket-mut" x1="${x.toFixed(1)}" y1="${(midY-h).toFixed(1)}" x2="${x.toFixed(1)}" y2="${(midY+h).toFixed(1)}" stroke="${color}" stroke-width="2.2" opacity="0.85"/>`);
+  });
+  const bindSeed=Math.abs(candidate.id.charCodeAt(candidate.id.length-1)+candidate.id.charCodeAt(0));
+  const bindPos=Math.min(0.92,Math.max(0.08,((bindSeed*13)%97)/100));
+  const bx=40+bindPos*(W-80);
+  parts.push(`<path class="pocket-binder" d="M ${bx.toFixed(1)} 30 Q ${bx.toFixed(1)} 60 ${bx.toFixed(1)} ${midY-8}"/>`);
+  parts.push(`<polygon class="pocket-binder-arrow" points="${bx-5},${midY-14} ${bx+5},${midY-14} ${bx},${midY-4}"/>`);
+  parts.push(`<text class="pocket-label" x="${bx}" y="24" text-anchor="middle">${candidate.variant}</text>`);
+  parts.push(`<text class="pocket-label" x="${bx}" y="${midY+34}" text-anchor="middle" fill="#5b5b5b">binds ~ pos ${Math.round(bindPos*L)}</text>`);
+  parts.push(`<text class="pocket-label" x="46" y="${midY+8}" fill="#8a8a8a">N-term</text>`);
+  parts.push(`<text class="pocket-label" x="${W-46}" y="${midY+8}" text-anchor="end" fill="#8a8a8a">C-term (${L} aa)</text>`);
+  svg.innerHTML=parts.join('');
+  const nearest=a.mutations.map(m=>Math.abs(m.pos-bindPos*L)).sort((a,b)=>a-b)[0]||L;
+  $('#pocketChip').textContent=`nearest mutation Δ ${nearest.toFixed(0)} aa`;
+}
+
 function renderDrug(d){
   const top=d.top_pick;
   $('#drugCountChip').textContent=d.candidates.length;
@@ -765,8 +888,9 @@ function renderDrug(d){
     const cls=x.success_prob>=0.6?'impact-high':x.success_prob>=0.4?'impact-med':'impact-low';
     return `<tr><td>${x.id}</td><td>${x.class}</td><td>${x.target}</td><td>${x.binding_kcal_mol}</td><td>${x.admet_score}</td><td>${x.synth_complexity}</td><td>${x.ic50_nm}</td><td>${x.resistance_robustness}</td><td class="${cls}"><span class="impact-bar"><span style="width:${(x.success_prob*100).toFixed(0)}%"></span></span>${(x.success_prob*100).toFixed(1)}%</td></tr>`;
   }).join('');
+  renderDrugCards(d);
   requestAnimationFrame(()=>{
-    ['successHist','bindingChart','admetScatter','classChart','ic50Chart','robustScatter'].forEach(k=>{
+    ['successHist','bindingChart','admetScatter','classChart','ic50Chart','robustScatter','radar'].forEach(k=>{
       try{state.charts[k].resize();state.charts[k].update('none')}catch(e){}
     });
   });
