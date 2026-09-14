@@ -155,6 +155,56 @@ def feature_importance(bundle: GeoTrainedBundle) -> list[dict]:
     ]
 
 
+def derive_from_analysis(analysis: dict, base_r0: float, base_mut_rate: float) -> dict:
+    if not analysis:
+        return {
+            "r0": base_r0, "mutation_rate": base_mut_rate,
+            "r0_delta": 0.0, "mut_rate_delta": 0.0,
+            "escape_pressure": 0.0, "high_impact_hits": 0,
+            "hotspot_hits": 0, "novelty": 0.0,
+            "notes": ["no genome supplied — using slider defaults"],
+        }
+    muts = analysis.get("mutations", [])
+    hotspots = set(analysis.get("reference", {}).get("hotspots", []))
+    novelty = float(analysis.get("novelty_score", 0.0))
+    high_impact = [m for m in muts if m.get("impact", 0.0) >= 0.6]
+    hotspot_hits = sum(1 for m in muts if m.get("hotspot_distance", 999) <= 5)
+    escape_pressure = 0.0
+    for m in muts[:20]:
+        impact = m.get("impact", 0.0)
+        near = 1.0 if m.get("hotspot_distance", 999) <= 5 else 0.4
+        escape_pressure += impact * near
+    escape_pressure = min(3.0, escape_pressure)
+
+    r0_delta = round(0.08 * len(high_impact) + 0.05 * hotspot_hits + 0.12 * novelty, 3)
+    r0_delta = max(-0.5, min(2.5, r0_delta))
+    mut_rate_delta = round(0.005 * escape_pressure + 0.03 * novelty, 4)
+
+    r0 = round(base_r0 + r0_delta, 2)
+    mr = round(base_mut_rate + mut_rate_delta, 4)
+
+    notes = []
+    if high_impact:
+        notes.append(f"{len(high_impact)} high-impact mutation(s) raise R₀ by {0.08 * len(high_impact):.2f}")
+    if hotspot_hits:
+        notes.append(f"{hotspot_hits} escape-hotspot hit(s) raise R₀ by {0.05 * hotspot_hits:.2f}")
+    if novelty >= 0.3:
+        notes.append(f"novelty index {novelty:.2f} raises R₀ by {0.12 * novelty:.2f} and mut. rate by {0.03 * novelty:.4f}")
+    if not notes:
+        notes.append("mutation profile is benign — simulation uses baseline sliders")
+
+    return {
+        "r0": r0, "mutation_rate": mr,
+        "r0_delta": r0_delta, "mut_rate_delta": mut_rate_delta,
+        "escape_pressure": round(escape_pressure, 3),
+        "high_impact_hits": len(high_impact),
+        "hotspot_hits": hotspot_hits,
+        "novelty": novelty,
+        "notes": notes,
+        "base_r0": base_r0, "base_mut_rate": base_mut_rate,
+    }
+
+
 def great_circle_arc(seed: dict, target: dict, n: int = 24) -> list[list[float]]:
     la1, lo1 = math.radians(seed["lat"]), math.radians(seed["lng"])
     la2, lo2 = math.radians(target["lat"]), math.radians(target["lng"])
