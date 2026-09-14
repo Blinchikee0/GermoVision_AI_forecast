@@ -3,7 +3,7 @@
 > Early-warning tool for pathogen mutations. Analyzes a genome, forecasts geographic drift with an ML model, and ranks drug candidates against the mutation profile.
 
 <div align="center">
-  <img src="logo_black.png" alt="GermoVision" width="88" />
+  <img src="logo_white.png" alt="GermoVision" width="88" />
 </div>
 
 <div align="center">
@@ -33,28 +33,28 @@ All three modes read a common state, so a single genome upload cascades into a f
 ```mermaid
 flowchart LR
     subgraph Input
-        A[FASTA / PDB drop]
-        B[Optional image drop]
-        C[Seed city click]
+        A["FASTA or PDB drop"]
+        B["Optional image drop"]
+        C["Seed city click"]
     end
     subgraph Backend
-        D[/api/analyze/]
-        E[/api/image_features/]
-        F[/api/merge/]
-        G[/api/drift/]
-        H[/api/drug/]
-        I[/api/sample_fasta/]
+        D["POST api analyze"]
+        E["POST api image_features"]
+        F["POST api merge"]
+        G["POST api drift"]
+        H["POST api drug"]
+        I["GET api sample_fasta"]
     end
     subgraph Models
-        M1["Alignment engine\nSequenceMatcher + physicochem"]
-        M2["Geo-ML bundle\nGradientBoosting + RandomForest"]
+        M1["Alignment engine<br/>SequenceMatcher + physicochem"]
+        M2["Geo-ML bundle<br/>GradientBoosting + RandomForest"]
         M3["Composite drug ranker"]
-        M4["Trained GermoVision-Net\nCNN + BiLSTM + Attention"]
+        M4["Trained GermoVision-Net<br/>CNN + BiLSTM + Attention"]
     end
     subgraph UI
-        U1[Analyze panel]
-        U2[Drift map with world atlas]
-        U3[Drug shell with candidate cards]
+        U1["Analyze panel"]
+        U2["Drift map with world atlas"]
+        U3["Drug shell with candidate cards"]
     end
     A --> D
     B --> E
@@ -83,16 +83,16 @@ The neural network `GermoVision-Net` (10.4 M parameters, ONNX-exported) is train
 
 ```mermaid
 flowchart LR
-    raw[FASTA/PDB bytes] --> parser[parse_fasta / parse_pdb]
-    parser --> kind[detect_kind\nDNA vs protein]
-    kind -->|DNA| tr[translate to protein]
-    kind -->|protein| aa[amino-acid sequence]
+    raw["FASTA or PDB bytes"] --> parser["parse_fasta or parse_pdb"]
+    parser --> kind["detect_kind<br/>DNA vs protein"]
+    kind -->|DNA| tr["translate to protein"]
+    kind -->|protein| aa["amino-acid sequence"]
     tr --> aa
-    aa --> align[SequenceMatcher against reference]
-    align --> score[score_mutation for each hit]
-    score --> stats[distributions:\nimpact, hotspot, physicochem]
-    stats --> tier[risk tier assignment]
-    tier --> out[JSON response + 9 chart datasets]
+    aa --> align["SequenceMatcher against reference"]
+    align --> score["score_mutation for each hit"]
+    score --> stats["distributions<br/>impact, hotspot, physicochem"]
+    stats --> tier["risk tier assignment"]
+    tier --> out["JSON response + 9 chart datasets"]
 ```
 
 ### 3.2 Reference database
@@ -172,16 +172,16 @@ If $\nu' \geq 0.7$ the tier is escalated to **HIGH** and a note is added to the 
 
 ```mermaid
 flowchart LR
-    seed[Seed city + sliders] --> genome{Analyze exists?}
-    genome -->|yes| boost[derive_from_analysis\n=> effective R0, mut_rate]
-    genome -->|no| slid[slider defaults]
-    boost --> sim[gravity propagation]
+    seed["Seed city + sliders"] --> genome{"Analyze exists?"}
+    genome -->|yes| boost["derive_from_analysis<br/>=> effective R0 and mut_rate"]
+    genome -->|no| slid["slider defaults"]
+    boost --> sim["gravity propagation"]
     slid --> sim
-    sim --> ml[Geo-ML predictions\narrival day + risk 60d]
-    ml --> arcs[great-circle arcs\ntop 15 targets]
-    ml --> map[world atlas image + city halos]
-    ml --> table[per-city projection table]
-    ml --> verdict[6-line rationale with feature importances]
+    sim --> ml["Geo-ML predictions<br/>arrival day + risk 60d"]
+    ml --> arcs["great-circle arcs<br/>top 15 targets"]
+    ml --> map["world atlas image + city halos"]
+    ml --> table["per-city projection table"]
+    ml --> verdict["6-line rationale with feature importances"]
 ```
 
 ### 4.2 Genome-informed R0 lift
@@ -262,10 +262,12 @@ t_{\text{double}} \;=\; \frac{T_g \, \ln 2}{R_0 - 1}
 $$
 
 $$
-t_{25\%} \;=\; \min\{t : |\{j : s_j(t) > 0.02\}| \geq 0.25 \, n\}
+t_{0.25} \;=\; \text{first day } t \text{ such that at least } 0.25\,n \text{ cities have } s_j(t) > 0.02
 $$
 
-Same for $t_{50\%}$ with a $\geq 0.50\,n$ cutoff.
+$$
+t_{0.50} \;=\; \text{first day } t \text{ such that at least } 0.50\,n \text{ cities have } s_j(t) > 0.02
+$$
 
 ### 4.7 Great-circle arcs
 
@@ -285,12 +287,12 @@ Arc opacity is set to $0.15 + 0.55 \cdot \hat{p}_{\text{risk 60}}$ so higher ris
 
 ```mermaid
 flowchart LR
-    prof[Mutation profile\ntop 10 hits] --> targets[Drug target catalogue\nby pathogen family]
-    targets --> gen[Generate 3 variants per class]
-    gen --> feat[Feature draw:\nbinding, ADMET, IC50, robustness]
-    feat --> score[Composite success score]
-    score --> rank[Rank by success prob]
-    rank --> shell[Candidate cards +\nradar profile +\nbinding schematic]
+    prof["Mutation profile<br/>top 10 hits"] --> targets["Drug target catalogue<br/>by pathogen family"]
+    targets --> gen["Generate 3 variants per class"]
+    gen --> feat["Feature draw<br/>binding, ADMET, IC50, robustness"]
+    feat --> score["Composite success score"]
+    score --> rank["Rank by success prob"]
+    rank --> shell["Candidate cards + radar profile + binding schematic"]
 ```
 
 ### 5.2 Composite success score
@@ -313,10 +315,12 @@ Deterministic pseudo-random draw indexed by `md5(variant + ref + salt)`:
 
 | Feature | Formula |
 |---------|---------|
-| $\Delta G$ (kcal/mol) | $-4.5 - 7.5\,u_b - 0.1 \cdot \#R_{\text{target}}$ |
+| $\Delta G$ (kcal/mol) | $-4.5 - 7.5\,u_b - 0.1 \, n_R$ |
 | ADMET | $0.35 + 0.6\,u_a - 0.05\,\nu$ |
 | synth complexity | $1 + \lfloor 9\,u_s \rfloor$ |
-| IC50 (nM) | $10^{0.8 + 3\,u_i}$ |
+| IC50 (nM) | $10^{\,0.8 + 3\,u_i}$ |
+
+with $n_R$ = count of arginine (R) residues in the drug target label, and $u_b, u_a, u_s, u_i \in [0,1]$ deterministic pseudo-random draws.
 
 ### 5.4 Radar normalization
 
@@ -343,17 +347,17 @@ The bundled `net.pt` / `net.onnx` is the primary forecasting model used in stand
 
 ```mermaid
 flowchart LR
-    x[Input B x 42 x 12] --> norm[IQR normalization]
-    norm --> cnn[Causal dilated CNN\n5 layers, dilations 1,2,4,8,16]
-    cnn --> lstm[BiLSTM\n2 layers, hidden 128]
-    lstm --> pos[Sinusoidal positional encoding]
-    pos --> attn[Multi-head self-attention\n8 heads, dk 64]
-    attn --> pool[Attention pooling]
-    pool --> h1[Probabilistic head\nmu, sigma per horizon]
-    pool --> h2[Emergence event head\nBernoulli logit]
-    pool --> h3[Dirichlet policy head\nR-way allocation]
-    pool --> h4[Critic V(s)]
-    pool --> h5[Reconstruction head]
+    x["Input B x 42 x 12"] --> norm["IQR normalization"]
+    norm --> cnn["Causal dilated CNN<br/>5 layers, dilations 1,2,4,8,16"]
+    cnn --> lstm["BiLSTM<br/>2 layers, hidden 128"]
+    lstm --> pos["Sinusoidal positional encoding"]
+    pos --> attn["Multi-head self-attention<br/>8 heads, dk 64"]
+    attn --> pool["Attention pooling"]
+    pool --> h1["Probabilistic head<br/>mu, sigma per horizon"]
+    pool --> h2["Emergence event head<br/>Bernoulli logit"]
+    pool --> h3["Dirichlet policy head<br/>R-way allocation"]
+    pool --> h4["Critic V of s"]
+    pool --> h5["Reconstruction head"]
 ```
 
 Parameters: 10.4 M. FLOPs per forward pass: 4.2 G. Trained on rolling-origin walk-forward splits with a 30-day gap.
