@@ -133,27 +133,40 @@ function initDrugCharts(){
       plugins:{legend:{display:true,labels:{color:INK2,boxWidth:10,font:{size:10}}},tooltip:{backgroundColor:INK,padding:8}},
       scales:{r:{angleLines:{color:LINE},grid:{color:LINE},ticks:{stepSize:0.25,color:INK3,font:{size:9},backdropColor:'rgba(0,0,0,0)'},pointLabels:{color:INK,font:{size:10,weight:'600'}},min:0,max:1}}}
   });
-  state.charts.successHist=makeChart('successHist','bar',{labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:2}]},
-    {scales:{x:{grid:{display:false},ticks:{color:INK3,font:{size:9}},title:{display:true,text:'success %',color:INK3}},y:{grid:{color:LINE},ticks:{color:INK3}}}});
-  state.charts.bindingChart=makeChart('bindingChart','bar',{labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:2}]},
-    {scales:{x:{grid:{display:false},ticks:{color:INK3,font:{size:9}},title:{display:true,text:'ΔG bin',color:INK3}},y:{grid:{color:LINE},ticks:{color:INK3}}}});
+  const barLabel={anchor:'end',align:'end',color:INK,font:{size:10,weight:'700'},formatter:v=>v||''};
+  state.charts.successHist=makeChart('successHist','bar',
+    {labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:3,maxBarThickness:24}]},
+    {layout:{padding:{top:16}},plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8}},
+     scales:{x:{grid:{display:false},ticks:{color:INK,font:{size:10,weight:'600'},maxRotation:0}},
+             y:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},beginAtZero:true}}});
+  state.charts.bindingChart=makeChart('bindingChart','bar',
+    {labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:3,maxBarThickness:24}]},
+    {layout:{padding:{top:16}},plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8}},
+     scales:{x:{grid:{display:false},ticks:{color:INK,font:{size:10,weight:'600'},maxRotation:0}},
+             y:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},beginAtZero:true}}});
   state.charts.admetScatter=new Chart(document.getElementById('admetScatter').getContext('2d'),{
-    type:'scatter',data:{datasets:[{data:[],pointBackgroundColor:[],borderColor:INK,pointRadius:5}]},
+    type:'scatter',data:{datasets:[{data:[],pointBackgroundColor:[],borderColor:INK,pointRadius:6,hoverRadius:9}]},
     options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},
       plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8,callbacks:{label:c=>`${c.raw.id} · ADMET ${c.raw.x.toFixed(2)} · synth ${c.raw.y} · success ${(c.raw.s*100).toFixed(1)}%`}}},
-      scales:{x:{grid:{color:LINE},ticks:{color:INK3},title:{display:true,text:'ADMET →',color:INK3},min:0,max:1},
-              y:{grid:{color:LINE},ticks:{color:INK3},title:{display:true,text:'← synth complexity',color:INK3},min:0,max:10,reverse:true}}}
+      scales:{x:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},title:{display:true,text:'ADMET (higher is better) →',color:INK,font:{size:10,weight:'600'}},min:0,max:1},
+              y:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},title:{display:true,text:'← synth complexity (lower is better)',color:INK,font:{size:10,weight:'600'}},min:0,max:10,reverse:true}}}
   });
-  state.charts.classChart=makeChart('classChart','bar',{labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:2}]},
-    {indexAxis:'y',scales:{x:{grid:{color:LINE},ticks:{color:INK3},title:{display:true,text:'mean success',color:INK3},min:0,max:1},y:{grid:{display:false},ticks:{color:INK3,font:{size:9}}}}});
-  state.charts.ic50Chart=makeChart('ic50Chart','bar',{labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:2}]},
-    {scales:{x:{grid:{display:false},ticks:{color:INK3,font:{size:9}},title:{display:true,text:'IC50 (nM)',color:INK3}},y:{grid:{color:LINE},ticks:{color:INK3}}}});
+  state.charts.classChart=makeChart('classChart','bar',
+    {labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:3,maxBarThickness:22}]},
+    {indexAxis:'y',layout:{padding:{right:36}},plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8,callbacks:{label:c=>`mean success ${(c.raw*100).toFixed(1)}%`}}},
+     scales:{x:{grid:{color:LINE},ticks:{color:INK3,font:{size:10},callback:v=>(v*100).toFixed(0)+'%'},title:{display:true,text:'mean success prob',color:INK,font:{size:10,weight:'600'}},min:0,max:1},
+             y:{grid:{display:false},ticks:{color:INK,font:{size:10,weight:'600'}}}}});
+  state.charts.ic50Chart=makeChart('ic50Chart','bar',
+    {labels:[],datasets:[{data:[],backgroundColor:INK,borderRadius:3,maxBarThickness:26}]},
+    {layout:{padding:{top:16}},plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8,callbacks:{label:c=>`${c.raw} candidates`}}},
+     scales:{x:{grid:{display:false},ticks:{color:INK,font:{size:10,weight:'600'},maxRotation:0},title:{display:true,text:'IC₅₀ upper bound (nM)',color:INK,font:{size:10,weight:'600'}}},
+             y:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},beginAtZero:true}}});
   state.charts.robustScatter=new Chart(document.getElementById('robustScatter').getContext('2d'),{
-    type:'scatter',data:{datasets:[{data:[],pointBackgroundColor:[],pointRadius:5}]},
+    type:'scatter',data:{datasets:[{data:[],pointBackgroundColor:[],pointRadius:6,hoverRadius:9}]},
     options:{responsive:true,maintainAspectRatio:false,animation:{duration:600},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8,callbacks:{label:c=>`${c.raw.id} · robust ${c.raw.x.toFixed(2)} · ΔG ${c.raw.y}`}}},
-      scales:{x:{grid:{color:LINE},ticks:{color:INK3},title:{display:true,text:'robustness →',color:INK3},min:0,max:1},
-              y:{grid:{color:LINE},ticks:{color:INK3},title:{display:true,text:'← ΔG (kcal/mol)',color:INK3},reverse:true}}}
+      plugins:{legend:{display:false},tooltip:{backgroundColor:INK,padding:8,callbacks:{label:c=>`${c.raw.id} · robust ${c.raw.x.toFixed(2)} · ΔG ${c.raw.y} · success ${(c.raw.s*100).toFixed(1)}%`}}},
+      scales:{x:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},title:{display:true,text:'resistance robustness →',color:INK,font:{size:10,weight:'600'}},min:0,max:1},
+              y:{grid:{color:LINE},ticks:{color:INK3,font:{size:10}},title:{display:true,text:'← ΔG (kcal/mol, stronger)',color:INK,font:{size:10,weight:'600'}},reverse:true}}}
   });
 }
 
@@ -722,6 +735,18 @@ const MOL_ICONS={
   'oxazolidinone':`<g><polygon points="32,10 46,20 40,38 24,38 18,20" class="fill"/><line x1="32" y1="38" x2="32" y2="54"/><line x1="24" y1="38" x2="20" y2="54"/><line x1="40" y1="38" x2="44" y2="54"/></g>`,
 };
 
+function setChipUnderCard(canvasId,text){
+  const card=document.getElementById(canvasId)?.closest('.card');
+  if(!card)return;
+  let chip=card.querySelector('.card-head .chip.stat-chip');
+  if(!chip){
+    const head=card.querySelector('.card-head');
+    if(!head)return;
+    chip=document.createElement('span');chip.className='chip stat-chip';head.appendChild(chip);
+  }
+  chip.textContent=text;
+}
+
 function moleculeSvg(className){
   const inner=MOL_ICONS[className]||`<circle cx="32" cy="32" r="18" class="fill"/>`;
   return `<svg class="drug-molecule" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
@@ -847,42 +872,65 @@ function renderDrug(d){
   ].map(([k,v,s])=>`<div class="stat-cell"><div class="stat-cell-key">${k}</div><div class="stat-cell-val">${v}</div><div class="stat-cell-sub">${s}</div></div>`).join(''):'';
 
   const dist=d.distributions;
+  const total=d.candidates.length;
   const sh=state.charts.successHist;
-  sh.data.labels=['0-10','10-20','20-30','30-40','40-50','50-60','60-70','70-80','80-90','90-100'];
+  sh.data.labels=['5','15','25','35','45','55','65','75','85','95'];
   sh.data.datasets[0].data=dist.success_hist;
   sh.data.datasets[0].backgroundColor=dist.success_hist.map((_,i)=>i>=7?OK:i>=5?WARN:INK);
+  sh.options.scales.y.suggestedMax=Math.max(3,Math.max(...dist.success_hist)+1);
   sh.update();
+  const succMean=d.candidates.reduce((a,b)=>a+b.success_prob,0)/total;
+  const succHi=d.candidates.filter(c=>c.success_prob>=0.6).length;
+  setChipUnderCard('successHist',`mean ${(succMean*100).toFixed(0)}% · ${succHi}/${total} ≥60%`);
 
   const bind=state.charts.bindingChart;
-  bind.data.labels=['-4..-5.5','-5.5..-7','-7..-8.5','-8.5..-10','-10..-11.5','-11.5..-13'];
+  bind.data.labels=['−4','−6','−7','−8.5','−10','−11.5'];
   bind.data.datasets[0].data=dist.binding_bins;
   bind.data.datasets[0].backgroundColor=dist.binding_bins.map((_,i)=>i>=3?OK:INK);
+  bind.options.scales.y.suggestedMax=Math.max(3,Math.max(...dist.binding_bins)+1);
   bind.update();
+  const bindMean=d.candidates.reduce((a,b)=>a+b.binding_kcal_mol,0)/total;
+  const bindStrong=d.candidates.filter(c=>c.binding_kcal_mol<=-8).length;
+  setChipUnderCard('bindingChart',`mean ΔG ${bindMean.toFixed(2)} · ${bindStrong}/${total} ≤−8`);
 
   const scat=state.charts.admetScatter;
   scat.data.datasets[0].data=dist.scatter_admet_synth.map(p=>({x:p.x,y:p.y,s:p.s,id:p.id}));
   scat.data.datasets[0].pointBackgroundColor=dist.scatter_admet_synth.map(p=>p.s>=0.6?OK:p.s>=0.4?WARN:INK);
   scat.update();
+  const admetMean=d.candidates.reduce((a,b)=>a+b.admet_score,0)/total;
+  const synthMean=d.candidates.reduce((a,b)=>a+b.synth_complexity,0)/total;
+  setChipUnderCard('admetScatter',`ADMET ${admetMean.toFixed(2)} · synth ${synthMean.toFixed(1)}/10`);
 
   const cls=state.charts.classChart;
   cls.data.labels=dist.class_summary.map(c=>c.class.length>26?c.class.slice(0,26)+'…':c.class);
   cls.data.datasets[0].data=dist.class_summary.map(c=>c.mean_success);
+  cls.data.datasets[0].backgroundColor=dist.class_summary.map(c=>c.mean_success>=0.6?OK:c.mean_success>=0.4?WARN:INK);
+  cls.options.layout={padding:{right:60}};
   cls.update();
+  const topClass=dist.class_summary[0];
+  setChipUnderCard('classChart',topClass?`leader · ${topClass.class.split(' ').slice(0,2).join(' ')} @ ${(topClass.mean_success*100).toFixed(0)}%`:'—');
 
   const ic50s=d.candidates.map(c=>c.ic50_nm);
   const bins=[0,0,0,0,0,0];
   const edges=[10,50,100,500,1000,5000];
   ic50s.forEach(v=>{for(let i=0;i<edges.length;i++)if(v<=edges[i]){bins[i]++;break}});
   const ic=state.charts.ic50Chart;
-  ic.data.labels=['<10','<50','<100','<500','<1k','<5k'];
+  ic.data.labels=['≤10','≤50','≤100','≤500','≤1k','≤5k'];
   ic.data.datasets[0].data=bins;
   ic.data.datasets[0].backgroundColor=bins.map((_,i)=>i<=1?OK:i<=3?INK:WARN);
+  ic.options.scales.y.suggestedMax=Math.max(3,Math.max(...bins)+1);
   ic.update();
+  const ic50Median=[...ic50s].sort((a,b)=>a-b)[Math.floor(ic50s.length/2)];
+  const sub100=ic50s.filter(v=>v<=100).length;
+  setChipUnderCard('ic50Chart',`median ${ic50Median} nM · ${sub100}/${total} sub-100 nM`);
 
   const rs=state.charts.robustScatter;
   rs.data.datasets[0].data=d.candidates.map(c=>({x:c.resistance_robustness,y:c.binding_kcal_mol,id:c.id,s:c.success_prob}));
   rs.data.datasets[0].pointBackgroundColor=d.candidates.map(c=>c.success_prob>=0.6?OK:c.success_prob>=0.4?WARN:INK);
   rs.update();
+  const robMean=d.candidates.reduce((a,b)=>a+b.resistance_robustness,0)/total;
+  const bestBoth=d.candidates.filter(c=>c.resistance_robustness>=0.7&&c.binding_kcal_mol<=-8).length;
+  setChipUnderCard('robustScatter',`mean robust ${robMean.toFixed(2)} · ${bestBoth}/${total} top-left`);
 
   $('#drugBody').innerHTML=d.candidates.map((x,i)=>{
     const cls=x.success_prob>=0.6?'impact-high':x.success_prob>=0.4?'impact-med':'impact-low';
