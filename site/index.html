@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GermoVision</title>
+<link rel="icon" type="image/png" href="/GermoVisionBlack.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="analyze">
+
+<aside class="rail">
+  <a class="rail-brand" href="#">
+    <img src="/GermoVisionBlack.png" alt="GermoVision">
+    <div><b>GermoVision</b><span>early warning</span></div>
+  </a>
+  <nav class="rail-nav">
+    <button class="rail-item active" data-mode="analyze">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9zM14 3v6h6"/></svg>
+      <span>Analyze</span>
+    </button>
+    <button class="rail-item" data-mode="drift">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 010 18M12 3a13 13 0 000 18"/></svg>
+      <span>Drift map</span>
+    </button>
+    <button class="rail-item" data-mode="drug">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6l2 4v3H7V7l2-4zM7 10h10v9a2 2 0 01-2 2H9a2 2 0 01-2-2z"/><path d="M10 14h4M12 12v4"/></svg>
+      <span>Design drug</span>
+    </button>
+  </nav>
+  <div class="rail-foot">
+    <div class="rail-credit">Developed by<br><b>Mendikhan Abylaikhan</b></div>
+  </div>
+</aside>
+
+<main class="stage">
+
+  <!-- MODE 1: ANALYZE -->
+  <section class="mode" data-mode="analyze">
+    <header class="mode-head">
+      <div>
+        <h1>Analyze pathogen genome</h1>
+        <p>Drop a FASTA/PDB and optionally an image (gel, EM, blot). GermoVision aligns against a curated reference, scores every mutation, and cross-references any attached image with the sequence-level call.</p>
+      </div>
+      <div class="ref-picker">
+        <label>Reference</label>
+        <select id="refSel"></select>
+      </div>
+    </header>
+
+    <div class="input-row">
+      <div class="dropzone" id="drop">
+        <svg viewBox="0 0 48 48"><path d="M12 32v6a2 2 0 002 2h20a2 2 0 002-2v-6M24 8v22M14 18l10-10 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="drop-title">Drop FASTA or PDB</div>
+        <div class="drop-sub">.fasta .fa .fna .faa .pdb .txt</div>
+        <input type="file" id="fileInput" accept=".fasta,.fa,.fna,.faa,.pdb,.txt" hidden>
+      </div>
+      <div class="dropzone alt" id="imgDrop">
+        <svg viewBox="0 0 48 48"><rect x="8" y="10" width="32" height="28" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="20" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M40 30l-8-8-14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="drop-title">Drop image <span class="drop-tag">optional</span></div>
+        <div class="drop-sub">.png .jpg .jpeg .gif · gel · EM · blot</div>
+        <input type="file" id="imgInput" accept=".png,.jpg,.jpeg,.gif" hidden>
+      </div>
+      <div class="samples-col">
+        <div class="samples-head">Or load a synthetic sample</div>
+        <button class="sample-btn" data-preset="spike">SARS-CoV-2 spike</button>
+        <button class="sample-btn" data-preset="ha">Influenza H1N1 HA</button>
+        <button class="sample-btn" data-preset="rpob">M.tb rpoB</button>
+      </div>
+    </div>
+
+    <div class="run-bar">
+      <div class="queue" id="queue">
+        <span class="queue-empty">no files queued yet</span>
+      </div>
+      <button class="btn ghost" id="clearQueueBtn" disabled>Clear</button>
+      <button class="btn dark analyze-btn" id="runAnalyzeBtn" disabled>Analyze</button>
+    </div>
+
+    <div class="stat-row six" id="analyzeStats"></div>
+
+    <div class="charts-grid three">
+      <div class="card">
+        <div class="card-head"><h3>Mutation heat along sequence</h3></div>
+        <canvas id="mutMap" height="150"></canvas>
+        <p class="card-note">Vertical bars = per-position impact score (0…1). Red bars sit near known escape hotspots; grey band shows hotspot regions of the reference.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Impact distribution</h3><span class="chip" id="impactSplitChip">—</span></div>
+        <canvas id="impactDist" height="150"></canvas>
+        <p class="card-note">Stacked bars: how many mutations fall into each impact bin (0.0-0.9). Red = high (≥0.6), amber = medium, black = low. A heavy right tail is a warning sign.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Hotspot proximity</h3><span class="chip" id="hotChip">—</span></div>
+        <canvas id="hotDist" height="150"></canvas>
+        <p class="card-note">Distance in residues from each mutation to the nearest known escape hotspot. First bar (0-4 residues) is the danger zone.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Physicochemical shift</h3></div>
+        <canvas id="physicoDist" height="150"></canvas>
+        <p class="card-note">Combined shift in hydrophobicity, charge and residue mass caused by each substitution. Values &gt; 0.5 usually break local structure.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Cumulative impact along sequence</h3></div>
+        <canvas id="cumImpact" height="150"></canvas>
+        <p class="card-note">Running sum of mutation impact as we walk from residue 1 to the C-terminus. Steep segments = high-density mutation clusters.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Amino-acid composition</h3></div>
+        <canvas id="compChart" height="150"></canvas>
+        <p class="card-note">Percent share of each amino acid in the submitted sequence. Deviations from a reference protein hint at codon-usage bias or truncation.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Hydrophobicity profile</h3></div>
+        <canvas id="hydroChart" height="150"></canvas>
+        <p class="card-note">Kyte-Doolittle rolling mean (window = 9). Peaks are transmembrane / hydrophobic core segments — mutations here often disrupt folding.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Local entropy (bits)</h3></div>
+        <canvas id="entChart" height="150"></canvas>
+        <p class="card-note">Shannon entropy of a 21-residue window. Low values = biased / repetitive stretches; high values = flexible / disordered regions.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Mutation type split</h3></div>
+        <canvas id="kindPie" height="150"></canvas>
+        <p class="card-note">Substitution vs insertion vs deletion. Deletions are structurally disruptive and often drive immune escape.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Position × impact scatter</h3></div>
+        <canvas id="scatterChart" height="150"></canvas>
+        <p class="card-note">Each dot is one mutation. Vertical clusters at hotspot positions signal a coordinated escape event, not random drift.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Regional mutation load</h3></div>
+        <canvas id="regionChart" height="150"></canvas>
+        <p class="card-note">Reference sequence split into 10 equal windows. Bars show how many mutations fall in each window — reveals localised vs distributed pressure.</p>
+      </div>
+    </div>
+
+    <div class="card wide" id="imageCard" hidden>
+      <div class="card-head"><h3>Attached image · cross-reference</h3><span class="chip" id="imgKindChip">—</span></div>
+      <div class="image-grid">
+        <div class="image-thumb"><img id="imgPreview" alt=""></div>
+        <div class="image-stats" id="imageStats"></div>
+        <div class="image-hist">
+          <canvas id="imgHist" height="130"></canvas>
+          <p class="card-note">Byte-intensity histogram (16 bins). Used only as a coarse quality &amp; cross-reference signal; the ML call remains driven by the sequence.</p>
+        </div>
+      </div>
+      <div class="cross-ref" id="crossRef"></div>
+    </div>
+
+    <div class="card wide rationale">
+      <div class="card-head"><h3>Model decision · rationale</h3><span class="chip" id="riskChip">—</span></div>
+      <div id="rationaleBody" class="rationale-body">Analyze a genome first.</div>
+    </div>
+
+    <div class="card wide">
+      <div class="card-head"><h3>Ranked mutations</h3><span class="chip" id="mutCountChip">—</span></div>
+      <div class="table-shell">
+        <table class="mut-table"><thead><tr><th>notation</th><th>type</th><th>hotspot Δ</th><th>physico Δ</th><th>impact</th></tr></thead><tbody id="mutBody"></tbody></table>
+      </div>
+      <p class="card-note">Rows are sorted by impact = 0.55·hotspot proximity + 0.35·physicochemical shift + 0.10·structural (indel bonus). Top rows are the highest-priority candidates for wet-lab confirmation.</p>
+    </div>
+  </section>
+
+  <!-- MODE 2: DRIFT -->
+  <section class="mode" data-mode="drift" hidden>
+    <header class="mode-head">
+      <div>
+        <h1>Drift &amp; spread map</h1>
+        <p>Click a city as origin, tune R₀ and mutation rate. GermoVision runs a gravity-based mobility model and reports arrival times, doubling time, and mutations acquired on the way.</p>
+      </div>
+      <div class="ref-picker">
+        <label>Pathogen</label>
+        <select id="driftRefSel"></select>
+      </div>
+    </header>
+
+    <div class="drift-controls">
+      <label>R₀ <input type="range" id="r0Slider" min="1.1" max="6" step="0.1" value="2.5"><span id="r0Val">2.5</span></label>
+      <label>Gen. time <input type="range" id="gtSlider" min="2" max="12" step="0.5" value="5"><span id="gtVal">5</span> d</label>
+      <label>Mut. rate <input type="range" id="mrSlider" min="0.005" max="0.12" step="0.005" value="0.04"><span id="mrVal">0.04</span>/d</label>
+      <label>Days <input type="range" id="dSlider" min="30" max="180" step="10" value="90"><span id="dVal">90</span></label>
+      <button class="btn dark" id="runDrift">Simulate</button>
+      <div class="scrub"><input type="range" id="driftScrub" min="0" max="89" value="0" disabled><span id="driftDay">day 0</span></div>
+      <button class="btn ghost" id="driftPlay" disabled>▶</button>
+    </div>
+
+    <div class="stat-row four" id="driftStats"></div>
+
+    <div class="drift-grid">
+      <div class="card map-card">
+        <div class="card-head">
+          <h3>Global propagation</h3>
+          <span class="chip" id="seedCityChip">click a city to seed</span>
+        </div>
+        <svg id="worldMap" viewBox="0 0 900 460"></svg>
+        <p class="card-note">Circle fill = current variant share in that city (dark ≥ 50 %). Ring size = growth momentum. Hover a city for details, click to change the seed.</p>
+      </div>
+      <div class="col-charts">
+        <div class="card">
+          <div class="card-head"><h3>Cumulative share · top 8 cities</h3></div>
+          <canvas id="driftShareChart" height="150"></canvas>
+          <p class="card-note">Sigmoid growth per city, starting after local arrival. Seed city bolded.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Cities reached over time</h3></div>
+          <canvas id="reachedChart" height="150"></canvas>
+          <p class="card-note">Number of cities with ≥ 2 % detected share per day.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Mutations acquired</h3><span class="chip" id="mutAccChip">0</span></div>
+          <div class="mut-timeline" id="mutTimeline"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card wide rationale">
+      <div class="card-head"><h3>Simulation verdict</h3><span class="chip" id="driftVerdictChip">—</span></div>
+      <div id="driftRationale" class="rationale-body">Pick a seed city and press Simulate.</div>
+    </div>
+  </section>
+
+  <!-- MODE 3: DRUG -->
+  <section class="mode" data-mode="drug" hidden>
+    <header class="mode-head">
+      <div>
+        <h1>Design candidate treatments</h1>
+        <p>GermoVision ranks drug-class candidates against the mutation profile from step 1. Every candidate is scored on binding, ADMET, potency, resistance-robustness and synthesis complexity.</p>
+      </div>
+      <button class="btn dark" id="runDrug" disabled>Rank candidates</button>
+    </header>
+
+    <div class="card wide rationale" id="topPickCard">
+      <div class="card-head"><h3>Top pick · rationale</h3><span class="chip" id="topPickChip">—</span></div>
+      <div id="topPickBody" class="rationale-body">Analyze a genome first — the drug engine reads the mutation profile from step 1.</div>
+    </div>
+
+    <div class="stat-row four" id="drugStats"></div>
+
+    <div class="charts-grid three">
+      <div class="card">
+        <div class="card-head"><h3>Success probability</h3></div>
+        <canvas id="successHist" height="150"></canvas>
+        <p class="card-note">Distribution of the combined score across all candidates. A left-heavy plot means most classes fail this mutation profile — the top pick is genuinely rare.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Binding energy (ΔG)</h3></div>
+        <canvas id="bindingChart" height="150"></canvas>
+        <p class="card-note">More negative = stronger binding. Anything below −8 kcal/mol is drug-like.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>ADMET × synth complexity</h3></div>
+        <canvas id="admetScatter" height="150"></canvas>
+        <p class="card-note">Bottom-right corner = high ADMET, simple synthesis → the sweet spot for scale-up.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Mean success per class</h3></div>
+        <canvas id="classChart" height="150"></canvas>
+        <p class="card-note">Which mechanism-of-action families dominate for this mutation profile.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>IC₅₀ distribution</h3></div>
+        <canvas id="ic50Chart" height="150"></canvas>
+        <p class="card-note">Potency in nanomolar. Sub-100 nM is competitive with best-in-class.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Robustness vs binding</h3></div>
+        <canvas id="robustScatter" height="150"></canvas>
+        <p class="card-note">Robustness to escape mutations plotted against binding energy. Best candidates cluster top-left.</p>
+      </div>
+    </div>
+
+    <div class="card wide">
+      <div class="card-head"><h3>Ranked candidates</h3><span class="chip" id="drugCountChip">—</span></div>
+      <div class="table-shell">
+        <table class="drug-table">
+          <thead><tr><th>id</th><th>class</th><th>target</th><th>ΔG kcal/mol</th><th>ADMET</th><th>synth</th><th>IC₅₀ nM</th><th>robust</th><th>success</th></tr></thead>
+          <tbody id="drugBody"></tbody>
+        </table>
+      </div>
+      <p class="card-note">Success = 0.15 + 0.35·ADMET + 0.35·robustness + 0.20·(|ΔG|/12) − synth/40. Weights tuned on curated antiviral SAR data.</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
