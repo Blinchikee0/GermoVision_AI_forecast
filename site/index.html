@@ -225,6 +225,14 @@
       </div>
     </div>
 
+    <div class="card wide">
+      <div class="card-head"><h3>Per-city projection</h3><span class="chip" id="cityTableChip">—</span></div>
+      <div class="table-shell">
+        <table class="city-table"><thead><tr><th>city</th><th>pop, M</th><th>arrival day</th><th>risk 60d</th><th>share today</th><th>peak share</th><th>continent</th></tr></thead><tbody id="cityBody"></tbody></table>
+      </div>
+      <p class="card-note">Table sorted by earliest arrival. Arrival day and 60-day risk come from the sklearn geo model; share today reads the scrubber position; peak share is the maximum over the horizon.</p>
+    </div>
+
     <div class="card wide rationale">
       <div class="card-head"><h3>Simulation verdict</h3><span class="chip" id="driftVerdictChip">—</span></div>
       <div id="driftRationale" class="rationale-body">Pick a seed city and press Simulate.</div>
