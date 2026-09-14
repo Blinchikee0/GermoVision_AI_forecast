@@ -494,10 +494,14 @@ def haversine_km(a: dict, b: dict) -> float:
 
 
 def drift(seed_city: int, r0: float, generation_time: float, days: int,
-          mutation_rate: float, ref_id: str) -> dict:
+          mutation_rate: float, ref_id: str, analysis: dict | None = None) -> dict:
     n = len(WORLD_CITIES)
     seed_city = max(0, min(n - 1, seed_city))
     seed = WORLD_CITIES[seed_city]
+
+    genome_boost = geo_ml.derive_from_analysis(analysis, r0, mutation_rate)
+    r0 = genome_boost["r0"]
+    mutation_rate = genome_boost["mutation_rate"]
 
     bundle = get_geo_bundle()
     ml_used = bundle is not None
@@ -611,6 +615,8 @@ def drift(seed_city: int, r0: float, generation_time: float, days: int,
         f"doubling time under this R₀ is {doubling} d — {'containment window is very tight' if doubling < 5 else 'suppression is still feasible with rapid contact tracing' if doubling < 10 else 'containment feasible with standard measures'}",
         engine_note,
     ]
+    if genome_boost.get("r0_delta", 0) > 0.05:
+        reasons.insert(0, f"genome-informed R₀ lift +{genome_boost['r0_delta']:.2f} (baseline {genome_boost['base_r0']:.2f} → effective {r0:.2f}) driven by {genome_boost['high_impact_hits']} high-impact and {genome_boost['hotspot_hits']} hotspot mutation(s)")
 
     rationale = {
         "verdict": (
@@ -642,6 +648,9 @@ def drift(seed_city: int, r0: float, generation_time: float, days: int,
         "ml_arrival": ml_arrival,
         "ml_risk_60d": ml_risk,
         "ml_feature_importance": geo_ml.feature_importance(bundle) if bundle else [],
+        "genome_boost": genome_boost,
+        "effective_r0": r0,
+        "effective_mutation_rate": mutation_rate,
     }
 
 
@@ -968,6 +977,7 @@ class Handler(BaseHTTPRequestHandler):
                     int(body.get("days", 90)),
                     float(body.get("mutation_rate", 0.03)),
                     body.get("reference", "sars2_spike"),
+                    body.get("analysis"),
                 )
                 self._json(200, res); return
             if url.path == "/api/drug":
