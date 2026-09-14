@@ -101,9 +101,10 @@ code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:var(--pane
 .chip.ok{background:#e8f2ea;color:var(--ok);border-color:#bcd8c1}
 
 canvas{max-width:100%;display:block}
-.card>canvas{max-height:170px}
-.ch{position:relative;height:160px;width:100%}
+.card>canvas{max-height:220px}
+.ch{position:relative;height:200px;width:100%}
 .ch canvas{position:absolute!important;top:0!important;left:0!important;width:100%!important;height:100%!important;max-height:100%!important}
+.mode[data-mode="drug"] .ch{height:220px}
 
 .rationale{background:linear-gradient(180deg,var(--panel) 0%,var(--panel-2) 100%)}
 .rationale-body{font-size:13.5px;line-height:1.7;color:var(--ink-1);font-weight:500}
