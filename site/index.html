@@ -254,6 +254,25 @@
       <div id="topPickBody" class="rationale-body">Analyze a genome first — the drug engine reads the mutation profile from step 1.</div>
     </div>
 
+    <div class="drug-shell">
+      <div class="card">
+        <div class="card-head"><h3>Top candidates</h3><span class="chip" id="drugCardsChip">click a card</span></div>
+        <div class="drug-cards" id="drugCards"></div>
+        <p class="card-note">Iconography reflects drug class: hex = small molecule, Y-shape = mAb, chain = peptide, nucleotide = polymerase inhibitor. Click to inspect its profile on the radar and binding schematic.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Multi-axis profile</h3><span class="chip" id="radarChip">—</span></div>
+        <div class="ch"><canvas id="radarChart"></canvas></div>
+        <p class="card-note">Five normalised axes — binding, potency, ADMET, robustness, ease-of-synth. Compared with the class average (grey). Bigger polygon = better all-round drug.</p>
+      </div>
+    </div>
+
+    <div class="card wide">
+      <div class="card-head"><h3>Target · binding schematic</h3><span class="chip" id="pocketChip">—</span></div>
+      <svg id="pocketDiagram" viewBox="0 0 900 220" preserveAspectRatio="xMidYMid meet"></svg>
+      <p class="card-note">Grey rail = reference protein length; red vertical bars = mutations in the submitted sequence (height ∝ impact). The dashed marker shows where the selected candidate binds — proximity to red bars means the mutation profile can escape it.</p>
+    </div>
+
     <div class="stat-row four" id="drugStats"></div>
 
     <div class="charts-grid three">
