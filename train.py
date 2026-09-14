@@ -13,11 +13,11 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-import germovision_config as C
-import germovision_data as D
-import germovision_eval as E
-import germovision_losses as L
-from germovision_model import ExportWrapper, GermoVisionNet, count_flops
+import config as C
+import data as D
+import evaluation as E
+import losses as L
+from model import ExportWrapper, GermoVisionNet, count_flops
 
 log = logging.getLogger("germovision")
 
@@ -809,7 +809,7 @@ def main(argv: list[str] | None = None) -> int:
         "outbreak": outbreak,
     }
 
-    import germovision_plots as P
+    import plots as P
 
     made = P.build_all_figures(results, history, artefacts)
     log.info("Figure files created: %d", len(made))

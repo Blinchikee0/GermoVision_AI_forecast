@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-import germovision_config as C
+import config as C
 
 log = logging.getLogger("germovision.data")
 

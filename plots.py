@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib.colors import TwoSlopeNorm
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
-import germovision_config as C
+import config as C
 
 log = logging.getLogger("germovision.plots")
 C.apply_rcparams()

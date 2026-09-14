@@ -8,8 +8,8 @@ ROOT = Path(__file__).resolve().parent
 FIGDIR = ROOT / "figures"
 RESULTS_JSON = ROOT / "results.json"
 METRICS_TABLE_MD = ROOT / "metrics_table.md"
-CHECKPOINT_PT = ROOT / "germovision_net.pt"
-CHECKPOINT_ONNX = ROOT / "germovision_net.onnx"
+CHECKPOINT_PT = ROOT / "net.pt"
+CHECKPOINT_ONNX = ROOT / "net.onnx"
 DATA_CACHE = ROOT / ".cache"
 
 SEED = 20260910

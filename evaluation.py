@@ -7,10 +7,10 @@ import numpy as np
 import torch
 from scipy import optimize, stats
 
-import germovision_config as C
-import germovision_losses as L
-from germovision_data import WindowSet
-from germovision_model import SingleLSTM
+import config as C
+import losses as L
+from data import WindowSet
+from model import SingleLSTM
 
 log = logging.getLogger("germovision.eval")
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -222,7 +222,7 @@ def cusum_detector(z_series: np.ndarray, k: float | None = None,
 
 
 def geographic_forecast(panel, lineage: int, t_now: int) -> dict:
-    from germovision_data import _gravity_matrix
+    from data import _gravity_matrix
 
     flow = _gravity_matrix(panel.coords, panel.population)
     present = panel.counts[:, lineage, max(0, t_now - 14) : t_now + 1].sum(axis=1) > 0

@@ -7,7 +7,7 @@ import torch
 import torch.nn.functional as F
 from scipy import stats
 
-import germovision_config as C
+import config as C
 
 SQRT_PI = math.sqrt(math.pi)
 

@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-import germovision_config as C
+import config as C
 
 
 class CausalConvBlock(nn.Module):
