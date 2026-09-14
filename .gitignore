@@ -10,6 +10,7 @@ venv/
 *.ipynb_checkpoints
 *.log
 *.md
+!README.md
 /models/
 /.cache/
 geo_model.pkl
