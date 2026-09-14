@@ -171,7 +171,15 @@ tbody tr:last-child td{border-bottom:none}
 .map-halo{fill:none;stroke:#0a0a0a;stroke-width:1;opacity:0;animation:halo 2.6s ease-out infinite}
 @keyframes halo{0%{r:6;opacity:.6}100%{r:34;opacity:0}}
 
+.map-tooltip{position:absolute;background:var(--ink);color:#fff;padding:8px 12px;border-radius:6px;font-size:11.5px;font-family:'JetBrains Mono',monospace;pointer-events:none;opacity:0;transition:opacity .12s;z-index:20;line-height:1.5;box-shadow:0 4px 12px rgba(0,0,0,.15);white-space:nowrap}
+.map-tooltip.on{opacity:1}
+.map-tooltip b{color:#fff;font-weight:700}
+.map-tooltip .tt-row{color:#c8c4b5}
+.map-tooltip .tt-row b{color:#fff}
+.map-card{position:relative}
 .mut-timeline{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:6px}
+.city-table td:nth-child(4){text-align:right}
+.city-table td:nth-child(5),.city-table td:nth-child(6){text-align:right}
 .mut-item{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:9px 12px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:500}
 .mut-item-day{color:var(--ink-2);font-size:11.5px;font-weight:600}
 .mut-item-code{font-weight:700;color:var(--ink)}
