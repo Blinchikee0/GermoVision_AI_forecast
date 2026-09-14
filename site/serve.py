@@ -588,21 +588,43 @@ def drift(seed_city: int, r0: float, generation_time: float, days: int,
     peak_share = peak_global / total_pop
     doubling = round(math.log(2) / max(0.001, (r0 - 1.0) / generation_time), 1)
 
+    high_risk_cities = 0
+    if bundle:
+        high_risk_cities = sum(1 for r in ml_risk if r >= 0.6)
+    top_impor = []
+    if bundle:
+        fi = geo_ml.feature_importance(bundle)
+        top_impor = sorted(fi, key=lambda x: -x["risk_importance"])[:3]
+
+    engine_note = (
+        f"ML backend: sklearn gradient-boosting regressor + random-forest classifier "
+        f"({bundle.trained_n} synthetic (city × scenario) training pairs). "
+        f"Top drivers of 60-day arrival risk: "
+        + ", ".join(f"{f['feature']} ({f['risk_importance']:.2f})" for f in top_impor)
+    ) if bundle else "Heuristic gravity fallback (sklearn unavailable)."
+
+    reasons = [
+        f"{len(reached)} of {n} cities crossed the 2 % detection threshold within {days} days",
+        f"{high_risk_cities} of {n} cities carry ML-estimated 60-day risk ≥ 0.60",
+        f"{len(accumulated)} amino-acid substitutions accumulated at rate {mutation_rate}/day",
+        f"peak population-weighted share ≈ {peak_share:.1%} on the horizon",
+        f"doubling time under this R₀ is {doubling} d — {'containment window is very tight' if doubling < 5 else 'suppression is still feasible with rapid contact tracing' if doubling < 10 else 'containment feasible with standard measures'}",
+        engine_note,
+    ]
+
     rationale = {
         "verdict": (
             f"With R₀ = {r0} and generation time {generation_time} d, the pathogen doubles roughly every "
-            f"{doubling} days. Starting from {WORLD_CITIES[seed_city]['n']}, it is expected to reach "
-            f"25 % of tracked cities by day {reached_25} and 50 % by day {reached_50}."),
-        "reasons": [
-            f"{len(reached)} of {n} cities crossed the 2 % detection threshold within {days} days",
-            f"{len(accumulated)} amino-acid substitutions accumulated at rate {mutation_rate}/day",
-            f"peak population-weighted share ≈ {peak_share:.1%} on the horizon",
-            f"doubling time under this R₀ is {doubling} d — {'containment window is very tight' if doubling < 5 else 'suppression is still feasible with rapid contact tracing' if doubling < 10 else 'containment feasible with standard measures'}",
-        ],
+            f"{doubling} days. Starting from {WORLD_CITIES[seed_city]['n']}, the geo model expects "
+            f"25 % of tracked cities to be reached by day {reached_25} and 50 % by day {reached_50}. "
+            f"{high_risk_cities} cities cross the 60 % arrival-risk threshold within 60 days."),
+        "reasons": reasons,
         "reached_25_day": reached_25,
         "reached_50_day": reached_50,
         "doubling_days": doubling,
         "peak_share": round(peak_share, 3),
+        "high_risk_cities": high_risk_cities,
+        "top_features": top_impor,
     }
 
     return {
