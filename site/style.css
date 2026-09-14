@@ -210,6 +210,15 @@ tbody tr:last-child td{border-bottom:none}
 .map-tooltip .tt-row{color:#c8c4b5}
 .map-tooltip .tt-row b{color:#fff}
 .map-card{position:relative}
+.genome-inf{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.gi-cell{padding:10px 14px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px}
+.gi-cell b{display:block;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:2px}
+.gi-cell span{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-2);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.gi-cell em{display:block;font-style:normal;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3);margin-top:2px}
+.gi-cell.up b{color:var(--danger)}
+.gi-cell.down b{color:var(--ok)}
+.gi-notes{grid-column:1/-1;padding:10px 14px;background:var(--panel);border:1px dashed var(--line-2);border-radius:6px;font-size:12px;line-height:1.7;color:var(--ink-1);font-weight:500}
+.gi-notes b{color:var(--ink);font-weight:700}
 .mut-timeline{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:6px}
 .city-table td:nth-child(4){text-align:right}
 .city-table td:nth-child(5),.city-table td:nth-child(6){text-align:right}

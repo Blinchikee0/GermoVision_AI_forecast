@@ -293,6 +293,7 @@ async function runAnalyze(file){
     const res=await fetchJSON('/api/analyze',{method:'POST',
       headers:{'Content-Type':'application/octet-stream','X-Filename':file.name,'X-Reference':refId},body:buf});
     state.analysis=res;renderAnalyze(res);$('#runDrug').disabled=false;state.drug=null;
+    if(res.reference?.id&&$('#driftRefSel')){$('#driftRefSel').value=res.reference.id}
     if(state.image)await refreshCrossRef();
     toast('analysis done · '+res.mutation_count+' mutations','ok');
   }catch(e){toast('analysis failed: '+e.message,'err');console.error(e)}
@@ -577,13 +578,15 @@ async function runDrift(){
   if(state.seedCity==null){toast('click a city on the map first','err');return}
   const btn=$('#runDrift');btn.disabled=true;btn.textContent='simulating…';
   try{
-    const res=await fetchJSON('/api/drift',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    const body={
       seed_city:state.seedCity,r0:+$('#r0Slider').value,generation_time:+$('#gtSlider').value,
-      days:+$('#dSlider').value,mutation_rate:+$('#mrSlider').value,reference:$('#driftRefSel').value
-    })});
+      days:+$('#dSlider').value,mutation_rate:+$('#mrSlider').value,reference:$('#driftRefSel').value,
+    };
+    if(state.analysis)body.analysis=state.analysis;
+    const res=await fetchJSON('/api/drift',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     state.drift=res;state.driftT=0;
     const scr=$('#driftScrub');scr.max=res.days-1;scr.value=0;scr.disabled=false;$('#driftPlay').disabled=false;
-    renderDriftShare();renderReachedChart();renderMlFeat();renderMapArcs();renderDriftFrame(0);renderDriftRationale();
+    renderDriftShare();renderReachedChart();renderMlFeat();renderMapArcs();renderDriftFrame(0);renderDriftRationale();renderGenomeInfluence();
     const badge=$('#mlBadge');
     if(res.ml_used){badge.textContent='ml · '+(res.ml_feature_importance?.length||0)+' features';badge.className='chip ok'}
     else{badge.textContent='ml offline (heuristic fallback)';badge.className='chip warn'}
@@ -621,6 +624,29 @@ function renderMlFeat(){
   c.data.datasets[0].data=sorted.map(x=>+x.risk_importance.toFixed(3));
   c.data.datasets[0].backgroundColor=sorted.map((_,i)=>i===0?'#8a1e1e':i<3?'#7a5b12':INK);
   c.update();
+}
+
+function renderGenomeInfluence(){
+  const card=$('#genomeInfluenceCard');const box=$('#genomeInfluenceBody');const chip=$('#genomeInfluenceChip');
+  if(!card||!box)return;
+  const g=state.drift?.genome_boost;
+  if(!g||!state.analysis){card.hidden=true;return}
+  card.hidden=false;
+  chip.textContent=g.r0_delta>0?`+${g.r0_delta.toFixed(2)} R₀ from genome`:'no lift from genome';
+  chip.className='chip '+(g.r0_delta>=0.5?'danger':g.r0_delta>=0.15?'warn':'ok');
+  const cells=[
+    {k:'base R₀',v:g.base_r0.toFixed(2),sub:'slider input',dir:''},
+    {k:'ML R₀ lift',v:(g.r0_delta>=0?'+':'')+g.r0_delta.toFixed(2),sub:'from mutations',dir:g.r0_delta>0.05?'up':g.r0_delta<-0.05?'down':''},
+    {k:'effective R₀',v:g.r0.toFixed(2),sub:'used in sim',dir:g.r0_delta>0.05?'up':''},
+    {k:'high-impact hits',v:g.high_impact_hits,sub:'impact ≥ 0.60'},
+    {k:'hotspot hits',v:g.hotspot_hits,sub:'≤5 aa from hotspot'},
+    {k:'escape pressure',v:g.escape_pressure.toFixed(2),sub:'weighted impact'},
+    {k:'novelty',v:(g.novelty*100).toFixed(0)+'%',sub:'load vs reference'},
+    {k:'mut rate lift',v:(g.mut_rate_delta>=0?'+':'')+g.mut_rate_delta.toFixed(4),sub:'per day',dir:g.mut_rate_delta>0?'up':''},
+  ];
+  const cellsHtml=cells.map(c=>`<div class="gi-cell ${c.dir||''}"><span>${c.k}</span><b>${c.v}</b><em>${c.sub}</em></div>`).join('');
+  const notesHtml=`<div class="gi-notes"><b>Why the simulation changed:</b> ${g.notes.join('. ')}. The ML pipeline treats each mutation as evidence: high-impact substitutions near known escape hotspots raise transmissibility, and the novelty index (mutation load ÷ reference length) predicts a faster drift clock.</div>`;
+  box.innerHTML=cellsHtml+notesHtml;
 }
 
 function renderDriftRationale(){
