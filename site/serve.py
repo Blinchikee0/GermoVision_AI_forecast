@@ -16,10 +16,26 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+import geo_ml
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(message)s", datefmt="%H:%M:%S")
-log = logging.getLogger("germovision.serve")
+log = logging.getLogger("gv.serve")
 
 PORT = 8000
+
+_GEO_BUNDLE = None
+
+
+def get_geo_bundle():
+    global _GEO_BUNDLE
+    if _GEO_BUNDLE is None:
+        log.info("training geo ML bundle (first request)…")
+        _GEO_BUNDLE = geo_ml.train_or_load(cities=WORLD_CITIES)
+        if _GEO_BUNDLE:
+            log.info("geo ML bundle ready · %d training samples", _GEO_BUNDLE.trained_n)
+        else:
+            log.warning("sklearn unavailable — falling back to gravity heuristic only")
+    return _GEO_BUNDLE
 
 REFERENCES = {
     "sars2_spike": {
@@ -481,35 +497,56 @@ def drift(seed_city: int, r0: float, generation_time: float, days: int,
           mutation_rate: float, ref_id: str) -> dict:
     n = len(WORLD_CITIES)
     seed_city = max(0, min(n - 1, seed_city))
-    dist = [[haversine_km(WORLD_CITIES[i], WORLD_CITIES[j]) for j in range(n)] for i in range(n)]
-    raw_flow = [[0.0] * n for _ in range(n)]
-    for i in range(n):
-        for j in range(n):
-            if i == j or dist[i][j] <= 0:
-                continue
-            raw_flow[i][j] = (WORLD_CITIES[i]["pop"] * WORLD_CITIES[j]["pop"]) / ((dist[i][j] / 1000.0) ** 1.4 + 1.0)
-    fmax = max(max(row) for row in raw_flow) or 1.0
-    flow = [[v / fmax for v in row] for row in raw_flow]
-    speed_scale = max(1.0, days / 45.0)
-    arrival = [float("inf")] * n
-    arrival[seed_city] = 0.0
-    for _ in range(n - 1):
-        best_t, best_j = float("inf"), -1
+    seed = WORLD_CITIES[seed_city]
+
+    bundle = get_geo_bundle()
+    ml_used = bundle is not None
+    ml_arrival = [0.0] * n
+    ml_risk = [1.0] * n
+    if bundle:
+        pred = geo_ml.predict_arrival(bundle, seed, WORLD_CITIES, r0, generation_time, mutation_rate)
+        ml_arrival = pred["arrival_days"]
+        ml_risk = pred["risk_60d"]
+        arrival = [max(0.0, min(days * 1.6, ml_arrival[i])) for i in range(n)]
+        arrival[seed_city] = 0.0
+    else:
+        dist = [[haversine_km(WORLD_CITIES[i], WORLD_CITIES[j]) for j in range(n)] for i in range(n)]
+        raw_flow = [[0.0] * n for _ in range(n)]
         for i in range(n):
-            if arrival[i] == float("inf"):
-                continue
             for j in range(n):
-                if arrival[j] < float("inf"):
+                if i == j or dist[i][j] <= 0:
                     continue
-                f = flow[i][j]
-                if f <= 0:
+                raw_flow[i][j] = (WORLD_CITIES[i]["pop"] * WORLD_CITIES[j]["pop"]) / ((dist[i][j] / 1000.0) ** 1.4 + 1.0)
+        fmax = max(max(row) for row in raw_flow) or 1.0
+        flow = [[v / fmax for v in row] for row in raw_flow]
+        speed_scale = max(1.0, days / 45.0)
+        arrival = [float("inf")] * n
+        arrival[seed_city] = 0.0
+        for _ in range(n - 1):
+            best_t, best_j = float("inf"), -1
+            for i in range(n):
+                if arrival[i] == float("inf"):
                     continue
-                delay = arrival[i] + speed_scale * (2.5 + 6.0 / (f + 0.02))
-                if delay < best_t:
-                    best_t, best_j = delay, j
-        if best_j < 0:
-            break
-        arrival[best_j] = best_t
+                for j in range(n):
+                    if arrival[j] < float("inf"):
+                        continue
+                    f = flow[i][j]
+                    if f <= 0:
+                        continue
+                    delay = arrival[i] + speed_scale * (2.5 + 6.0 / (f + 0.02))
+                    if delay < best_t:
+                        best_t, best_j = delay, j
+            if best_j < 0:
+                break
+            arrival[best_j] = best_t
+
+    arcs = []
+    order = sorted(range(n), key=lambda i: arrival[i])
+    for j in order[1:16]:
+        arcs.append({
+            "seed": seed_city, "target": j, "delay": arrival[j],
+            "path": geo_ml.great_circle_arc(seed, WORLD_CITIES[j], n=28),
+        })
 
     shares = []
     for j in range(n):
@@ -578,6 +615,11 @@ def drift(seed_city: int, r0: float, generation_time: float, days: int,
         "final_mutation_count": len(accumulated),
         "reference": {"id": ref_id, "name": ref["name"], "disease": ref["disease"]},
         "rationale": rationale,
+        "arcs": arcs,
+        "ml_used": ml_used,
+        "ml_arrival": ml_arrival,
+        "ml_risk_60d": ml_risk,
+        "ml_feature_importance": geo_ml.feature_importance(bundle) if bundle else [],
     }
 
 
