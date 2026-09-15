@@ -879,7 +879,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _static(self, rel: str) -> None:
         if rel in ("", "/"):
-            rel = "site/index.html"
+            rel = "docs/index.html"
         path = (ROOT / rel.lstrip("/")).resolve()
         try:
             path.relative_to(ROOT)
@@ -937,7 +937,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_HEAD(self) -> None:
         rel = unquote(urlparse(self.path).path)
         if rel in ("", "/"):
-            rel = "site/index.html"
+            rel = "docs/index.html"
         path = (ROOT / rel.lstrip("/")).resolve()
         try:
             path.relative_to(ROOT)
@@ -993,7 +993,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main() -> None:
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    url = f"http://127.0.0.1:{PORT}/site/"
+    url = f"http://127.0.0.1:{PORT}/docs/"
     log.info("GermoVision console -> %s", url)
     try:
         webbrowser.open(url)

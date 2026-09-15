@@ -97,7 +97,7 @@ flowchart LR
 
 ### 3.2 Reference database
 
-Four curated targets bundled in `site/serve.py`:
+Four curated targets bundled in `docs/serve.py`:
 
 | Ref id | Disease | Length | Known escape hotspots |
 |--------|---------|--------|-----------------------|
@@ -509,10 +509,10 @@ pip install numpy scipy scikit-learn pandas torch matplotlib statsmodels
 ### 8.2 Run the interactive console
 
 ```bash
-python site/serve.py
+python docs/serve.py
 ```
 
-Opens `http://127.0.0.1:8000/site/` in the browser. The first drift simulation triggers a 4-second sklearn training pass; the model is cached to `geo_model.pkl` for subsequent runs.
+Opens `http://127.0.0.1:8000/docs/` in the browser. The first drift simulation triggers a 4-second sklearn training pass; the model is cached to `geo_model.pkl` for subsequent runs.
 
 ### 8.3 Retrain GermoVision-Net (optional)
 
@@ -554,7 +554,7 @@ Produces `net.pt`, `net.onnx`, 15 figures in `figures/`, `results.json`, and `me
 |-- results.json         # last full run metrics
 |-- figures/             # 15 PNG (300 dpi) + PDF pairs
 |-- logo_black.png / logo_white.png
-|-- site/
+|-- docs/
 |   |-- serve.py         # pure-stdlib HTTP server, 7 endpoints
 |   |-- index.html       # 3-mode single-page app
 |   |-- style.css        # matte light theme, no animations
