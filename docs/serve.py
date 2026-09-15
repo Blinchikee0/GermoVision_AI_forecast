@@ -484,6 +484,25 @@ def analyze(raw: bytes, filename: str, ref_id: str) -> dict:
     }
 
 
+def synth_window(ref_id: str, rate: float = 0.05) -> str:
+    ref = REFERENCES.get(ref_id) or REFERENCES["sars2_spike"]
+    import random as _r
+    _r.seed(hash(ref_id) & 0xffff)
+    pool = "AVLIMFWSTYCNQKRHDE"
+    seq = list(ref["aa"])
+    for i in range(len(seq)):
+        if _r.random() < rate:
+            alt = _r.choice(pool)
+            if alt == seq[i]:
+                alt = pool[(pool.index(alt) + 3) % len(pool)]
+            seq[i] = alt
+    body = f">synthetic_{ref_id}_rate{rate}\n"
+    mut = "".join(seq)
+    for i in range(0, len(mut), 80):
+        body += mut[i:i + 80] + "\n"
+    return body
+
+
 def haversine_km(a: dict, b: dict) -> float:
     r = 6371.0
     la1, lo1, la2, lo2 = map(math.radians, [a["lat"], a["lng"], b["lat"], b["lng"]])
@@ -911,22 +930,7 @@ class Handler(BaseHTTPRequestHandler):
             qs = parse_qs(url.query)
             ref_id = qs.get("ref", ["sars2_spike"])[0]
             rate = float(qs.get("rate", ["0.05"])[0])
-            ref = REFERENCES.get(ref_id) or REFERENCES["sars2_spike"]
-            import random as _r
-            _r.seed(hash(ref_id) & 0xffff)
-            pool = "AVLIMFWSTYCNQKRHDE"
-            seq = list(ref["aa"])
-            for i in range(len(seq)):
-                if _r.random() < rate:
-                    alt = _r.choice(pool)
-                    if alt == seq[i]:
-                        alt = pool[(pool.index(alt) + 3) % len(pool)]
-                    seq[i] = alt
-            body = f">synthetic_{ref_id}_rate{rate}\n"
-            mut = "".join(seq)
-            for i in range(0, len(mut), 80):
-                body += mut[i:i+80] + "\n"
-            data = body.encode("utf-8")
+            data = synth_window(ref_id, rate).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/plain; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))

@@ -5,12 +5,17 @@ import pickle
 from dataclasses import dataclass
 from pathlib import Path
 
-import numpy as np
+try:
+    import numpy as np
+    NUMPY_OK = True
+except ImportError:
+    np = None
+    NUMPY_OK = False
 
 try:
     from sklearn.ensemble import GradientBoostingRegressor, RandomForestClassifier
     from sklearn.preprocessing import StandardScaler
-    SKLEARN_OK = True
+    SKLEARN_OK = NUMPY_OK
 except ImportError:
     SKLEARN_OK = False
 
