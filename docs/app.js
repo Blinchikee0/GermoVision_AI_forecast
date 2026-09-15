@@ -493,7 +493,7 @@ function populateWorldMap(){
   const cities=state.meta.cities;
   const proj=(lng,lat)=>{const x=(lng+180)/360*900;const y=(90-lat)/180*450;return[x,y]};
   const parts=[];
-  parts.push(`<image href="/docs/world.svg" x="0" y="0" width="900" height="450" preserveAspectRatio="none" class="map-image"/>`);
+  parts.push(`<image href="world.svg" x="0" y="0" width="900" height="450" preserveAspectRatio="none" class="map-image"/>`);
   parts.push(`<g class="map-graticule">`);
   for(let lng=-180;lng<=180;lng+=30){const [x1]=proj(lng,-90),[x2]=proj(lng,90);parts.push(`<line x1="${x1}" y1="0" x2="${x2}" y2="450"/>`)}
   for(let lat=-60;lat<=60;lat+=30){const [,y1]=proj(-180,lat),[,y2]=proj(180,lat);parts.push(`<line x1="0" y1="${y1}" x2="900" y2="${y2}"/>`)}
