@@ -1,18 +1,24 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/*.py", "use": "@vercel/python" },
-    { "src": "docs/**", "use": "@vercel/static" }
+    { "src": "api/health.py",         "use": "@vercel/python", "config": { "includeFiles": "api/_common.py" } },
+    { "src": "api/analyze.py",        "use": "@vercel/python", "config": { "includeFiles": "api/_common.py" } },
+    { "src": "api/sample_fasta.py",   "use": "@vercel/python", "config": { "includeFiles": "api/_common.py" } },
+    { "src": "api/image_features.py", "use": "@vercel/python", "config": { "includeFiles": "api/_common.py" } },
+    { "src": "api/merge.py",          "use": "@vercel/python", "config": { "includeFiles": "api/_common.py" } },
+    { "src": "api/drift.py",          "use": "@vercel/python", "config": { "includeFiles": "api/_common.py" } },
+    { "src": "api/drug.py",           "use": "@vercel/python", "config": { "includeFiles": "api/_common.py" } },
+    { "src": "docs/**",               "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/style.css", "dest": "/docs/style.css" },
-    { "src": "/app.js", "dest": "/docs/app.js" },
-    { "src": "/world.svg", "dest": "/docs/world.svg" },
-    { "src": "/logo_black.png", "dest": "/docs/logo_black.png" },
-    { "src": "/logo_white.png", "dest": "/docs/logo_white.png" },
-    { "src": "/favicon.ico", "dest": "/docs/logo_black.png" },
-    { "src": "/", "dest": "/docs/index.html" },
-    { "src": "/(.*)", "dest": "/docs/$1" }
+    { "src": "/api/(.*)",         "dest": "/api/$1" },
+    { "src": "/style.css",        "dest": "/docs/style.css" },
+    { "src": "/app.js",           "dest": "/docs/app.js" },
+    { "src": "/world.svg",        "dest": "/docs/world.svg" },
+    { "src": "/logo_black.png",   "dest": "/docs/logo_black.png" },
+    { "src": "/logo_white.png",   "dest": "/docs/logo_white.png" },
+    { "src": "/favicon.ico",      "dest": "/docs/logo_black.png" },
+    { "src": "/",                 "dest": "/docs/index.html" },
+    { "src": "/(.*)",             "dest": "/docs/$1" }
   ]
 }
