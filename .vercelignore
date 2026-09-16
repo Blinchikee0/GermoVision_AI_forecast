@@ -17,6 +17,9 @@ plots.py
 evaluation.py
 data.py
 config.py
+geo_ml.py
+docs/serve.py
+pyproject.toml
 EXPLANATION.md
 geo_model.pkl
 .cache/

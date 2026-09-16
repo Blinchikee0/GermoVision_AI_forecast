@@ -1,12 +1,18 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    { "source": "/", "destination": "/docs/index.html" },
-    { "source": "/style.css", "destination": "/docs/style.css" },
-    { "source": "/app.js", "destination": "/docs/app.js" },
-    { "source": "/world.svg", "destination": "/docs/world.svg" },
-    { "source": "/logo_black.png", "destination": "/docs/logo_black.png" },
-    { "source": "/logo_white.png", "destination": "/docs/logo_white.png" },
-    { "source": "/favicon.ico", "destination": "/docs/logo_black.png" }
+  "version": 2,
+  "builds": [
+    { "src": "api/*.py", "use": "@vercel/python" },
+    { "src": "docs/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/style.css", "dest": "/docs/style.css" },
+    { "src": "/app.js", "dest": "/docs/app.js" },
+    { "src": "/world.svg", "dest": "/docs/world.svg" },
+    { "src": "/logo_black.png", "dest": "/docs/logo_black.png" },
+    { "src": "/logo_white.png", "dest": "/docs/logo_white.png" },
+    { "src": "/favicon.ico", "dest": "/docs/logo_black.png" },
+    { "src": "/", "dest": "/docs/index.html" },
+    { "src": "/(.*)", "dest": "/docs/$1" }
   ]
 }
