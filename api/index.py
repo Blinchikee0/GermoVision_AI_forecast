@@ -917,3 +917,113 @@ def great_circle_arc(seed, target, n=24):
         lng = math.degrees(math.atan2(y, x))
         out.append([lng, lat])
     return out
+
+
+# ==================== dispatch handler ====================
+
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import parse_qs, urlparse
+
+
+def _send_json(h, status, payload):
+    body = json.dumps(payload, allow_nan=False).encode("utf-8")
+    h.send_response(status)
+    h.send_header("Content-Type", "application/json; charset=utf-8")
+    h.send_header("Content-Length", str(len(body)))
+    h.send_header("Cache-Control", "no-store")
+    h.send_header("Access-Control-Allow-Origin", "*")
+    h.end_headers()
+    h.wfile.write(body)
+
+
+def _read_body(h):
+    length = int(h.headers.get("Content-Length", "0"))
+    return h.rfile.read(length) if length else b""
+
+
+def _read_json(h):
+    return json.loads(_read_body(h) or b"{}")
+
+
+class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Filename, X-Reference")
+        self.end_headers()
+
+    def do_GET(self):
+        url = urlparse(self.path)
+        path = url.path
+        try:
+            if path.endswith("/health"):
+                _send_json(self, 200, {
+                    "ok": True,
+                    "references": [
+                        {"id": k, "name": v["name"], "disease": v["disease"], "length": len(v["aa"])}
+                        for k, v in REFERENCES.items()
+                    ],
+                    "cities": WORLD_CITIES,
+                })
+                return
+            if path.endswith("/sample_fasta"):
+                qs = parse_qs(url.query)
+                ref_id = (qs.get("ref", ["sars2_spike"]) or ["sars2_spike"])[0]
+                try:
+                    rate = float((qs.get("rate", ["0.04"]) or ["0.04"])[0])
+                except ValueError:
+                    rate = 0.04
+                body = synth_window(ref_id, rate).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            _send_json(self, 404, {"error": "unknown route " + path})
+        except Exception as exc:
+            _send_json(self, 500, {"error": str(exc)})
+
+    def do_POST(self):
+        url = urlparse(self.path)
+        path = url.path
+        try:
+            if path.endswith("/analyze"):
+                raw = _read_body(self)
+                filename = self.headers.get("X-Filename", "input.fasta")
+                ref_id = self.headers.get("X-Reference", "sars2_spike")
+                _send_json(self, 200, analyze(raw, filename, ref_id))
+                return
+            if path.endswith("/image_features"):
+                raw = _read_body(self)
+                filename = self.headers.get("X-Filename", "image.png")
+                _send_json(self, 200, image_features(raw, filename))
+                return
+            if path.endswith("/merge"):
+                body = _read_json(self)
+                _send_json(self, 200, merge_analysis(body.get("analysis", {}), body.get("image", {})))
+                return
+            if path.endswith("/drift"):
+                body = _read_json(self)
+                _send_json(self, 200, drift(
+                    int(body.get("seed_city", 0)),
+                    float(body.get("r0", 2.5)),
+                    float(body.get("generation_time", 5.0)),
+                    int(body.get("days", 90)),
+                    float(body.get("mutation_rate", 0.03)),
+                    body.get("reference", "sars2_spike"),
+                    body.get("analysis"),
+                ))
+                return
+            if path.endswith("/drug"):
+                body = _read_json(self)
+                if "analysis" not in body:
+                    _send_json(self, 400, {"error": "post the analysis object under 'analysis'"})
+                    return
+                _send_json(self, 200, rank_drugs(body["analysis"]))
+                return
+            _send_json(self, 404, {"error": "unknown route " + path})
+        except Exception as exc:
+            _send_json(self, 500, {"error": str(exc)})
